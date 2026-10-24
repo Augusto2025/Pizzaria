@@ -138,17 +138,18 @@ class HomeScreen extends StatelessWidget {
               ),
         ),
         const SizedBox(height: 16),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            childAspectRatio: 0.85,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
+        // Use horizontal ListView instead of GridView to avoid text overflow
+        SizedBox(
+          height: 100,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: actions.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) => SizedBox(
+              width: 80, // Largura fixa para cada card no scroll horizontal
+              child: _QuickActionCard(action: actions[index]),
+            ),
           ),
-          itemCount: actions.length,
-          itemBuilder: (context, index) => _QuickActionCard(action: actions[index]),
         ),
       ],
     );

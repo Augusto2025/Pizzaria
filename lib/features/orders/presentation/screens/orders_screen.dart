@@ -165,24 +165,23 @@ class _OrderCard extends StatelessWidget {
                     ),
               ),
               const SizedBox(height: 12),
-              Row(
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
                 children: [
                   _InfoChip(
                     icon: Icons.fastfood,
                     label: '${order.itemsCount} ${order.itemsCount == 1 ? 'item' : 'itens'}',
                   ),
-                  const SizedBox(width: 12),
                   _InfoChip(
                     icon: Icons.attach_money,
                     label: 'R\$ ${order.total.toStringAsFixed(2).replaceAll('.', ',')}',
                   ),
-                  if (order.estimatedDelivery != null) ...[
-                    const SizedBox(width: 12),
+                  if (order.estimatedDelivery != null)
                     _InfoChip(
                       icon: Icons.access_time,
                       label: 'Entregue ${formatter.format(order.estimatedDelivery!)}',
                     ),
-                  ],
                 ],
               ),
               if (order.status.isActive) ...[

@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:pizza/core/constants/app_colors.dart';
 import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/constants/app_routes.dart';
-import 'package:pizza/shared/widgets/custom_button.dart';
 
 /// Tela do Cardápio/Menu
 class MenuScreen extends StatefulWidget {
@@ -284,35 +283,34 @@ class _ProductCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            product.name,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: product.isAvailable ? AppColors.textPrimary : AppColors.textDisabled,
-                                ),
+                    // Name with "Indisponível" badge below (not beside) to avoid overflow on long names
+                    Text(
+                      product.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: product.isAvailable ? AppColors.textPrimary : AppColors.textDisabled,
+                          ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (!product.isAvailable) ...[
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.error.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          AppStrings.unavailable,
+                          style: const TextStyle(
+                            color: AppColors.error,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        if (!product.isAvailable)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppColors.error.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              AppStrings.unavailable,
-                              style: const TextStyle(
-                                color: AppColors.error,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
+                      ),
+                    ],
                     const SizedBox(height: 4),
                     Text(
                       product.description,
@@ -339,33 +337,42 @@ class _ProductCard extends StatelessWidget {
                 ),
               ),
 
-              // Price & Add Button
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'R\$ ${product.price.toStringAsFixed(2).replaceAll('.', ',')}',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: product.isAvailable ? AppColors.primary : AppColors.textDisabled,
+              // Price & Add Button - Only cart icon next to price (compact, no overflow)
+              SizedBox(
+                width: 70,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'R\$ ${product.price.toStringAsFixed(2).replaceAll('.', ',')}',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: product.isAvailable ? AppColors.primary : AppColors.textDisabled,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    if (product.isAvailable)
+                      IconButton(
+                        icon: const Icon(Icons.add_shopping_cart, color: AppColors.primary, size: 28),
+                        onPressed: () {
+                          // TODO: Adicionar ao carrinho
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('${product.name} adicionado ao carrinho')),
+                          );
+                        },
+                        tooltip: 'Adicionar ao carrinho',
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (product.isAvailable)
-                    CustomButton(
-                      text: AppStrings.addToCart,
-                      isFullWidth: false,
-                      icon: Icons.add_shopping_cart,
-                      onPressed: () {
-                        // TODO: Adicionar ao carrinho
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('${product.name} adicionado ao carrinho')),
-                        );
-                      },
-                    )
-                  else
-                    const SizedBox.shrink(),
-                ],
+                      )
+                    else
+                      const SizedBox.shrink(),
+                  ],
+                ),
               ),
             ],
           ),

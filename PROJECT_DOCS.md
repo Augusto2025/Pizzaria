@@ -497,5 +497,150 @@ flutter pub outdated
 
 ---
 
+## Histórico de Correções de Bugs (2024-10-24)
+
+### 1. LocaleDataException — Tela Vermelha nos Pedidos
+**Problema:** `DateFormat('dd/MM/yyyy HH:mm', 'pt_BR')` lançava `LocaleDataException` porque o locale `pt_BR` não foi inicializado antes do `runApp()`.
+
+**Arquivos:** `lib/main.dart`, `lib/features/orders/presentation/screens/orders_screen.dart`, `lib/features/orders/presentation/screens/order_detail_screen.dart`
+
+**Correção:** Inicialização do locale no `main.dart`:
+```dart
+import 'package:intl/date_symbol_data_local.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initDependencies();
+  await initializeDateFormatting('pt_BR', null); // Necessário para DateFormat com 'pt_BR'
+  runApp(const MeuAplicativo());
+}
+```
+
+**Padrão estabelecido:** Sempre chamar `initializeDateFormatting('pt_BR', null)` antes de `runApp()` quando usar `intl` com locale brasileiro.
+
+---
+
+### 2. RenderFlex Overflows — Três Telas Afetadas
+
+#### A) Home / Início — Quick Actions (BOTTOM OVERFLOWED 5.3px)
+**Problema:** `GridView` com 4 colunas e `childAspectRatio: 0.85` deixava cards muito achatados; textos de 2 linhas ("Meus Pedidos", "Promoções") cortavam.
+
+**Arquivo:** `lib/features/home/presentation/screens/home_screen.dart`
+
+**Correção:** Substituído `GridView` por `ListView` horizontal com largura fixa por card:
+```dart
+// ANTES
+GridView.builder(
+  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+    crossAxisCount: 4,
+    childAspectRatio: 1.0,
+  ),
+)
+
+// DEPOIS
+SizedBox(
+  height: 100,
+  child: ListView.separated(
+    scrollDirection: Axis.horizontal,
+    itemBuilder: (context, index) => SizedBox(
+      width: 80,  // Largura fixa = texto não estoura
+      child: _QuickActionCard(action: actions[index]),
+    ),
+  ),
+)
+```
+
+**Decisão:** `ListView` horizontal > `GridView` para ações rápidas — melhor UX mobile, scroll natural, textos sempre legíveis.
+
+---
+
+#### B) Cardápio / Menu — Botão "Adicionar ao carrinho" (BOTTOM OVERFLOWED 113px)
+**Problema:** `CustomButton` com texto "Adicionar ao carrinho" + ícone em coluna de 110-130px → texto quebrava em 3-4 linhas, letras apareciam sobrepostas ao botão. Nome "Pizza Quatro Queijos" + badge "Indisponível" lado a lado também causava overflow horizontal.
+
+**Arquivo:** `lib/features/menu/presentation/screens/menu_screen.dart`
+
+**Correções:**
+1. **Badge "Indisponível" movido para BAIXO do nome** (não mais ao lado):
+```dart
+Text(product.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+if (!product.isAvailable) ...[
+  SizedBox(height: 4),
+  Container(/* badge menor, fonte 9px */),
+],
+```
+
+2. **Botão substituído por `IconButton` compacto** (apenas ícone de carrinho):
+```dart
+SizedBox(width: 70, child: Column(
+  children: [
+    Text('R$ XX,XX'),
+    SizedBox(height: 8),
+    IconButton(
+      icon: Icon(Icons.add_shopping_cart, size: 28),
+      tooltip: 'Adicionar ao carrinho',
+      style: IconButton.styleFrom(
+        backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+      ),
+    ),
+  ],
+))
+```
+
+**Decisões:**
+- `IconButton` > `CustomButton` em listas — economiza espaço horizontal, sem texto para quebrar
+- Badge de status **abaixo** do título (não inline) — nomes longos não competem por largura
+- Largura fixa (`width: 70`) na coluna de preço/ação — garante que `Expanded` da coluna de detalhes funcione
+
+---
+
+#### C) Pedidos / Orders — Chips de Info (Faixa Preta/Amarela - BOTTOM OVERFLOWED 37px)
+**Problema:** `Row` com 3 `_InfoChip` fixos (`itens` + `preço` + `Entregue dd/MM/yyyy HH:mm`) não quebrava em telas estreitas.
+
+**Arquivo:** `lib/features/orders/presentation/screens/orders_screen.dart`
+
+**Correção:** `Row` → `Wrap` com quebra automática:
+```dart
+// ANTES
+Row(children: [
+  _InfoChip(...),
+  SizedBox(width: 12),
+  _InfoChip(...),
+  if (estimatedDelivery != null) ...[
+    SizedBox(width: 12),
+    _InfoChip(...),
+  ],
+])
+
+// DEPOIS
+Wrap(spacing: 8, runSpacing: 8, children: [
+  _InfoChip(...),
+  _InfoChip(...),
+  if (estimatedDelivery != null) _InfoChip(...),
+])
+```
+
+**Decisão:** `Wrap` > `Row` para chips dinâmicos — responsivo automático sem media queries.
+
+---
+
+### 3. Limpeza de Código
+- Removido import não usado `package:pizza/shared/widgets/custom_button.dart` do `menu_screen.dart`
+- Adicionado `maxLines: 1` + `overflow: TextOverflow.ellipsis` no nome do produto no cardápio
+
+---
+
+### Resumo de Padrões Reforçados
+| Situação | Padrão Aplicado |
+|----------|-----------------|
+| Ações rápidas em grid | `ListView` horizontal + `SizedBox(width: fixo)` |
+| Botões de ação em cards/lista | `IconButton` com `tooltip` (sem texto) |
+| Chips/tags dinâmicos | `Wrap(spacing, runSpacing)` |
+| Badge de status + título longo | Badge **abaixo** do título (coluna), não ao lado (linha) |
+| Colunas em `Row` com filhos variados | `width` fixo no filho que não deve crescer |
+| Textos que podem ser longos | `maxLines` + `overflow: TextOverflow.ellipsis` |
+| Locale `pt_BR` com `intl` | `await initializeDateFormatting('pt_BR', null)` no `main()` |
+
+---
+
 *Última atualização: 2024-10-24*
 *Este documento deve ser mantido atualizado a cada mudança significativa no projeto.*

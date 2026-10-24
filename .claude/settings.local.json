@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rtk ls *)",
+      "Bash(mv C:/Programas/Projeto-flutter/pizza/* C:/Programas/Projeto-flutter/)",
+      "Bash(mv C:/Programas/Projeto-flutter/pizza/.* C:/Programas/Projeto-flutter/)"
+    ]
+  }
+}

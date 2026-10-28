@@ -1,0 +1,166 @@
+<UserControl x:Class="PizzariaDesktop.Views.Home.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:PizzariaDesktop.Views.Home"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="900"
+             Background="{StaticResource BackgroundBrush}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+            <!-- Welcome Header -->
+            <Border Style="{StaticResource CardStyle}" Padding="24" Margin="0,0,0,24">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="{Binding WelcomeMessage}" Style="{StaticResource HeadlineStyle}" FontSize="28" />
+                        <TextBlock Text="Faça seu pedido e receba no conforto da sua casa" Style="{StaticResource SubtitleStyle}" Margin="0,8,0,0" />
+                    </StackPanel>
+
+                    <!-- Cart Summary -->
+                    <Border Grid.Column="1" Background="{StaticResource PrimaryBrush}" CornerRadius="12" Padding="16,12" MinWidth="140">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="🛒" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBlock Text="Carrinho" FontSize="14" FontWeight="Medium" Foreground="White" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding CartItemCount}" FontSize="28" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,4,0,0" />
+                            <TextBlock Text="{Binding FormattedCartSubtotal}" FontSize="12" Foreground="#FFFFE0D8" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Quick Actions -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Acesso Rápido" Style="{StaticResource TitleStyle}" />
+                <Button Grid.Column="1" Style="{StaticResource SecondaryButtonStyle}" Content="Ver Cardápio" Padding="16,8" Command="{Binding GoToMenuCommand}" Margin="0,0,0,12" />
+            </Grid>
+
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,0,0,24">
+                <StackPanel Orientation="Horizontal">
+                    <Border Style="{StaticResource CardStyle}" Width="160" Height="160" Margin="0,0,16,0" Padding="20">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="🍕" FontSize="48" HorizontalAlignment="Center" />
+                            <TextBlock Text="Cardápio" Style="{StaticResource TitleStyle}" FontSize="18" HorizontalAlignment="Center" Margin="0,12,0,4" />
+                            <TextBlock Text="Veja nossas pizzas e bebidas" Style="{StaticResource CaptionStyle}" TextAlignment="Center" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}" Width="160" Height="160" Margin="0,0,16,0" Padding="20">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="📦" FontSize="48" HorizontalAlignment="Center" />
+                            <TextBlock Text="Meus Pedidos" Style="{StaticResource TitleStyle}" FontSize="18" HorizontalAlignment="Center" Margin="0,12,0,4" />
+                            <TextBlock Text="Acompanhe seus pedidos" Style="{StaticResource CaptionStyle}" TextAlignment="Center" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}" Width="160" Height="160" Margin="0,0,16,0" Padding="20">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="👤" FontSize="48" HorizontalAlignment="Center" />
+                            <TextBlock Text="Perfil" Style="{StaticResource TitleStyle}" FontSize="18" HorizontalAlignment="Center" Margin="0,12,0,4" />
+                            <TextBlock Text="Gerencie sua conta" Style="{StaticResource CaptionStyle}" TextAlignment="Center" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}" Width="160" Height="160" Padding="20">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="🛒" FontSize="48" HorizontalAlignment="Center" />
+                            <TextBlock Text="Carrinho" Style="{StaticResource TitleStyle}" FontSize="18" HorizontalAlignment="Center" Margin="0,12,0,4" />
+                            <TextBlock Text="Finalize seu pedido" Style="{StaticResource CaptionStyle}" TextAlignment="Center" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Last Order Status -->
+            <Border Style="{StaticResource CardStyle}" Padding="20" Margin="0,0,0,24" Visibility="{Binding HasLastOrder, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel>
+                    <TextBlock Text="📍 Último Pedido" Style="{StaticResource TitleStyle}" Margin="0,0,0,12" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Width="56" Height="56" CornerRadius="28"
+                                Background="{Binding LastOrder.Status, Converter={StaticResource OrderStatusToColorConverter}}">
+                            <TextBlock Text="📦" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0">
+                            <TextBlock Text="{Binding LastOrderTimeText}" Style="{StaticResource BodyStyle}" FontWeight="Medium" />
+                            <TextBlock Text="{Binding LastOrderStatusText}" Style="{StaticResource SubtitleStyle}" Margin="0,4,0,0" />
+                        </StackPanel>
+
+                        <Button Grid.Column="2" Style="{StaticResource SecondaryButtonStyle}" Content="Acompanhar" Padding="16,8" Command="{Binding GoToOrdersCommand}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Promotions -->
+            <Grid Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Promoções" Style="{StaticResource TitleStyle}" />
+            </Grid>
+
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,0,0,24">
+                <StackPanel Orientation="Horizontal">
+                    <ItemsControl ItemsSource="{Binding Promotions}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CardStyle}" Width="300" Height="140" Margin="0,0,16,0" Padding="20">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <Border Background="{Binding Color}" CornerRadius="4" Padding="6,2" Width="Auto" HorizontalAlignment="Left" Margin="0,0,0,12">
+                                                <TextBlock Text="{Binding Badge}" FontSize="10" FontWeight="Bold" Foreground="White" />
+                                            </Border>
+                                            <TextBlock Text="{Binding Title}" Style="{StaticResource TitleStyle}" FontSize="16" Margin="0,0,0,8" />
+                                            <TextBlock Text="{Binding Description}" Style="{StaticResource BodyStyle}" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Footer Info -->
+            <Border Style="{StaticResource CardStyle}" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="🍕 Pizzaria Delivery" Style="{StaticResource TitleStyle}" HorizontalAlignment="Center" Margin="0,0,0,8" />
+                    <TextBlock Text="Entrega rápida • Ingredientes frescos • Feito com carinho" Style="{StaticResource SubtitleStyle}" HorizontalAlignment="Center" TextAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,0">
+                        <TextBlock Text="📞 (11) 99999-9999" Style="{StaticResource BodyStyle}" Margin="0,0,24,0" />
+                        <TextBlock Text="📍 São Paulo, SP" Style="{StaticResource BodyStyle}" Margin="0,0,24,0" />
+                        <TextBlock Text="⏰ 18h - 23h" Style="{StaticResource BodyStyle}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

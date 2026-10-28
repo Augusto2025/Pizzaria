@@ -1,0 +1,173 @@
+<UserControl x:Class="PizzariaDesktop.Views.Menu.MenuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:PizzariaDesktop.Views.Menu"
+             xmlns:models="clr-namespace:PizzariaDesktop.Models"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="900"
+             Background="{StaticResource BackgroundBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Style="{StaticResource CardStyle}" Padding="24" Margin="24,24,24,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="🍕 Cardápio" Style="{StaticResource HeadlineStyle}" FontSize="28" />
+                    <TextBlock Text="Escolha seus favoritos e adicione ao carrinho" Style="{StaticResource SubtitleStyle}" Margin="0,8,0,0" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <Border Background="{StaticResource PrimaryBrush}" CornerRadius="12" Padding="12,8" MinWidth="120">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🛒" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBlock Text="{Binding DataContext.CartItemCount, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="14" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Category Tabs & Search -->
+        <Border Grid.Row="1" Padding="24,0,24,16">
+            <StackPanel>
+                <!-- Search -->
+                <TextBox Style="{StaticResource InputStyle}"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         Tag="🔍 Buscar por nome..."
+                         Margin="0,0,0,16" />
+
+                <!-- Category Tabs -->
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <StackPanel Orientation="Horizontal">
+                        <ItemsControl ItemsSource="{Binding Categories}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource SecondaryButtonStyle}"
+                                            Padding="16,10" Margin="0,0,12,0"
+                                            Command="{Binding DataContext.SelectCategoryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                            <Button.Background>
+                                                <MultiBinding Converter="{StaticResource CategoryBackgroundMultiConverter}">
+                                                    <Binding />
+                                                    <Binding Path="DataContext.SelectedCategory" RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                                                </MultiBinding>
+                                            </Button.Background>
+                                            <Button.BorderBrush>
+                                                <MultiBinding Converter="{StaticResource CategoryBorderMultiConverter}">
+                                                    <Binding />
+                                                    <Binding Path="DataContext.SelectedCategory" RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                                                </MultiBinding>
+                                            </Button.BorderBrush>
+                                            <Button.Foreground>
+                                                <MultiBinding Converter="{StaticResource CategoryForegroundMultiConverter}">
+                                                    <Binding />
+                                                    <Binding Path="DataContext.SelectedCategory" RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                                                </MultiBinding>
+                                            </Button.Foreground>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Converter={StaticResource CategoryToIconConverter}}" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                <TextBlock Text="{Binding Converter={StaticResource CategoryDisplayNameConverter}}" Style="{StaticResource BodyStyle}" FontWeight="Medium" />
+                                            </StackPanel>
+                                        </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+
+        <!-- Products Grid -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Padding="24,0,24,24">
+            <ItemsControl ItemsSource="{Binding FilteredProducts}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource CardStyle}" Width="280" Margin="0,0,16,16" Padding="0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Product Image/Emoji -->
+                                <Border Grid.Row="0" Height="180" Background="{StaticResource SurfaceBrush}">
+                                    <TextBlock Text="{Binding Converter={StaticResource CategoryToIconConverter}}" FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+
+                                <!-- Product Info -->
+                                <StackPanel Grid.Row="1" Margin="16,12,16,12">
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource TitleStyle}" FontSize="16" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Description}" Style="{StaticResource CaptionStyle}" TextWrapping="Wrap" Margin="0,4,0,8" MaxHeight="40" TextTrimming="CharacterEllipsis" />
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                        <Border Background="{Binding Converter={StaticResource CategoryBackgroundConverter}}" CornerRadius="4" Padding="4,2">
+                                            <TextBlock Text="{Binding Converter={StaticResource CategoryDisplayNameConverter}}" FontSize="10" FontWeight="Medium" Foreground="{Binding Converter={StaticResource CategoryForegroundConverter}}" />
+                                        </Border>
+                                        <TextBlock Text="{Binding FormattedPrepTime}" Style="{StaticResource CaptionStyle}" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    </StackPanel>
+
+                                    <!-- Unavailable Badge -->
+                                    <Border Background="#FFDC3545" CornerRadius="4" Padding="4,2" Margin="0,8,0,0" HorizontalAlignment="Left" Visibility="{Binding IsAvailable, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                        <TextBlock Text="Indisponível" FontSize="10" FontWeight="Bold" Foreground="White" />
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Price & Add Button -->
+                                <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" Padding="16,12" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" Text="{Binding FormattedPrice}" Style="{StaticResource TitleStyle}" FontSize="20" VerticalAlignment="Center" />
+
+                                        <Button Grid.Column="1" Style="{StaticResource PrimaryButtonStyle}"
+                                                Content="Adicionar" Padding="16,8" FontSize="12"
+                                                Command="{Binding DataContext.AddToCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                IsEnabled="{Binding IsAvailable}" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Empty State -->
+        <Border Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center"
+                Visibility="{Binding FilteredProducts.Count, Converter={StaticResource EmptyToVisibilityConverter}}">
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock Text="🔍" FontSize="48" />
+                <TextBlock Text="Nenhum produto encontrado" Style="{StaticResource TitleStyle}" Margin="0,16,0,8" />
+                <TextBlock Text="Tente buscar com outros termos ou selecione outra categoria" Style="{StaticResource SubtitleStyle}" TextAlignment="Center" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

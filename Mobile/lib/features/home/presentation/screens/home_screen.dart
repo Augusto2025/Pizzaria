@@ -144,7 +144,7 @@ class HomeScreen extends StatelessWidget {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: actions.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, index) => SizedBox(
               width: 80, // Largura fixa para cada card no scroll horizontal
               child: _QuickActionCard(action: actions[index]),

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Programas\\Pizzaria\\Desktop\\PizzariaDesktop.csproj": {}
+    "C:\\Programas\\Pizzaria\\Desktop\\PizzariaDesktop.csproj": {}
   },
   "projects": {
-    "c:\\Programas\\Pizzaria\\Desktop\\PizzariaDesktop.csproj": {
+    "C:\\Programas\\Pizzaria\\Desktop\\PizzariaDesktop.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Programas\\Pizzaria\\Desktop\\PizzariaDesktop.csproj",
+        "projectUniqueName": "C:\\Programas\\Pizzaria\\Desktop\\PizzariaDesktop.csproj",
         "projectName": "PizzariaDesktop",
-        "projectPath": "c:\\Programas\\Pizzaria\\Desktop\\PizzariaDesktop.csproj",
+        "projectPath": "C:\\Programas\\Pizzaria\\Desktop\\PizzariaDesktop.csproj",
         "packagesPath": "C:\\Users\\Gabriel\\.nuget\\packages\\",
-        "outputPath": "c:\\Programas\\Pizzaria\\Desktop\\obj\\",
+        "outputPath": "C:\\Programas\\Pizzaria\\Desktop\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Gabriel\\AppData\\Roaming\\NuGet\\NuGet.Config"

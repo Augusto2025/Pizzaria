@@ -59,7 +59,11 @@ app.*.map.json
 # C# / .NET / WPF / Desktop
 # ----------------------------------------
 
-# Build results
+# Build results (generic - covers any project)
+bin/
+obj/
+
+# Build results (specific configs)
 [Dd]ebug/
 [Rr]elease/
 x64/

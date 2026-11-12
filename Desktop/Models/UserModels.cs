@@ -16,6 +16,22 @@ public class Address
     public bool IsDefault { get; set; }
 
     public string FullAddress => $"{Street}, {Number} - {Neighborhood}, {City}/{State} - {ZipCode}";
+
+    // Factory method to create address from full string
+    public static Address FromFullAddress(string fullAddress)
+    {
+        return new Address
+        {
+            Id = Guid.NewGuid().ToString(),
+            Label = "Outro",
+            Street = fullAddress,
+            Number = "",
+            Neighborhood = "",
+            City = "",
+            State = "",
+            ZipCode = ""
+        };
+    }
 }
 
 public class User
@@ -25,5 +41,5 @@ public class User
     public string Email { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public List<Address> Addresses { get; set; } = new();
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

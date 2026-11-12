@@ -291,6 +291,7 @@
             <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
             <converters:OrderStatusToColorConverter x:Key="OrderStatusToColorConverter" />
+            <converters:OrderStatusToPaidVisibilityConverter x:Key="OrderStatusToPaidVisibilityConverter" />
             <converters:CategoryToIconConverter x:Key="CategoryToIconConverter" />
             <converters:CategoryDisplayNameConverter x:Key="CategoryDisplayNameConverter" />
             <converters:CategoryBackgroundConverter x:Key="CategoryBackgroundConverter" />
@@ -305,6 +306,9 @@
             <!-- ViewModel -> View DataTemplates -->
             <DataTemplate DataType="{x:Type vm:LoginViewModel}">
                 <viewsAuth:LoginView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:RegisterViewModel}">
+                <viewsAuth:RegisterView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:HomeViewModel}">
                 <viewsHome:HomeView />

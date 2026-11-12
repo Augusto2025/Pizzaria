@@ -14,9 +14,13 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
         <!-- Cart Items -->
-        <Border Grid.Column="0" Style="{StaticResource CardStyle}" Margin="24,24,12,24" Padding="0">
+        <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource CardStyle}" Margin="24,24,12,12" Padding="0">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -38,7 +42,8 @@
                         <Button Grid.Column="1" Style="{StaticResource SecondaryButtonStyle}"
                                 Content="Continuar comprando" Padding="16,8"
                                 Command="{Binding GoToMenuCommand}"
-                                BorderBrush="White" Foreground="White" />
+                                BorderBrush="White" Foreground="White"
+                                IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}" />
                     </Grid>
                 </Border>
 
@@ -71,22 +76,27 @@
 
                                         <!-- Quantity Controls -->
                                         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,0">
-                                            <Button Style="{StaticResource IconButtonStyle}" Width="32" Height="32" Content="−" FontSize="16" FontWeight="Bold"
+                                            <Button Style="{StaticResource IconButtonStyle}" Width="36" Height="36" Content="−" FontSize="18" FontWeight="Bold"
                                                     Command="{Binding DataContext.DecreaseQuantityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding}" />
-                                            <TextBlock Text="{Binding Quantity}" Style="{StaticResource TitleStyle}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="40" TextAlignment="Center" />
-                                            <Button Style="{StaticResource IconButtonStyle}" Width="32" Height="32" Content="+" FontSize="16" FontWeight="Bold"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip="Diminuir quantidade"
+                                                    IsEnabled="{Binding DataContext.IsProcessing, Converter={StaticResource InverseBoolConverter}, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                            <TextBlock Text="{Binding Quantity}" Style="{StaticResource TitleStyle}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="48" TextAlignment="Center" />
+                                            <Button Style="{StaticResource IconButtonStyle}" Width="36" Height="36" Content="+" FontSize="18" FontWeight="Bold"
                                                     Command="{Binding DataContext.IncreaseQuantityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding}" />
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip="Aumentar quantidade"
+                                                    IsEnabled="{Binding DataContext.IsProcessing, Converter={StaticResource InverseBoolConverter}, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                         </StackPanel>
 
                                         <!-- Price & Remove -->
                                         <StackPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <TextBlock Text="{Binding FormattedTotalPrice}" Style="{StaticResource TitleStyle}" FontSize="18" HorizontalAlignment="Right" />
-                                            <Button Style="{StaticResource IconButtonStyle}" Width="32" Height="32" Content="🗑" FontSize="14"
+                                            <Button Style="{StaticResource IconButtonStyle}" Width="36" Height="36" Content="🗑" FontSize="16"
                                                     Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     CommandParameter="{Binding}"
-                                                    ToolTip="Remover" Margin="0,8,0,0" />
+                                                    ToolTip="Remover item" Margin="0,8,0,0"
+                                                    IsEnabled="{Binding DataContext.IsProcessing, Converter={StaticResource InverseBoolConverter}, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                         </StackPanel>
                                     </Grid>
                                 </Border>
@@ -106,6 +116,23 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Order Confirmed State (shows after successful checkout) -->
+                <Border Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="40"
+                        Visibility="{Binding JustCheckedOut, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Border Width="80" Height="80" CornerRadius="40" Background="#FFE8F5E9" Margin="0,0,0,24">
+                            <TextBlock Text="✅" FontSize="40" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="Pedido Confirmado e Pago!" Style="{StaticResource HeadlineStyle}" FontSize="24" TextAlignment="Center" Margin="0,0,0,8" Foreground="#FF2E7D32" />
+                        <TextBlock x:Name="CheckoutSuccessDeliveryText" Text="Entrega prevista para 20:45" Style="{StaticResource TitleStyle}" FontSize="18" TextAlignment="Center" Margin="0,0,0,4" Foreground="#FF4CAF50" FontWeight="Bold" />
+                        <TextBlock Text="Seu pedido está sendo preparado 🍕" Style="{StaticResource SubtitleStyle}" TextAlignment="Center" MaxWidth="300" Margin="0,0,0,24" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button Style="{StaticResource PrimaryButtonStyle}" Content="📍 Acompanhar Pedido" Padding="24,12" Margin="0,0,12,0" Command="{Binding GoToOrdersCommand}" />
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Content="➕ Novo Pedido" Padding="24,12" Command="{Binding GoToMenuCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
                 <!-- Delivery & Payment Info -->
                 <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" Padding="24" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" CornerRadius="0,0,12,12">
                     <StackPanel>
@@ -113,25 +140,28 @@
                         <ComboBox ItemsSource="{Binding SavedAddresses}"
                                   DisplayMemberPath="FullAddress"
                                   SelectedItem="{Binding DeliveryAddress, Mode=TwoWay}"
-                                  Height="44" />
+                                  Height="44" FontSize="14"
+                                  IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}" />
 
                         <TextBlock Text="💳 Forma de Pagamento" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,16,0,8" />
                         <ComboBox ItemsSource="{Binding PaymentMethods}"
                                   SelectedItem="{Binding PaymentMethod, Mode=TwoWay}"
-                                  Height="44" />
+                                  Height="44" FontSize="14"
+                                  IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}" />
 
                         <TextBlock Text="📝 Observações" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,16,0,8" />
                         <TextBox Style="{StaticResource InputStyle}"
                                  Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 Tag="Instruções extras para o entregador..."
-                                 Height="80" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                 Tag="Instruções extras para o entregador (ex: interfone, ponto de referência)..."
+                                 Height="90" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" FontSize="14"
+                                 IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}" />
                     </StackPanel>
                 </Border>
             </Grid>
         </Border>
 
         <!-- Order Summary (Sidebar) -->
-        <Border Grid.Column="1" Width="340" Style="{StaticResource CardStyle}" Margin="12,24,24,24" Padding="0">
+        <Border Grid.Row="0" Grid.Column="1" Width="360" Style="{StaticResource CardStyle}" Margin="12,24,24,12" Padding="0">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -176,29 +206,185 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Total" Style="{StaticResource TitleStyle}" FontSize="20" />
-                            <TextBlock Grid.Column="1" Text="{Binding FormattedTotal}" Style="{StaticResource TitleStyle}" FontSize="20" Foreground="{StaticResource PrimaryBrush}" />
+                            <TextBlock Grid.Column="0" Text="Total" Style="{StaticResource TitleStyle}" FontSize="22" />
+                            <TextBlock Grid.Column="1" Text="{Binding FormattedTotal}" Style="{StaticResource TitleStyle}" FontSize="22" Foreground="{StaticResource PrimaryBrush}" />
                         </Grid>
 
-                        <!-- Delivery Time Estimate -->
-                        <Border Background="#FFE8F5E9" BorderBrush="#FF4CAF50" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,16,0,0">
+                        <!-- Delivery Time Estimate - Dynamic -->
+                        <Border Background="#FFE8F5E9" BorderBrush="#FF4CAF50" BorderThickness="1" CornerRadius="10" Padding="16" Margin="0,16,0,0">
                             <StackPanel>
-                                <TextBlock Text="⏱ Tempo estimado de entrega" Style="{StaticResource CaptionStyle}" FontWeight="Medium" Foreground="#FF2E7D32" />
-                                <TextBlock Text="35 - 45 min" Style="{StaticResource BodyStyle}" FontWeight="Bold" Foreground="#FF2E7D32" Margin="0,4,0,0" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,6">
+                                    <TextBlock Text="⏱" FontSize="16" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                    <TextBlock Text="Tempo estimado de entrega" Style="{StaticResource CaptionStyle}" FontWeight="Medium" Foreground="#FF2E7D32" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding EstimatedDeliveryRange}" Style="{StaticResource BodyStyle}" FontWeight="Bold" Foreground="#FF2E7D32" FontSize="18" TextAlignment="Center" />
+                                <TextBlock Text="Entregamos quentinho na sua casa! 🍕" Style="{StaticResource CaptionStyle}" Foreground="#FF4CAF50" TextAlignment="Center" Margin="0,6,0,0" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Payment method hint -->
+                        <Border Background="#FFF3E5F5" BorderBrush="#FF9C27B0" BorderThickness="1" CornerRadius="10" Padding="12" Margin="0,12,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="💡" FontSize="14" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                <TextBlock Text="Pagamento na entrega ou PIX" Style="{StaticResource CaptionStyle}" Foreground="#FF7B1FA2" TextWrapping="Wrap" VerticalAlignment="Center" />
                             </StackPanel>
                         </Border>
                     </StackPanel>
                 </ScrollViewer>
 
-                <!-- Checkout Button -->
+                <!-- Checkout Button with Loading State -->
                 <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" Padding="20" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" CornerRadius="0,0,12,12">
-                    <Button Style="{StaticResource PrimaryButtonStyle}"
-                            Content="Finalizar Pedido"
-                            Height="48"
-                            Command="{Binding GoToCheckoutCommand}"
-                            IsEnabled="{Binding CanCheckout}" />
+                    <Grid>
+                        <Button x:Name="CheckoutButton" Style="{StaticResource PrimaryButtonStyle}"
+                                Height="56"
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                Command="{Binding GoToCheckoutCommand}"
+                                IsEnabled="{Binding CanCheckout}">
+                            <Grid x:Name="ButtonContent">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="ButtonText" Grid.Column="0" Text="🚀 Finalizar Pedido" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" />
+                                <StackPanel x:Name="ButtonLoading" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="Collapsed">
+                                    <Border Width="24" Height="24" Margin="0,0,10,0">
+                                        <Border.RenderTransform>
+                                            <RotateTransform CenterX="12" CenterY="12" />
+                                        </Border.RenderTransform>
+                                        <Border.Triggers>
+                                            <EventTrigger RoutedEvent="Border.Loaded">
+                                                <BeginStoryboard>
+                                                    <Storyboard RepeatBehavior="Forever">
+                                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="360" Duration="0:0:1" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </Border.Triggers>
+                                        <Border.Background>
+                                            <VisualBrush Stretch="None">
+                                                <VisualBrush.Visual>
+                                                    <Path Data="M12,0 A12,12 0 0 1 24,12 A12,12 0 0 1 12,24 A12,12 0 0 1 0,12 A12,12 0 0 1 12,0"
+                                                          Stroke="White" StrokeThickness="3" Fill="Transparent"
+                                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                          StrokeDashArray="8,8" />
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Text="Processando..." VerticalAlignment="Center" FontSize="14" FontWeight="Medium" />
+                                </StackPanel>
+                            </Grid>
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="Border" Background="{TemplateBinding Background}"
+                                            CornerRadius="12" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource PrimaryVariantBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Background" Value="#D44E1F" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Background" Value="#FFA890" />
+                                            <Setter Property="Foreground" Value="#FFE0E0E0" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </Grid>
                 </Border>
             </Grid>
+        </Border>
+
+        <!-- Sticky Checkout Bar (Bottom) -->
+        <Border Grid.Row="1" Grid.ColumnSpan="2"
+                Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
+                Padding="24,16" VerticalAlignment="Bottom"
+                Visibility="{Binding CartItems.Count, Converter={StaticResource EmptyToVisibilityConverter}, ConverterParameter=inverse}"
+                Panel.ZIndex="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Total do Pedido" Style="{StaticResource CaptionStyle}" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding FormattedTotal}" Style="{StaticResource TitleStyle}" FontSize="28" Foreground="{StaticResource PrimaryBrush}" FontWeight="Bold" />
+                    <TextBlock Text="{Binding EstimatedDeliveryTimeDisplay}" Style="{StaticResource CaptionStyle}" Foreground="#FF2E7D32" FontWeight="Medium" Margin="0,2,0,0" />
+                </StackPanel>
+                <Button Grid.Column="1" Style="{StaticResource PrimaryButtonStyle}"
+                        Content="🚀 Finalizar Pedido" Padding="32,16"
+                        FontSize="16" FontWeight="SemiBold" Height="56" MinWidth="220"
+                        Command="{Binding GoToCheckoutCommand}"
+                        IsEnabled="{Binding CanCheckout}">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border" Background="{TemplateBinding Background}"
+                                    CornerRadius="12" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True"
+                                    Effect="{StaticResource ButtonShadowEffect}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{StaticResource PrimaryVariantBrush}" />
+                                    <Setter TargetName="Border" Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect Color="{StaticResource PrimaryColor}" ShadowDepth="0" BlurRadius="16" Opacity="0.4" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="#D44E1F" />
+                                    <Setter TargetName="Border" Property="Effect" Value="{x:Null}" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Border" Property="Background" Value="#FFA890" />
+                                    <Setter TargetName="Border" Property="Effect" Value="{x:Null}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Loading Overlay -->
+        <Border Grid.RowSpan="2" Grid.ColumnSpan="2" Background="#99000000" Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVisibilityConverter}}"
+                Panel.ZIndex="100">
+            <Border Background="White" CornerRadius="16" Padding="40" Width="340" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.2" Color="#FF000000" />
+                </Border.Effect>
+                <StackPanel HorizontalAlignment="Center">
+                    <Border Width="70" Height="70" CornerRadius="35" Background="#FF6B35" Margin="0,0,0,28">
+                        <Border.RenderTransform>
+                            <RotateTransform CenterX="35" CenterY="35" />
+                        </Border.RenderTransform>
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="Border.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever">
+                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Angle" From="0" To="360" Duration="0:0:0.8" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+                        <Viewbox Width="36" Height="36">
+                            <Canvas Width="24" Height="24">
+                                <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" Fill="White" />
+                            </Canvas>
+                        </Viewbox>
+                    </Border>
+                    <TextBlock Text="Finalizando seu pedido..." Style="{StaticResource TitleStyle}" FontSize="20" TextAlignment="Center" Margin="0,0,0,10" />
+                    <TextBlock Text="Processando pagamento e confirmando entrega" Style="{StaticResource SubtitleStyle}" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="280" />
+                </StackPanel>
+            </Border>
         </Border>
     </Grid>
 </UserControl>

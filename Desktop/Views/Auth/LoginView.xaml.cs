@@ -13,12 +13,17 @@ namespace PizzariaDesktop.Views.Auth
             InitializeComponent();
         }
 
+        private void ExitSystemButton_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (DataContext is LoginViewModel vm && sender is PasswordBox pb)
+            if (sender is PasswordBox pb && DataContext is LoginViewModel vm)
             {
-                vm.Password = pb.Password;
-                // Sync to TextBox if visible
+                // Directly update ViewModel (trimmed), then sync to TextBox if visible
+                vm.Password = pb.Password.Trim();
                 if (_isPasswordVisible)
                 {
                     PasswordTextBox.Text = pb.Password;
@@ -28,14 +33,11 @@ namespace PizzariaDesktop.Views.Auth
 
         private void PasswordTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (DataContext is LoginViewModel vm && sender is TextBox tb)
+            // Only sync back to PasswordBox when TextBox is visible (show password mode)
+            if (sender is TextBox tb && DataContext is LoginViewModel vm && _isPasswordVisible)
             {
-                vm.Password = tb.Text;
-                // Sync to PasswordBox if not visible
-                if (!_isPasswordVisible)
-                {
-                    PasswordBox.Password = tb.Text;
-                }
+                vm.Password = tb.Text.Trim();
+                PasswordBox.Password = tb.Text;
             }
         }
 
@@ -46,7 +48,7 @@ namespace PizzariaDesktop.Views.Auth
             if (_isPasswordVisible)
             {
                 // Show password: copy to TextBox, show it, hide PasswordBox
-                PasswordTextBox.Text = PasswordBox.Password;
+                PasswordTextBox.Text = PasswordBox.Password.Trim();
                 PasswordTextBox.Visibility = Visibility.Visible;
                 PasswordBox.Visibility = Visibility.Collapsed;
                 EyeIcon.Text = "🙈"; // Eye with slash
@@ -57,7 +59,7 @@ namespace PizzariaDesktop.Views.Auth
             else
             {
                 // Hide password: copy to PasswordBox, show it, hide TextBox
-                PasswordBox.Password = PasswordTextBox.Text;
+                PasswordBox.Password = PasswordTextBox.Text.Trim();
                 PasswordBox.Visibility = Visibility.Visible;
                 PasswordTextBox.Visibility = Visibility.Collapsed;
                 EyeIcon.Text = "👁"; // Open eye

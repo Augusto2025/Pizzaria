@@ -148,8 +148,30 @@
 
                                     <!-- Status Badge -->
                                     <Border Background="{Binding Status, Converter={StaticResource OrderStatusToColorConverter}}"
-                                            CornerRadius="20" Padding="12,8" HorizontalAlignment="Left" Margin="0,0,0,20">
+                                            CornerRadius="20" Padding="12,8" HorizontalAlignment="Left" Margin="0,0,0,8">
                                         <TextBlock Text="{Binding StatusDisplayName}" FontSize="13" FontWeight="Bold" Foreground="White" />
+                                    </Border>
+
+                                    <!-- PAGO Badge (for confirmed/paid orders) -->
+                                    <Border Background="#FF28A745" CornerRadius="20" Padding="12,8" HorizontalAlignment="Left" Margin="0,0,0,20"
+                                            Visibility="{Binding Status, Converter={StaticResource OrderStatusToPaidVisibilityConverter}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="✓" FontSize="12" FontWeight="Bold" Foreground="White" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                            <TextBlock Text="PAGO" FontSize="13" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Delivery Time Estimate (Prominent) -->
+                                    <Border Background="#FFE8F5E9" BorderBrush="#FF4CAF50" BorderThickness="1" CornerRadius="10" Padding="16" Margin="0,0,0,20"
+                                            Visibility="{Binding EstimatedDeliveryTime, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,6">
+                                                <TextBlock Text="⏱" FontSize="16" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                                <TextBlock Text="Previsão de Entrega" Style="{StaticResource CaptionStyle}" FontWeight="Medium" Foreground="#FF2E7D32" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding FormattedEstimatedDelivery}" Style="{StaticResource BodyStyle}" FontWeight="Bold" Foreground="#FF1B5E20" FontSize="18" TextAlignment="Center" />
+                                            <TextBlock Text="Entregamos quentinho na sua casa! 🍕" Style="{StaticResource CaptionStyle}" Foreground="#FF4CAF50" TextAlignment="Center" Margin="0,6,0,0" />
+                                        </StackPanel>
                                     </Border>
 
                                     <!-- Timeline -->

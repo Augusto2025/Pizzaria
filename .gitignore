@@ -59,6 +59,11 @@ app.*.map.json
 # C# / .NET / WPF / Desktop
 # ----------------------------------------
 
+# Environment files
+*.env
+*.env.local
+.env.*
+
 # Build results (generic - covers any project)
 bin/
 obj/

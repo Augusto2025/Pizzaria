@@ -74,6 +74,24 @@ public class OrderStatusToColorConverter : IValueConverter
     }
 }
 
+public class OrderStatusToPaidVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is OrderStatus status)
+        {
+            // Show PAGO badge for confirmed and later statuses (payment already processed)
+            return status >= OrderStatus.Confirmed ? Visibility.Visible : Visibility.Collapsed;
+        }
+        return Visibility.Collapsed;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
 public class CategoryToIconConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -208,14 +226,18 @@ public class EmptyToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value == null) return Visibility.Visible;
+        bool isEmpty = false;
 
-        if (value is string str) return string.IsNullOrEmpty(str) ? Visibility.Visible : Visibility.Collapsed;
-        if (value is System.Collections.ICollection col) return col.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-        if (value is int i) return i == 0 ? Visibility.Visible : Visibility.Collapsed;
-        if (value is double d) return d == 0 ? Visibility.Visible : Visibility.Collapsed;
+        if (value == null) isEmpty = true;
+        else if (value is string str) isEmpty = string.IsNullOrEmpty(str);
+        else if (value is System.Collections.ICollection col) isEmpty = col.Count == 0;
+        else if (value is int i) isEmpty = i == 0;
+        else if (value is double d) isEmpty = d == 0;
 
-        return Visibility.Collapsed;
+        // Handle inverse parameter
+        bool inverse = parameter is string param && param.Equals("inverse", StringComparison.OrdinalIgnoreCase);
+
+        return (inverse ? !isEmpty : isEmpty) ? Visibility.Visible : Visibility.Collapsed;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -425,7 +425,7 @@ public class Order : INotifyPropertyChanged
         }
     }
 
-    private DateTime _createdAt = DateTime.Now;
+    private DateTime _createdAt = DateTime.UtcNow;
     public DateTime CreatedAt
     {
         get => _createdAt;

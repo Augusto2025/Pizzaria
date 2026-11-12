@@ -173,14 +173,6 @@
                             <TextBlock Text="Entrando..." Style="{StaticResource BodyStyle}" Foreground="White" Margin="12,0,0,0" VerticalAlignment="Center" FontSize="14" />
                         </StackPanel>
 
-                        <!-- Demo Info -->
-                        <Border Background="#FFFEF3E2" BorderBrush="#FFFFD8B8" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,18,0,24">
-                            <StackPanel>
-                                <TextBlock Text="💡 Modo Demo" FontWeight="Medium" Foreground="#FF8B5E00" FontSize="12" />
-                                <TextBlock Text="Qualquer e-mail e senha funcionam para teste." FontSize="11" Foreground="#FF8B5E00" Margin="0,4,0,0" />
-                            </StackPanel>
-                        </Border>
-
                         <!-- Register Link -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock Text="Não tem conta? " Style="{StaticResource BodyStyle}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="14" />
@@ -188,11 +180,25 @@
                                     Padding="8,4" BorderThickness="0" Background="Transparent" FontSize="14"
                                     Command="{Binding GoToRegisterCommand}" />
                         </StackPanel>
+
+                        <!-- Exit System Button -->
+                        <Button x:Name="ExitSystemButton"
+                                Content="Sair do Sistema"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Background="#DC3545"
+                                BorderBrush="#DC3545"
+                                Foreground="White"
+                                Padding="16,10"
+                                Margin="0,20,0,0"
+                                FontSize="14"
+                                FontWeight="Medium"
+                                HorizontalAlignment="Center"
+                                Click="ExitSystemButton_Click" />
                     </StackPanel>
                 </Border>
 
                 <!-- Version/Footer -->
-                <TextBlock Grid.Row="2" Text="v1.0.0 • Modo Demonstração"
+                <TextBlock Grid.Row="2" Text="v1.0.0"
                            Style="{StaticResource CaptionStyle}" Foreground="{StaticResource TextSecondaryBrush}"
                            HorizontalAlignment="Center" Margin="0,24,0,0" FontSize="11" />
             </Grid>

@@ -5,11 +5,14 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Data;
+using PizzariaDesktop.Services;
 using System.Collections.ObjectModel;
+using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 
 public class MainViewModel : BaseViewModel
 {
-    private BaseViewModel _currentView;
+    private BaseViewModel? _currentView;
     private bool _isLoggedIn = false;
     private User? _currentUser;
 
@@ -32,6 +35,7 @@ public class MainViewModel : BaseViewModel
     }
 
     public ObservableCollection<CartItem> CartItems { get; } = new(MockData.CartItems);
+    public ObservableCollection<Order> UserOrders { get; } = new(MockData.Orders.OrderByDescending(o => o.CreatedAt));
 
     public int CartItemCount => CartItems.Sum(c => c.Quantity);
     public double CartSubtotal => CartItems.Sum(c => c.TotalPrice);
@@ -55,9 +59,9 @@ public class MainViewModel : BaseViewModel
         }
 
         // Setup login view with event handling
-        var loginVM = new LoginViewModel();
+        var loginVM = CreateLoginViewModel();
         loginVM.OnLoginSuccess += user => Login(user);
-        loginVM.OnGoToRegister += () => { /* TODO: navigate to register */ };
+        loginVM.OnGoToRegister += NavigateToRegister;
         CurrentView = loginVM;
 
         NavigateToHomeCommand = new RelayCommand(_ => NavigateToHome());
@@ -67,6 +71,40 @@ public class MainViewModel : BaseViewModel
         NavigateToProfileCommand = new RelayCommand(_ => NavigateToProfile());
         LogoutCommand = new RelayCommand(_ => Logout());
         ToggleSidebarCommand = new RelayCommand(_ => { /* Toggle sidebar logic */ });
+    }
+
+    private LoginViewModel CreateLoginViewModel()
+    {
+        // Try to get IAuthService from ServiceLocator if available
+        IAuthService? authService = null;
+        try
+        {
+            authService = ServiceLocator.GetService<IAuthService>();
+        }
+        catch { }
+
+        return authService != null ? new LoginViewModel(authService) : new LoginViewModel();
+    }
+
+    private RegisterViewModel CreateRegisterViewModel()
+    {
+        // Try to get IAuthService from ServiceLocator if available
+        IAuthService? authService = null;
+        try
+        {
+            authService = ServiceLocator.GetService<IAuthService>();
+        }
+        catch { }
+
+        return authService != null ? new RegisterViewModel(authService) : new RegisterViewModel();
+    }
+
+    public void NavigateToRegister()
+    {
+        var registerVM = CreateRegisterViewModel();
+        registerVM.OnRegisterSuccess += user => Login(user);
+        registerVM.OnGoToLogin += () => CurrentView = CreateLoginViewModel();
+        CurrentView = registerVM;
     }
 
     public void NavigateTo(BaseViewModel viewModel)
@@ -103,7 +141,9 @@ public class MainViewModel : BaseViewModel
         }
         else
         {
-            CartItems.Add(new CartItem { Product = product, Quantity = quantity });
+            var newItem = new CartItem { Product = product, Quantity = quantity };
+            newItem.PropertyChanged += (s, e) => OnCartChanged();
+            CartItems.Add(newItem);
         }
         OnCartChanged();
     }
@@ -137,8 +177,18 @@ public class MainViewModel : BaseViewModel
 
     public void ClearCart()
     {
+        foreach (var item in CartItems)
+        {
+            item.PropertyChanged -= (s, e) => OnCartChanged();
+        }
         CartItems.Clear();
         OnCartChanged();
+    }
+
+    public void AddOrderToHistory(Order order)
+    {
+        // Add to the beginning of the list (most recent first)
+        UserOrders.Insert(0, order);
     }
 
     private void OnCartChanged()

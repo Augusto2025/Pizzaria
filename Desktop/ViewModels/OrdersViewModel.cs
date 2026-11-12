@@ -13,7 +13,8 @@ public class OrdersViewModel : BaseViewModel
     public OrdersViewModel(MainViewModel mainViewModel)
     {
         _mainViewModel = mainViewModel;
-        Orders = new ObservableCollection<Order>(MockData.Orders.OrderByDescending(o => o.CreatedAt));
+        // Use the shared UserOrders collection from MainViewModel
+        Orders = _mainViewModel.UserOrders;
 
         SelectOrderCommand = new RelayCommand(o => SelectOrder((Order)o!));
         ClearSelectionCommand = new RelayCommand(_ => ClearSelection());

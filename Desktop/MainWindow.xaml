@@ -9,6 +9,8 @@
         mc:Ignorable="d"
         Title="Pizzaria Delivery"
         WindowState="Maximized"
+        WindowStyle="None"
+        ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BackgroundBrush}">
     <Window.DataContext>

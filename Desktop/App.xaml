@@ -194,6 +194,10 @@
                 </Setter>
             </Style>
 
+            <!-- Shadow Effects (referenciados em CartView, OrderConfirmationDialog, etc.) -->
+            <DropShadowEffect x:Key="ButtonShadowEffect" Color="{StaticResource PrimaryColor}" ShadowDepth="0" BlurRadius="12" Opacity="0.3" />
+            <DropShadowEffect x:Key="CardShadowEffect" Color="#000000" ShadowDepth="0" BlurRadius="24" Opacity="0.12" />
+
             <!-- Input Style -->
             <Style x:Key="InputStyle" TargetType="TextBox">
                 <Setter Property="FontFamily" Value="{StaticResource FontFamily}" />

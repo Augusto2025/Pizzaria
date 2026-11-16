@@ -195,14 +195,29 @@ public partial class EditProfileDialog : Window
         }
         catch (Exception ex)
         {
+            var fullMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                fullMessage += $"\n\nInner Exception: {ex.InnerException.Message}";
+                if (ex.InnerException.InnerException != null)
+                {
+                    fullMessage += $"\n\nDeep Inner Exception: {ex.InnerException.InnerException.Message}";
+                }
+            }
+
             System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] ERRO ao salvar perfil: {ex.Message}");
             System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] StackTrace: {ex.StackTrace}");
             if (ex.InnerException != null)
             {
                 System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] InnerException: {ex.InnerException.Message}");
                 System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] InnerStackTrace: {ex.InnerException.StackTrace}");
+                if (ex.InnerException.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] Deep InnerException: {ex.InnerException.InnerException.Message}");
+                    System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] Deep InnerStackTrace: {ex.InnerException.InnerException.StackTrace}");
+                }
             }
-            ShowMessage($"Erro ao salvar: {ex.Message}", isError: true);
+            ShowMessage($"Erro ao salvar:\n{fullMessage}", isError: true);
         }
         finally
         {

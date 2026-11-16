@@ -262,14 +262,29 @@ public partial class ManageAddressesDialog : Window
         }
         catch (Exception ex)
         {
+            var fullMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                fullMessage += $"\n\nInner Exception: {ex.InnerException.Message}";
+                if (ex.InnerException.InnerException != null)
+                {
+                    fullMessage += $"\n\nDeep Inner Exception: {ex.InnerException.InnerException.Message}";
+                }
+            }
+
             System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] ERRO ao salvar endereço: {ex.Message}");
             System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] StackTrace: {ex.StackTrace}");
             if (ex.InnerException != null)
             {
                 System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] InnerException: {ex.InnerException.Message}");
                 System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] InnerStackTrace: {ex.InnerException.StackTrace}");
+                if (ex.InnerException.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] Deep InnerException: {ex.InnerException.InnerException.Message}");
+                    System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] Deep InnerStackTrace: {ex.InnerException.InnerException.StackTrace}");
+                }
             }
-            MessageBox.Show($"Erro ao salvar endereço: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"Erro ao salvar endereço:\n{fullMessage}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

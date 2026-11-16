@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Extensions.DependencyInjection;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Data.Repositories;
 using PizzariaDesktop.Services;
@@ -13,7 +14,8 @@ using PizzariaDesktop.Services;
 public partial class ManageAddressesDialog : Window
 {
     private readonly User _currentUser;
-    private readonly IAddressRepository? _addressRepository;
+    private readonly IAddressRepository _addressRepository;
+    private readonly IServiceScope _serviceScope;
     private ObservableCollection<Address> _addresses = new();
     private bool _isEditing = false;
     private Address? _editingAddress = null;
@@ -25,15 +27,9 @@ public partial class ManageAddressesDialog : Window
             InitializeComponent();
             _currentUser = currentUser ?? throw new ArgumentNullException(nameof(currentUser));
 
-            try
-            {
-                _addressRepository = ServiceLocator.GetServiceOrDefault<IAddressRepository>();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Erro ao obter IAddressRepository: {ex.Message}");
-                _addressRepository = null;
-            }
+            // Create a scope to resolve Scoped services (repositories, DbContext)
+            _serviceScope = App.Services.CreateScope();
+            _addressRepository = _serviceScope.ServiceProvider.GetRequiredService<IAddressRepository>();
 
             LoadAddresses();
         }
@@ -48,6 +44,13 @@ public partial class ManageAddressesDialog : Window
             }
             throw;
         }
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        // Dispose the scope when dialog closes
+        _serviceScope?.Dispose();
     }
 
     private async void LoadAddresses()
@@ -153,8 +156,7 @@ public partial class ManageAddressesDialog : Window
     }
 
     private async void SaveAddressButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_addressRepository == null) return;
+    {;
 
         var label = LabelTextBox.Text?.Trim() ?? "";
         var number = NumberTextBox.Text?.Trim() ?? "";
@@ -268,8 +270,6 @@ public partial class ManageAddressesDialog : Window
                 MessageBoxImage.Question);
 
             if (result != MessageBoxResult.Yes) return;
-
-            if (_addressRepository == null) return;
 
             try
             {

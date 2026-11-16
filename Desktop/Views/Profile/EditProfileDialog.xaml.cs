@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.Extensions.DependencyInjection;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Data.Repositories;
 using PizzariaDesktop.Services;
@@ -13,7 +14,8 @@ using BCrypt.Net;
 public partial class EditProfileDialog : Window
 {
     private readonly User _currentUser;
-    private readonly IUserRepository? _userRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IServiceScope _serviceScope;
     private bool _isSaving = false;
 
     public EditProfileDialog(User currentUser)
@@ -23,16 +25,9 @@ public partial class EditProfileDialog : Window
             InitializeComponent();
             _currentUser = currentUser ?? throw new ArgumentNullException(nameof(currentUser));
 
-            // Use GetServiceOrDefault to avoid crash if ServiceLocator not initialized
-            try
-            {
-                _userRepository = ServiceLocator.GetServiceOrDefault<IUserRepository>();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Erro ao obter IUserRepository: {ex.Message}");
-                _userRepository = null;
-            }
+            // Create a scope to resolve Scoped services (repositories, DbContext)
+            _serviceScope = App.Services.CreateScope();
+            _userRepository = _serviceScope.ServiceProvider.GetRequiredService<IUserRepository>();
 
             LoadUserData();
         }
@@ -47,6 +42,13 @@ public partial class EditProfileDialog : Window
             }
             throw; // Re-throw to let the caller handle it
         }
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        // Dispose the scope when dialog closes
+        _serviceScope?.Dispose();
     }
 
     private void LoadUserData()

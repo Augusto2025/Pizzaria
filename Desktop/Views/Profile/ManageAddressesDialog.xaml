@@ -421,23 +421,23 @@
 
                                         <StackPanel Grid.Column="0" Margin="0,0,8,14">
                                             <TextBlock Text="Rótulo (ex: Casa, Trabalho)" Style="{StaticResource BodyStyle}" FontWeight="Medium" FontSize="14" Margin="0,0,0,6" />
-                                            <TextBox x:Name="LabelTextBox" Style="{StaticResource InputStyle}" Height="50" Tag="Casa" />
+                                            <TextBox x:Name="LabelTextBox" Style="{StaticResource InputStyle}" Height="50" Padding="12,4" FontSize="15" Tag="Casa" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="1" Margin="8,0,0,14">
                                             <TextBlock Text="Número" Style="{StaticResource BodyStyle}" FontWeight="Medium" FontSize="14" Margin="0,0,0,6" />
-                                            <TextBox x:Name="NumberTextBox" Style="{StaticResource InputStyle}" Height="50" Tag="123" />
+                                            <TextBox x:Name="NumberTextBox" Style="{StaticResource InputStyle}" Height="50" Padding="12,4" FontSize="15" Tag="123" />
                                         </StackPanel>
                                     </Grid>
 
                                     <StackPanel Margin="0,0,0,14">
                                         <TextBlock Text="Rua / Avenida" Style="{StaticResource BodyStyle}" FontWeight="Medium" FontSize="14" Margin="0,0,0,6" />
-                                        <TextBox x:Name="StreetTextBox" Style="{StaticResource InputStyle}" Height="50" Tag="Rua das Flores" />
+                                        <TextBox x:Name="StreetTextBox" Style="{StaticResource InputStyle}" Height="50" Padding="12,4" FontSize="15" Tag="Rua das Flores" />
                                     </StackPanel>
 
                                     <StackPanel Margin="0,0,0,14">
                                         <TextBlock Text="Complemento (opcional)" Style="{StaticResource BodyStyle}" FontWeight="Medium" FontSize="14" Margin="0,0,0,6" />
-                                        <TextBox x:Name="ComplementTextBox" Style="{StaticResource InputStyle}" Height="50" Tag="Apto 45, Bloco B" />
+                                        <TextBox x:Name="ComplementTextBox" Style="{StaticResource InputStyle}" Height="50" Padding="12,4" FontSize="15" Tag="Apto 45, Bloco B" />
                                     </StackPanel>
 
                                     <Grid>
@@ -448,12 +448,12 @@
 
                                         <StackPanel Grid.Column="0" Margin="0,0,8,14">
                                             <TextBlock Text="Bairro" Style="{StaticResource BodyStyle}" FontWeight="Medium" FontSize="14" Margin="0,0,0,6" />
-                                            <TextBox x:Name="NeighborhoodTextBox" Style="{StaticResource InputStyle}" Height="50" Tag="Jardim Primavera" />
+                                            <TextBox x:Name="NeighborhoodTextBox" Style="{StaticResource InputStyle}" Height="50" Padding="12,4" FontSize="15" Tag="Jardim Primavera" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="1" Margin="8,0,0,14">
                                             <TextBlock Text="CEP" Style="{StaticResource BodyStyle}" FontWeight="Medium" FontSize="14" Margin="0,0,0,6" />
-                                            <TextBox x:Name="ZipCodeTextBox" Style="{StaticResource InputStyle}" Height="50" Tag="01234-567" />
+                                            <TextBox x:Name="ZipCodeTextBox" Style="{StaticResource InputStyle}" Height="50" Padding="12,4" FontSize="15" Tag="01234-567" />
                                         </StackPanel>
                                     </Grid>
 
@@ -465,12 +465,12 @@
 
                                         <StackPanel Grid.Column="0" Margin="0,0,8,14">
                                             <TextBlock Text="Cidade" Style="{StaticResource BodyStyle}" FontWeight="Medium" FontSize="14" Margin="0,0,0,6" />
-                                            <TextBox x:Name="CityTextBox" Style="{StaticResource InputStyle}" Height="50" Tag="São Paulo" />
+                                            <TextBox x:Name="CityTextBox" Style="{StaticResource InputStyle}" Height="50" Padding="12,4" FontSize="15" Tag="São Paulo" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="1" Margin="8,0,0,14">
                                             <TextBlock Text="Estado" Style="{StaticResource BodyStyle}" FontWeight="Medium" FontSize="14" Margin="0,0,0,6" />
-                                            <TextBox x:Name="StateTextBox" Style="{StaticResource InputStyle}" Height="50" Tag="SP" />
+                                            <TextBox x:Name="StateTextBox" Style="{StaticResource InputStyle}" Height="50" Padding="12,4" FontSize="15" Tag="SP" />
                                         </StackPanel>
                                     </Grid>
 

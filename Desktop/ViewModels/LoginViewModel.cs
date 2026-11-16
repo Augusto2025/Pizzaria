@@ -3,6 +3,7 @@ namespace PizzariaDesktop.ViewModels;
 using System.ComponentModel;
 using System.Windows.Input;
 using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Services;
 
@@ -40,19 +41,10 @@ public class LoginViewModel : BaseViewModel
     public ICommand LoginCommand { get; }
     public ICommand GoToRegisterCommand { get; }
 
-    private readonly IAuthService? _authService;
-
     public LoginViewModel()
     {
-        // Para design-time
         LoginCommand = new RelayCommand(async _ => await LoginAsync());
         GoToRegisterCommand = new RelayCommand(_ => GoToRegister());
-        _authService = null;
-    }
-
-    public LoginViewModel(IAuthService authService) : this()
-    {
-        _authService = authService;
     }
 
     private async Task LoginAsync()
@@ -72,36 +64,28 @@ public class LoginViewModel : BaseViewModel
 
         try
         {
-            if (_authService != null)
-            {
-                var result = await _authService.LoginAsync(trimmedEmail, trimmedPassword);
+            // Create a scope for this operation
+            using var scope = App.Services.CreateScope();
+            var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+            var result = await authService.LoginAsync(trimmedEmail, trimmedPassword);
 
-                if (result.Success && result.User != null)
-                {
-                    OnLoginSuccess?.Invoke(result.User);
-                }
-                else
-                {
-                    ErrorMessage = result.ErrorMessage;
-                }
+            if (result.Success && result.User != null)
+            {
+                OnLoginSuccess?.Invoke(result.User);
             }
             else
             {
-                // Fallback para modo demo (sem DI)
-                await Task.Delay(500);
-                var user = new User
-                {
-                    Id = "demo-001",
-                    Name = "Usuário Demo",
-                    Email = Email,
-                    Phone = "(11) 99999-9999",
-                    CreatedAt = DateTime.Now
-                };
-                OnLoginSuccess?.Invoke(user);
+                ErrorMessage = result.ErrorMessage;
             }
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[LoginViewModel] Erro ao fazer login: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[LoginViewModel] StackTrace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"[LoginViewModel] InnerException: {ex.InnerException.Message}");
+            }
             ErrorMessage = $"Erro ao fazer login: {ex.Message}";
         }
         finally

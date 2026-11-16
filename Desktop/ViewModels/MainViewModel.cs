@@ -76,18 +76,14 @@ public class MainViewModel : BaseViewModel
 
     private LoginViewModel CreateLoginViewModel()
     {
-        // Create scope to get scoped IAuthService
-        using var scope = App.Services.CreateScope();
-        var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
-        return new LoginViewModel(authService);
+        // LoginViewModel now creates its own scope during login operation
+        return new LoginViewModel();
     }
 
     private RegisterViewModel CreateRegisterViewModel()
     {
-        // Create scope to get scoped IAuthService
-        using var scope = App.Services.CreateScope();
-        var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
-        return new RegisterViewModel(authService);
+        // RegisterViewModel now creates its own scope during registration operation
+        return new RegisterViewModel();
     }
 
     public void NavigateToRegister()

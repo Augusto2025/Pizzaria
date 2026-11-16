@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.DependencyInjection;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Services;
 
@@ -101,19 +102,10 @@ public class RegisterViewModel : BaseViewModel
     public ICommand RegisterCommand { get; }
     public ICommand GoToLoginCommand { get; }
 
-    private readonly IAuthService? _authService;
-
     public RegisterViewModel()
     {
-        // Para design-time
         RegisterCommand = new RelayCommand(async _ => await RegisterAsync());
         GoToLoginCommand = new RelayCommand(_ => GoToLogin());
-        _authService = null;
-    }
-
-    public RegisterViewModel(IAuthService authService) : this()
-    {
-        _authService = authService;
     }
 
     private async Task RegisterAsync()
@@ -198,36 +190,21 @@ public class RegisterViewModel : BaseViewModel
             // Trim password for storage
             var trimmedPassword = Password.Trim();
 
-            if (_authService != null)
-            {
-                Console.WriteLine($"Calling AuthService.RegisterAsync...");
-                var result = await _authService.RegisterAsync(Name, Email, trimmedPassword, cleanPhone);
+            // Create a scope for this operation
+            using var scope = App.Services.CreateScope();
+            var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+            Console.WriteLine($"Calling AuthService.RegisterAsync...");
+            var result = await authService.RegisterAsync(Name, Email, trimmedPassword, cleanPhone);
 
-                if (result.Success && result.User != null)
-                {
-                    Console.WriteLine($"Registration successful, invoking OnRegisterSuccess");
-                    OnRegisterSuccess?.Invoke(result.User);
-                }
-                else
-                {
-                    ErrorMessage = result.ErrorMessage;
-                    Console.WriteLine($"Registration failed from AuthService: {ErrorMessage}");
-                }
+            if (result.Success && result.User != null)
+            {
+                Console.WriteLine($"Registration successful, invoking OnRegisterSuccess");
+                OnRegisterSuccess?.Invoke(result.User);
             }
             else
             {
-                Console.WriteLine($"AuthService is null, using fallback demo mode");
-                // Fallback para modo demo (sem DI)
-                await Task.Delay(500);
-                var user = new User
-                {
-                    Id = $"user-{DateTime.UtcNow:yyyyMMddHHmmss}",
-                    Name = Name,
-                    Email = Email,
-                    Phone = cleanPhone,
-                    CreatedAt = DateTime.UtcNow
-                };
-                OnRegisterSuccess?.Invoke(user);
+                ErrorMessage = result.ErrorMessage;
+                Console.WriteLine($"Registration failed from AuthService: {ErrorMessage}");
             }
         }
         catch (Exception ex)

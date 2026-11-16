@@ -1,7 +1,7 @@
 # Pizzaria Delivery App - Documentação do Projeto (Desktop C# WPF)
 
 ## Visão Geral
-Sistema de delivery para pizzaria - versão desktop Windows (WPF). Clientes fazem pedidos pelo app e acompanham o status em tempo real. **Agora com persistência real via Entity Framework Core** (SQLite local / PostgreSQL produção), autenticação JWT, e fluxo completo de registro/login.
+Sistema de delivery para pizzaria - versão desktop Windows (WPF). Clientes fazem pedidos pelo app e acompanham o status em tempo real. **Agora com persistência real via Entity Framework Core** (SQLite local / PostgreSQL produção), autenticação JWT, e fluxo completo de registro/login. **NOVO: Botão "Último acesso" para login automático com credenciais salvas.**
 
 ## Arquitetura do Projeto
 
@@ -36,14 +36,15 @@ PizzariaDesktop/
 │
 ├── Services/
 │   ├── AuthService.cs        # Login, Register, JWT tokens, BCrypt
+│   ├── LastLoginService.cs   # NOVO: Armazena credenciais do último login (DPAPI)
 │   └── ServiceCollectionExtensions.cs  # DI config, DbContext, repos, ServiceLocator
 │
 ├── ViewModels/
 │   ├── BaseViewModel.cs      # INotifyPropertyChanged base
 │   ├── RelayCommand.cs       # ICommand implementation
 │   ├── MainViewModel.cs      # Navegação, estado global, cart, login/register flow
-│   ├── LoginViewModel.cs     # Login com AuthService + fallback demo
-│   ├── RegisterViewModel.cs  # Registro com validação campo a campo + AuthService
+│   ├── LoginViewModel.cs     # Login com AuthService + fallback demo + **Último acesso**
+│   ├── RegisterViewModel.cs  # Registro com validação campo a campo + AuthService + **Último acesso**
 │   ├── HomeViewModel.cs      # Promoções, quick actions
 │   ├── MenuViewModel.cs      # Produtos por categoria, filtros
 │   ├── CartViewModel.cs      # Carrinho, checkout, OrderConfirmationDialog
@@ -52,7 +53,7 @@ PizzariaDesktop/
 │
 ├── Views/
 │   ├── Auth/
-│   │   ├── LoginView.xaml          # Full-screen split 50/50 + link "Cadastre-se"
+│   │   ├── LoginView.xaml          # Full-screen split 50/50 + link "Cadastre-se" + **Botão "Último acesso"**
 │   │   ├── LoginView.xaml.cs       # Show/hide password + Exit button
 │   │   ├── RegisterView.xaml       # Full-screen split 50/50 + validação inline
 │   │   └── RegisterView.xaml.cs    # Phone mask, show/hide password (2x)
@@ -91,7 +92,7 @@ PizzariaDesktop/
 
 ## Funcionalidades Principais
 
-### 1. Autenticação (Auth) - **NOVO: Registro + JWT**
+### 1. Autenticação (Auth) - **NOVO: Registro + JWT + Último Acesso**
 - **Login**: Email + Senha (validação real via BCrypt + JWT)
 - **Registro**: Nome, Email, Telefone, Senha, Confirmar Senha
   - Validação campo a campo (inline errors)
@@ -105,6 +106,11 @@ PizzariaDesktop/
 - **Layout**: Full-screen split 50/50 - esquerda brand (laranja #FF6B35), direita formulário centralizado
 - **Link "Cadastre-se" / "Entrar"** entre Login ↔ Register
 - **Botão "Sair do Sistema"** no Login (fecha app)
+- **NOVO - Botão "Último acesso"**: Aparece quando há login salvo anteriormente
+  - Mostra ícone 🕐, label "Último acesso" e email da conta
+  - Ao clicar: preenche automaticamente email + senha descriptografada e faz login
+  - Credenciais salvas criptografadas com **DPAPI (Windows Data Protection API)** em `%LocalAppData%\PizzariaDesktop\lastlogin.json`
+  - Segurança: criptografia por usuário Windows, sem chaves expostas
 
 ### 2. Home / Dashboard
 - Boas-vindas personalizada com nome do usuário
@@ -119,6 +125,12 @@ PizzariaDesktop/
 - Filtro por categoria via tabs
 - Cards mostram badge de categoria colorido
 - Botão "Adicionar" navega para carrinho
+- **Barra de Pesquisa melhorada**:
+  - Espaçamento de 16px acima do título "Cardápio"
+  - Visual tipo card com borda sutil
+  - Placeholder visível "🔍 Buscar por nome..." que desaparece ao digitar
+  - Padding reduzido no input (36,6,12,6) para altura compacta
+  - DataTrigger corrigido (usa `Visibility.Visible` ao invés de `True`)
 
 ### 4. Carrinho (Cart)
 - Lista de itens com: produto, quantidade (+/-), preço unitário, total
@@ -348,6 +360,28 @@ public class AuthResult {
 - Configuração via `appsettings.json` / `.env` / Environment Variables
 - Fallback demo mode se `_authService == null`
 
+### LastLoginService (ILastLoginService) - NOVO
+```csharp
+public interface ILastLoginService {
+    LastLoginInfo? GetLastLogin();
+    void SaveLastLogin(string email, string password);
+    void ClearLastLogin();
+    string? DecryptPassword(string encryptedPassword);
+}
+
+public class LastLoginInfo {
+    public string Email { get; set; }
+    public string EncryptedPassword { get; set; }
+    public DateTime LastAccess { get; set; }
+}
+```
+- **Armazenamento**: JSON em `%LocalAppData%\PizzariaDesktop\lastlogin.json`
+- **Criptografia**: DPAPI (Windows Data Protection API) - `ProtectedData.Protect/Unprotect`
+  - `DataProtectionScope.CurrentUser` - apenas o usuário Windows atual pode descriptografar
+  - Sem chaves de criptografia expostas no código
+- **Salvo automaticamente** após login ou registro bem-sucedido
+- **Carregado na inicialização** do LoginViewModel
+
 ### ServiceCollectionExtensions - NOVO
 ```csharp
 public static class ServiceCollectionExtensions {
@@ -359,6 +393,7 @@ Configura:
 - `DbContext` (SQLite ou PostgreSQL auto-detectado)
 - Repositórios: `IUserRepository`, `IAddressRepository`, `IProductRepository`, `ICartRepository`, `IOrderRepository`, `ICategoryRepository`
 - `IAuthService`
+- `ILastLoginService` (Singleton)
 - `ServiceLocator` para acesso global opcional
 
 ### ServiceLocator (Opcional) - NOVO
@@ -466,7 +501,7 @@ public interface ICategoryRepository { ... }
 
 ---
 
-## Converters (14 total)
+## Converters (15 total)
 
 ### ValueConverters (IValueConverter)
 | Converter | Uso |
@@ -482,6 +517,7 @@ public interface ICategoryRepository { ... }
 | `CategoryForegroundConverter` | Category → Brush (texto do badge) - **COMBOBOX WORKAROUND** |
 | `BoolToBackgroundConverter` | bool → Brush (seleção) |
 | `EmptyToVisibilityConverter` | string/IEnumerable → Visibility (vazio=Collapsed) |
+| `StringToVisibilityConverter` | **NOVO** string → Visibility (vazio=Visible/Collapsed com parâmetro inverse) |
 
 ### MultiValueConverters (IMultiValueConverter) - Para ConverterParameter com Binding
 | Converter | Uso |
@@ -630,6 +666,8 @@ sequenceDiagram
 | EF Core migrations SQLite vs PostgreSQL | Provider auto-detectado pela connection string |
 | Tabelas PostgreSQL case-sensitive | `FixColumnNamesAsync()` cria tabelas snake_case via SQL raw |
 | PasswordBox show/hide | PasswordBox ↔ TextBox swap no code-behind |
+| Placeholder da busca não desaparece | DataTrigger com `Value="{x:Static Visibility.Visible}"` + `EmptyToVisibilityConverter` inverse |
+| Padding excessivo no input de busca | Reduzido de `40,10,12,10` para `36,6,12,6` |
 
 ---
 
@@ -704,6 +742,8 @@ Ao trabalhar neste projeto, **SEMPRE**:
 - [x] **Repository Pattern** + DI (Microsoft.Extensions.DI)
 - [x] Design system consistente
 - [x] Build limpo, run funcional
+- [x] **Botão "Último acesso"** - login automático com credenciais salvas (DPAPI)
+- [x] **Barra de Pesquisa melhorada** - placeholder visível, padding reduzido, desaparece ao digitar
 
 ### Futuro (Backend Real / Produção)
 - [ ] API Service (HttpClient + interfaces) para substituir repositórios locais
@@ -825,6 +865,7 @@ Ao trabalhar neste projeto, **SEMPRE**:
 ```
 Services/
   AuthService.cs              # Login, Register, JWT, BCrypt
+  LastLoginService.cs         # NOVO: Último acesso (DPAPI)
   ServiceCollectionExtensions.cs  # DI, DbContext, Repos, ServiceLocator
 
 Data/
@@ -837,13 +878,26 @@ Data/
 
 ViewModels/
   RegisterViewModel.cs           # Registro com validação + AuthService
+  LoginViewModel.cs              # ATUALIZADO: HasLastLogin, LastLoginEmail, UseLastLoginCommand
 
 Views/Auth/
   RegisterView.xaml/.cs          # Split 50/50 + phone mask + 2x show/hide
+  LoginView.xaml                 # ATUALIZADO: Botão "Último acesso"
 
 Views/Cart/
   OrderConfirmationDialog.xaml/.cs  # Modal animado sucesso
 ```
+
+### 🔍 Melhorias UX (2026-11-16)
+- **Barra de Pesquisa no Cardápio**:
+  - Placeholder "🔍 Buscar por nome..." visível e desaparece ao digitar
+  - Espaçamento de 16px do título
+  - Visual tipo card com borda sutil
+  - Padding reduzido (36,6,12,6)
+- **Botão "Último Acesso" no Login**:
+  - Login automático com credenciais salvas (DPAPI)
+  - Mostra email da última conta usada
+  - Seguro: criptografia por usuário Windows
 
 ### ⚙️ Configuração
 - `appsettings.json` / `appsettings.Development.json`
@@ -853,5 +907,5 @@ Views/Cart/
 
 ---
 
-*Última atualização: 2026-11-12*
+*Última atualização: 2026-11-16*
 *Este documento deve ser mantido atualizado a cada mudança significativa no projeto.*

@@ -114,6 +114,13 @@ public class AuthService : IAuthService
             var createdUser = await _userRepository.CreateAsync(user, passwordHash);
             Console.WriteLine($"User created successfully in DB: {createdUser.Id}");
 
+            // Load user with addresses
+            var userWithAddresses = await _userRepository.GetByEmailWithAddressesAsync(email);
+            if (userWithAddresses != null)
+            {
+                createdUser = userWithAddresses;
+            }
+
             var token = GenerateJwtToken(createdUser);
             _currentUser = createdUser;
             _currentToken = token;

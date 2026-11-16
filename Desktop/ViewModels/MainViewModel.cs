@@ -118,7 +118,28 @@ public class MainViewModel : BaseViewModel
         CurrentUser = user;
         IsLoggedIn = true;
         await LoadCartFromDatabaseAsync();
+        await LoadUserAddressesAsync();
         NavigateTo(new HomeViewModel(this));
+    }
+
+    public async Task LoadUserAddressesAsync()
+    {
+        if (CurrentUser == null) return;
+
+        try
+        {
+            var addressRepo = ServiceLocator.GetServiceOrDefault<IAddressRepository>();
+            if (addressRepo != null)
+            {
+                var addresses = await addressRepo.GetByUserIdAsync(CurrentUser.Id);
+                CurrentUser.Addresses.Clear();
+                CurrentUser.Addresses.AddRange(addresses);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar endereços do usuário: {ex.Message}");
+        }
     }
 
     public async Task LoadCartFromDatabaseAsync()

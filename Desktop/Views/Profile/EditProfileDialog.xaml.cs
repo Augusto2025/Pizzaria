@@ -13,14 +13,24 @@ using BCrypt.Net;
 public partial class EditProfileDialog : Window
 {
     private readonly User _currentUser;
-    private readonly IUserRepository _userRepository;
+    private readonly IUserRepository? _userRepository;
     private bool _isSaving = false;
 
     public EditProfileDialog(User currentUser)
     {
         InitializeComponent();
         _currentUser = currentUser;
-        _userRepository = ServiceLocator.GetService<IUserRepository>();
+
+        // Use GetServiceOrDefault to avoid crash if ServiceLocator not initialized
+        try
+        {
+            _userRepository = ServiceLocator.GetServiceOrDefault<IUserRepository>();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao obter IUserRepository: {ex.Message}");
+            _userRepository = null;
+        }
 
         LoadUserData();
     }
@@ -131,15 +141,14 @@ public partial class EditProfileDialog : Window
 
             if (hasChanges && _userRepository != null)
             {
-                // Update user in database
+                // Update user in database (name, phone)
                 var success = await _userRepository.UpdateAsync(_currentUser);
 
-                // If password changed, we need to update it separately
+                // If password changed, update it separately
                 if (success && !string.IsNullOrWhiteSpace(newPassword))
                 {
                     var passwordHash = BCrypt.HashPassword(newPassword);
-                    // Password hash update would require a separate method in repository
-                    // For now, the name/phone update will work
+                    success = await _userRepository.UpdatePasswordAsync(_currentUser.Id, passwordHash);
                 }
 
                 if (success)

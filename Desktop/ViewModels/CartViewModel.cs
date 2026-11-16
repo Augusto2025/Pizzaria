@@ -14,13 +14,14 @@ using PizzariaDesktop.Services;
 public class CartViewModel : BaseViewModel
 {
     private readonly MainViewModel _mainViewModel;
-    private string _deliveryAddress = "Rua das Flores, 123 - Jardim Primavera, São Paulo/SP";
+    private Address? _selectedAddress;
     private string _paymentMethod = "PIX";
     private string _notes = string.Empty;
     private bool _isProcessing = false;
     private bool _justCheckedOut = false;
     private DateTime? _lastOrderDeliveryTime;
     private const double DeliveryFee = 5.00;
+    private List<Address> _savedAddresses = new();
 
     public CartViewModel(MainViewModel mainViewModel)
     {
@@ -33,6 +34,9 @@ public class CartViewModel : BaseViewModel
         GoToMenuCommand = new RelayCommand(_ => _mainViewModel.NavigateToMenu());
         GoToCheckoutCommand = new RelayCommand(async _ => await GoToCheckoutAsync(), _ => CanCheckout && !IsProcessing);
         GoToOrdersCommand = new RelayCommand(_ => _mainViewModel.NavigateToOrders());
+
+        // Load addresses when viewmodel is created (user should be logged in by then)
+        _ = LoadAddressesAsync();
     }
 
     public ObservableCollection<CartItem> CartItems { get; }
@@ -45,6 +49,22 @@ public class CartViewModel : BaseViewModel
     public string FormattedDeliveryFee => $"R$ {DeliveryFee:F2}";
     public string FormattedTotal => $"R$ {Total:F2}";
 
+    public Address? SelectedAddress
+    {
+        get => _selectedAddress;
+        set
+        {
+            if (SetProperty(ref _selectedAddress, value) && value != null)
+            {
+                // Update delivery address string for backward compatibility
+                _deliveryAddress = value.FullAddress;
+                OnPropertyChanged(nameof(DeliveryAddress));
+            }
+        }
+    }
+
+    // Backward compatibility property for order creation
+    private string _deliveryAddress = "Rua das Flores, 123 - Jardim Primavera, São Paulo/SP";
     public string DeliveryAddress
     {
         get => _deliveryAddress;
@@ -77,7 +97,7 @@ public class CartViewModel : BaseViewModel
     }
 
     public List<string> PaymentMethods { get; } = new() { "PIX", "Cartão de Crédito", "Cartão de Débito", "Dinheiro", "Carteira Digital" };
-    public List<Address> SavedAddresses { get; } = MockData.Addresses;
+    public List<Address> SavedAddresses => _savedAddresses;
 
     public ICommand IncreaseQuantityCommand { get; }
     public ICommand DecreaseQuantityCommand { get; }
@@ -121,7 +141,7 @@ public class CartViewModel : BaseViewModel
             await Task.Delay(800);
 
             // Create the order from cart items
-            var order = CreateOrderFromCart();
+            var order = await CreateOrderFromCartAsync();
 
             // Store delivery time for success display
             _lastOrderDeliveryTime = order.EstimatedDeliveryTime;
@@ -170,25 +190,31 @@ public class CartViewModel : BaseViewModel
         }
     }
 
-    private Order CreateOrderFromCart()
+    private async Task<Order> CreateOrderFromCartAsync()
     {
         var now = DateTime.Now;
         // Calculate estimated delivery based on items (more items = longer prep)
         var maxPrepTime = CartItems.Any() ? CartItems.Max(c => c.Product.PrepTimeMinutes) : 25;
         var estimatedDelivery = now.AddMinutes(maxPrepTime + 15); // prep + delivery
 
-        // Find matching saved address or create new one
+        // Use selected address from ComboBox, fallback to first saved address, or parse from string
         Address deliveryAddress;
-        var savedAddr = SavedAddresses.FirstOrDefault(a => a.FullAddress == DeliveryAddress);
-        if (savedAddr != null)
+        if (SelectedAddress != null)
         {
-            deliveryAddress = savedAddr;
+            deliveryAddress = SelectedAddress;
+        }
+        else if (SavedAddresses.Any())
+        {
+            deliveryAddress = SavedAddresses.First();
         }
         else
         {
             // Parse the address string to create a new Address object
             deliveryAddress = Address.FromFullAddress(DeliveryAddress);
         }
+
+        // Ensure address is saved to database (if new)
+        deliveryAddress = await EnsureAddressSavedAsync(deliveryAddress);
 
         var order = new Order
         {
@@ -268,5 +294,66 @@ public class CartViewModel : BaseViewModel
             var maxDelivery = maxPrepTime + 20;
             return $"{minDelivery} - {maxDelivery} min";
         }
+    }
+
+    // Load addresses from database
+    public async Task LoadAddressesAsync()
+    {
+        if (_mainViewModel.CurrentUser == null) return;
+
+        try
+        {
+            var addressRepo = ServiceLocator.GetServiceOrDefault<IAddressRepository>();
+            if (addressRepo != null)
+            {
+                var addresses = await addressRepo.GetByUserIdAsync(_mainViewModel.CurrentUser.Id);
+                _savedAddresses.Clear();
+                _savedAddresses.AddRange(addresses);
+                OnPropertyChanged(nameof(SavedAddresses));
+
+                // Select default address or first address
+                if (_savedAddresses.Any())
+                {
+                    var defaultAddress = _savedAddresses.FirstOrDefault(a => a.IsDefault) ?? _savedAddresses.First();
+                    SelectedAddress = defaultAddress;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar endereços: {ex.Message}");
+        }
+    }
+
+    // Save new address to database if needed
+    private async Task<Address> EnsureAddressSavedAsync(Address address)
+    {
+        if (_mainViewModel.CurrentUser == null) return address;
+
+        // Check if address already exists in saved addresses (by ID or by FullAddress)
+        var existing = _savedAddresses.FirstOrDefault(a => a.Id == address.Id || a.FullAddress == address.FullAddress);
+        if (existing != null)
+        {
+            return existing;
+        }
+
+        // Save new address to database
+        try
+        {
+            var addressRepo = ServiceLocator.GetServiceOrDefault<IAddressRepository>();
+            if (addressRepo != null)
+            {
+                var savedAddress = await addressRepo.CreateAsync(address, _mainViewModel.CurrentUser.Id);
+                _savedAddresses.Add(savedAddress);
+                OnPropertyChanged(nameof(SavedAddresses));
+                return savedAddress;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao salvar endereço: {ex.Message}");
+        }
+
+        return address;
     }
 }

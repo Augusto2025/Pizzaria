@@ -77,6 +77,16 @@ public class UserRepository : IUserRepository
         return true;
     }
 
+    public async Task<bool> UpdatePasswordAsync(string userId, string newPasswordHash)
+    {
+        var entity = await _context.Users.FindAsync(userId);
+        if (entity == null) return false;
+
+        entity.PasswordHash = newPasswordHash;
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
     public async Task<bool> DeleteAsync(string id)
     {
         var entity = await _context.Users.FindAsync(id);

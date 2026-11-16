@@ -133,6 +133,9 @@ public class CartViewModel : BaseViewModel
             // Show success state in cart view
             JustCheckedOut = true;
 
+            // Hide loading overlay BEFORE showing dialog
+            IsProcessing = false;
+
             // Show confirmation dialog
             var dialog = new OrderConfirmationDialog(order, _mainViewModel);
             dialog.ShowDialog();
@@ -145,12 +148,9 @@ public class CartViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
+            IsProcessing = false;
             MessageBox.Show($"Erro ao finalizar pedido: {ex.Message}", "Erro",
                 MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-        finally
-        {
-            IsProcessing = false;
         }
     }
 

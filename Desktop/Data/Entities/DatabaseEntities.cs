@@ -21,12 +21,13 @@ public class UserEntity
 
     [Required]
     [MaxLength(255)]
+    [Column("password_hash")]
     public string PasswordHash { get; set; } = string.Empty;
 
     [MaxLength(20)]
     public string Phone { get; set; } = string.Empty;
 
-    [NotMapped]
+    [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation

@@ -215,8 +215,9 @@ public class PizzariaDbContext : DbContext
             entity.Property(e => e.Id).HasMaxLength(50).HasColumnName("id");
             entity.Property(e => e.Name).HasMaxLength(100).IsRequired().HasColumnName("name");
             entity.Property(e => e.Email).HasMaxLength(150).IsRequired().HasColumnName("email");
-            entity.Property(e => e.PasswordHash).HasMaxLength(255).IsRequired().HasColumnName("passwordhash");
+            entity.Property(e => e.PasswordHash).HasMaxLength(255).IsRequired().HasColumnName("password_hash");
             entity.Property(e => e.Phone).HasMaxLength(20).HasColumnName("phone");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
         });
     }
 
@@ -227,7 +228,7 @@ public class PizzariaDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.UserId);
             entity.Property(e => e.Id).HasMaxLength(50).HasColumnName("id");
-            entity.Property(e => e.UserId).HasMaxLength(50).IsRequired().HasColumnName("userid");
+            entity.Property(e => e.UserId).HasMaxLength(50).IsRequired().HasColumnName("user_id");
             entity.Property(e => e.Label).HasMaxLength(50).IsRequired().HasColumnName("label");
             entity.Property(e => e.Street).HasMaxLength(100).IsRequired().HasColumnName("street");
             entity.Property(e => e.Number).HasMaxLength(20).IsRequired().HasColumnName("number");
@@ -235,10 +236,10 @@ public class PizzariaDbContext : DbContext
             entity.Property(e => e.Neighborhood).HasMaxLength(50).IsRequired().HasColumnName("neighborhood");
             entity.Property(e => e.City).HasMaxLength(50).IsRequired().HasColumnName("city");
             entity.Property(e => e.State).HasMaxLength(2).IsRequired().HasColumnName("state");
-            entity.Property(e => e.ZipCode).HasMaxLength(10).IsRequired().HasColumnName("zipcode");
+            entity.Property(e => e.ZipCode).HasMaxLength(10).IsRequired().HasColumnName("zip_code");
             entity.Property(e => e.Latitude).HasColumnName("latitude");
             entity.Property(e => e.Longitude).HasColumnName("longitude");
-            entity.Property(e => e.IsDefault).HasColumnName("isdefault");
+            entity.Property(e => e.IsDefault).HasColumnName("is_default");
 
             entity.HasOne(e => e.User)
                 .WithMany(u => u.Addresses)

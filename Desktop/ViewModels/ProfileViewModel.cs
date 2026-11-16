@@ -75,13 +75,28 @@ public class ProfileViewModel : BaseViewModel
     {
         if (CurrentUser == null) return;
 
-        var dialog = new EditProfileDialog(CurrentUser);
-        var result = dialog.ShowDialog();
-
-        if (result == true)
+        try
         {
-            // Reload user data from database to get updated info
-            RefreshUserData();
+            var dialog = new EditProfileDialog(CurrentUser);
+            var result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                // Reload user data from database to get updated info
+                RefreshUserData();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao abrir Editar Perfil: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                System.Diagnostics.Debug.WriteLine($"Inner StackTrace: {ex.InnerException.StackTrace}");
+            }
+            MessageBox.Show($"Erro ao abrir editor de perfil: {ex.Message}", "Erro",
+                MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

@@ -181,7 +181,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="{StaticResource SurfaceColor}" />
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource SurfaceBrush}" />
                                 <Setter TargetName="ContentPresenter" Property="TextElement.Foreground" Value="{StaticResource TextPrimaryBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>

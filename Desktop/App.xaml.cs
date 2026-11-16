@@ -40,6 +40,56 @@ namespace PizzariaDesktop
 
             // Carrega recursos e conversores
             InitializeComponent();
+
+            // Global exception handlers
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+        }
+
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            var ex = e.Exception;
+            System.Diagnostics.Debug.WriteLine($"=== UNHANDLED UI EXCEPTION ===");
+            System.Diagnostics.Debug.WriteLine($"Message: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Inner: {ex.InnerException.Message}");
+                System.Diagnostics.Debug.WriteLine($"Inner StackTrace: {ex.InnerException.StackTrace}");
+            }
+
+            MessageBox.Show($"Erro inesperado: {ex.Message}\n\nVerifique o Output/Debug para detalhes.", "Erro Crítico",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+
+            e.Handled = true; // Prevent app crash
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var ex = e.ExceptionObject as Exception;
+            System.Diagnostics.Debug.WriteLine($"=== UNHANDLED DOMAIN EXCEPTION ===");
+            System.Diagnostics.Debug.WriteLine($"Message: {ex?.Message}");
+            System.Diagnostics.Debug.WriteLine($"StackTrace: {ex?.StackTrace}");
+            if (ex?.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Inner: {ex.InnerException.Message}");
+                System.Diagnostics.Debug.WriteLine($"Inner StackTrace: {ex.InnerException.StackTrace}");
+            }
+        }
+
+        private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+        {
+            var ex = e.Exception;
+            System.Diagnostics.Debug.WriteLine($"=== UNOBSERVED TASK EXCEPTION ===");
+            System.Diagnostics.Debug.WriteLine($"Message: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Inner: {ex.InnerException.Message}");
+                System.Diagnostics.Debug.WriteLine($"Inner StackTrace: {ex.InnerException.StackTrace}");
+            }
+            e.SetObserved(); // Prevent crash
         }
 
         private IConfiguration BuildConfiguration()

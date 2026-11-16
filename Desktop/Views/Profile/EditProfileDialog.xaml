@@ -6,14 +6,12 @@
         xmlns:local="clr-namespace:PizzariaDesktop.Views.Profile"
         mc:Ignorable="d"
         Title="Editar Perfil"
-        Height="520" Width="460"
-        MinHeight="480"
-        WindowStyle="None"
-        AllowsTransparency="True"
-        Background="Transparent"
+        Height="560" Width="480"
+        MinHeight="500"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
-        ShowInTaskbar="False">
+        ShowInTaskbar="False"
+        Background="{StaticResource BackgroundBrush}">
 
     <Window.Resources>
         <!-- Colors -->
@@ -238,112 +236,111 @@
     </Window.Resources>
 
     <Grid>
-        <!-- Main Card with Shadow -->
-        <Border Background="Transparent" RenderTransformOrigin="0.5,0.5" Effect="{StaticResource CardShadowEffect}">
-            <Border CornerRadius="20" Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />  <!-- Header -->
-                        <RowDefinition Height="*" />     <!-- Content -->
-                        <RowDefinition Height="Auto" />  <!-- Action Buttons -->
-                    </Grid.RowDefinitions>
+        <!-- Main Card -->
+        <Border CornerRadius="12" Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                Effect="{StaticResource CardShadowEffect}" Margin="8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />  <!-- Header -->
+                    <RowDefinition Height="*" />     <!-- Content -->
+                    <RowDefinition Height="Auto" />  <!-- Action Buttons -->
+                </Grid.RowDefinitions>
 
-                    <!-- ==================== HEADER ==================== -->
-                    <Border Grid.Row="0" Background="{StaticResource PrimaryBrush}" Padding="24,28" CornerRadius="19,19,0,0">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="✏️ Editar Perfil" Style="{StaticResource HeadlineStyle}" Foreground="White" FontSize="22" />
-                                <TextBlock Text="Atualize suas informações pessoais" Style="{StaticResource SubtitleStyle}" Foreground="#FFFFE0D8" FontSize="14" Margin="0,4,0,0" />
-                            </StackPanel>
-                            <Button Grid.Column="1" Style="{StaticResource GhostButtonStyle}" Content="✕" FontSize="18" FontWeight="Bold"
-                                    Width="40" Height="40" Padding="0" Click="CloseButton_Click" ToolTip="Fechar" />
-                        </Grid>
-                    </Border>
-
-                    <!-- ==================== CONTENT ==================== -->
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,24"
-                                  BorderThickness="0" Background="Transparent">
-                        <StackPanel Orientation="Vertical">
-
-                            <!-- Profile Photo (Display only) -->
-                            <Border Width="100" Height="100" CornerRadius="50" Background="{StaticResource PrimaryBrush}" Margin="0,0,0,24" HorizontalAlignment="Center">
-                                <TextBlock Text="👤" FontSize="48" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            </Border>
-
-                            <!-- Name Field -->
-                            <StackPanel Margin="0,0,0,16">
-                                <TextBlock Text="Nome Completo" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,0,0,6" />
-                                <TextBox x:Name="NameTextBox" Style="{StaticResource InputStyle}" Height="48" />
-                            </StackPanel>
-
-                            <!-- Email Field (Read-only display) -->
-                            <StackPanel Margin="0,0,0,16">
-                                <TextBlock Text="E-mail" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,0,0,6" />
-                                <TextBox x:Name="EmailTextBox" Style="{StaticResource InputStyle}" Height="48" IsReadOnly="True" Background="{StaticResource SurfaceBrush}" />
-                                <TextBlock Text="O e-mail não pode ser alterado" Style="{StaticResource CaptionStyle}" Margin="0,6,0,0" />
-                            </StackPanel>
-
-                            <!-- Phone Field -->
-                            <StackPanel Margin="0,0,0,16">
-                                <TextBlock Text="Telefone" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,0,0,6" />
-                                <TextBox x:Name="PhoneTextBox" Style="{StaticResource InputStyle}" Height="48" />
-                            </StackPanel>
-
-                            <!-- Divider -->
-                            <Border Height="1" Background="{StaticResource BorderColor}" Margin="0,16,0,16" />
-
-                            <!-- Change Password Section -->
-                            <TextBlock Text="🔒 Alterar Senha" Style="{StaticResource HeadlineStyle}" FontSize="18" Margin="0,0,0,16" />
-
-                            <StackPanel Margin="0,0,0,16">
-                                <TextBlock Text="Senha Atual" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,0,0,6" />
-                                <PasswordBox x:Name="CurrentPasswordBox" Style="{StaticResource PasswordBoxStyle}" Height="48" />
-                            </StackPanel>
-
-                            <StackPanel Margin="0,0,0,16">
-                                <TextBlock Text="Nova Senha" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,0,0,6" />
-                                <PasswordBox x:Name="NewPasswordBox" Style="{StaticResource PasswordBoxStyle}" Height="48" />
-                            </StackPanel>
-
-                            <StackPanel Margin="0,0,0,16">
-                                <TextBlock Text="Confirmar Nova Senha" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,0,0,6" />
-                                <PasswordBox x:Name="ConfirmPasswordBox" Style="{StaticResource PasswordBoxStyle}" Height="48" />
-                            </StackPanel>
-
-                            <!-- Error/Success Message -->
-                            <Border x:Name="MessageBorder" Background="#FFE8F5E9" BorderBrush="#FF4CAF50" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,12,0,0" Visibility="Collapsed">
-                                <TextBlock x:Name="MessageText" Text="" Style="{StaticResource BodyStyle}" FontSize="13" Foreground="#FF2E7D32" TextWrapping="Wrap" />
-                            </Border>
-
+                <!-- ==================== HEADER ==================== -->
+                <Border Grid.Row="0" Background="{StaticResource PrimaryBrush}" Padding="24,28" CornerRadius="11,11,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="✏️ Editar Perfil" Style="{StaticResource HeadlineStyle}" Foreground="White" FontSize="22" />
+                            <TextBlock Text="Atualize suas informações pessoais" Style="{StaticResource SubtitleStyle}" Foreground="#FFFFE0D8" FontSize="14" Margin="0,4,0,0" />
                         </StackPanel>
-                    </ScrollViewer>
+                        <Button Grid.Column="1" Style="{StaticResource GhostButtonStyle}" Content="✕" FontSize="18" FontWeight="Bold"
+                                Width="40" Height="40" Padding="0" Click="CloseButton_Click" ToolTip="Fechar" />
+                    </Grid>
+                </Border>
 
-                    <!-- ==================== ACTION BUTTONS ==================== -->
-                    <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" Padding="20,16,20,24" CornerRadius="0,0,19,19"
-                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0">
-                        <StackPanel Orientation="Vertical">
-                            <!-- Save Button -->
-                            <Button x:Name="SaveButton" Style="{StaticResource PrimaryButtonStyle}"
-                                    Height="52" Click="SaveButton_Click">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="💾" FontSize="18" Margin="0,0,10,0" VerticalAlignment="Center" />
-                                    <TextBlock Text="Salvar Alterações" VerticalAlignment="Center" FontWeight="SemiBold" />
-                                </StackPanel>
-                            </Button>
+                <!-- ==================== CONTENT ==================== -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,24"
+                              BorderThickness="0" Background="Transparent">
+                    <StackPanel Orientation="Vertical">
 
-                            <!-- Cancel Button -->
-                            <Button x:Name="CancelButton" Style="{StaticResource SecondaryButtonStyle}"
-                                    Height="48" Margin="0,12,0,0" Click="CloseButton_Click">
-                                <TextBlock Text="Cancelar" VerticalAlignment="Center" FontWeight="Medium" />
-                            </Button>
+                        <!-- Profile Photo (Display only) -->
+                        <Border Width="100" Height="100" CornerRadius="50" Background="{StaticResource PrimaryBrush}" Margin="0,0,0,24" HorizontalAlignment="Center">
+                            <TextBlock Text="👤" FontSize="48" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+
+                        <!-- Name Field -->
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Nome Completo" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,0,0,6" />
+                            <TextBox x:Name="NameTextBox" Style="{StaticResource InputStyle}" Height="48" />
                         </StackPanel>
-                    </Border>
-                </Grid>
-            </Border>
+
+                        <!-- Email Field (Read-only display) -->
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="E-mail" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,0,0,6" />
+                            <TextBox x:Name="EmailTextBox" Style="{StaticResource InputStyle}" Height="48" IsReadOnly="True" Background="{StaticResource SurfaceBrush}" />
+                            <TextBlock Text="O e-mail não pode ser alterado" Style="{StaticResource CaptionStyle}" Margin="0,6,0,0" />
+                        </StackPanel>
+
+                        <!-- Phone Field -->
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Telefone" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,0,0,6" />
+                            <TextBox x:Name="PhoneTextBox" Style="{StaticResource InputStyle}" Height="48" />
+                        </StackPanel>
+
+                        <!-- Divider -->
+                        <Border Height="1" Background="{StaticResource BorderBrush}" Margin="0,16,0,16" />
+
+                        <!-- Change Password Section -->
+                        <TextBlock Text="🔒 Alterar Senha" Style="{StaticResource HeadlineStyle}" FontSize="18" Margin="0,0,0,16" />
+
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Senha Atual" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,0,0,6" />
+                            <PasswordBox x:Name="CurrentPasswordBox" Style="{StaticResource PasswordBoxStyle}" Height="48" />
+                        </StackPanel>
+
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Nova Senha" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,0,0,6" />
+                            <PasswordBox x:Name="NewPasswordBox" Style="{StaticResource PasswordBoxStyle}" Height="48" />
+                        </StackPanel>
+
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Confirmar Nova Senha" Style="{StaticResource BodyStyle}" FontWeight="Medium" Margin="0,0,0,6" />
+                            <PasswordBox x:Name="ConfirmPasswordBox" Style="{StaticResource PasswordBoxStyle}" Height="48" />
+                        </StackPanel>
+
+                        <!-- Error/Success Message -->
+                        <Border x:Name="MessageBorder" Background="#FFE8F5E9" BorderBrush="#FF4CAF50" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,12,0,0" Visibility="Collapsed">
+                            <TextBlock x:Name="MessageText" Text="" Style="{StaticResource BodyStyle}" FontSize="13" Foreground="#FF2E7D32" TextWrapping="Wrap" />
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- ==================== ACTION BUTTONS ==================== -->
+                <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" Padding="20,16,20,24" CornerRadius="0,0,11,11"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0">
+                    <StackPanel Orientation="Vertical">
+                        <!-- Save Button -->
+                        <Button x:Name="SaveButton" Style="{StaticResource PrimaryButtonStyle}"
+                                Height="52" Click="SaveButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="💾" FontSize="18" Margin="0,0,10,0" VerticalAlignment="Center" />
+                                <TextBlock Text="Salvar Alterações" VerticalAlignment="Center" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Cancel Button -->
+                        <Button x:Name="CancelButton" Style="{StaticResource SecondaryButtonStyle}"
+                                Height="48" Margin="0,12,0,0" Click="CloseButton_Click">
+                            <TextBlock Text="Cancelar" VerticalAlignment="Center" FontWeight="Medium" />
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Border>
     </Grid>
 </Window>

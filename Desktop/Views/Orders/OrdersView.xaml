@@ -48,7 +48,7 @@
                                             <Setter Property="Background" Value="Transparent" />
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="{StaticResource SurfaceColor}" />
+                                                    <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>

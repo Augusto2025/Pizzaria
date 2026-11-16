@@ -18,21 +18,35 @@ public partial class EditProfileDialog : Window
 
     public EditProfileDialog(User currentUser)
     {
-        InitializeComponent();
-        _currentUser = currentUser;
-
-        // Use GetServiceOrDefault to avoid crash if ServiceLocator not initialized
         try
         {
-            _userRepository = ServiceLocator.GetServiceOrDefault<IUserRepository>();
+            InitializeComponent();
+            _currentUser = currentUser ?? throw new ArgumentNullException(nameof(currentUser));
+
+            // Use GetServiceOrDefault to avoid crash if ServiceLocator not initialized
+            try
+            {
+                _userRepository = ServiceLocator.GetServiceOrDefault<IUserRepository>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao obter IUserRepository: {ex.Message}");
+                _userRepository = null;
+            }
+
+            LoadUserData();
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erro ao obter IUserRepository: {ex.Message}");
-            _userRepository = null;
+            System.Diagnostics.Debug.WriteLine($"Erro no construtor EditProfileDialog: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                System.Diagnostics.Debug.WriteLine($"Inner StackTrace: {ex.InnerException.StackTrace}");
+            }
+            throw; // Re-throw to let the caller handle it
         }
-
-        LoadUserData();
     }
 
     private void LoadUserData()

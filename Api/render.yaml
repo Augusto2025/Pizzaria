@@ -4,7 +4,6 @@ services:
     name: pizzaria-api
     runtime: docker
     dockerfilePath: Api/Dockerfile
-    dockerContext: Api
     plan: free
     region: oregon  # ou frankfurt para EU
     healthCheckPath: /health

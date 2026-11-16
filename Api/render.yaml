@@ -12,11 +12,11 @@ services:
         value: Production
       - key: ASPNETCORE_URLS
         value: http://+:8080
-      # Configure estas no dashboard do Render (não commitar segredos):
-      # - key: DATABASE_CONNECTION_STRING
-      #   sync: false
-      # - key: JWT_SECRET
-      #   sync: false
+      # Segredos: configure os valores no dashboard Render (sync: false = não commita no git)
+      - key: DATABASE_CONNECTION_STRING
+        sync: false
+      - key: JWT_SECRET
+        sync: false
     autoDeploy: true
 
 # Opcional: PostgreSQL gerenciado no Render (grátis 90 dias, depois $7/mês)

@@ -2,8 +2,11 @@ namespace PizzariaDesktop.ViewModels;
 
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using System.Windows;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Data;
+using PizzariaDesktop.Data.Repositories;
+using PizzariaDesktop.Views.Profile;
 
 public class ProfileViewModel : BaseViewModel
 {
@@ -15,7 +18,7 @@ public class ProfileViewModel : BaseViewModel
     public ProfileViewModel(MainViewModel mainViewModel)
     {
         _mainViewModel = mainViewModel;
-        var user = MockData.CurrentUser;
+        var user = _mainViewModel.CurrentUser ?? MockData.CurrentUser;
         _name = user.Name;
         _email = user.Email;
         _phone = user.Phone;
@@ -53,9 +56,9 @@ public class ProfileViewModel : BaseViewModel
 
     public ObservableCollection<Address> Addresses { get; }
 
-    public int TotalOrders => MockData.Orders.Count;
-    public int DeliveredOrders => MockData.Orders.Count(o => o.Status == OrderStatus.Delivered);
-    public double TotalSpent => MockData.Orders.Where(o => o.Status == OrderStatus.Delivered).Sum(o => o.Total);
+    public int TotalOrders => _mainViewModel.UserOrders.Count;
+    public int DeliveredOrders => _mainViewModel.UserOrders.Count(o => o.Status == OrderStatus.Delivered);
+    public double TotalSpent => _mainViewModel.UserOrders.Where(o => o.Status == OrderStatus.Delivered).Sum(o => o.Total);
 
     public string FormattedTotalSpent => $"R$ {TotalSpent:F2}";
 
@@ -68,8 +71,54 @@ public class ProfileViewModel : BaseViewModel
     public ICommand ManagePaymentMethodsCommand { get; }
     public ICommand SettingsCommand { get; }
 
-    public void EditProfile() { /* Demo only */ }
-    public void ManageAddresses() { /* Demo only */ }
-    public void ManagePaymentMethods() { /* Demo only */ }
-    public void Settings() { /* Demo only */ }
+    public void EditProfile()
+    {
+        if (CurrentUser == null) return;
+
+        var dialog = new EditProfileDialog(CurrentUser);
+        var result = dialog.ShowDialog();
+
+        if (result == true)
+        {
+            // Reload user data from database to get updated info
+            RefreshUserData();
+        }
+    }
+
+    private void RefreshUserData()
+    {
+        if (CurrentUser != null)
+        {
+            Name = CurrentUser.Name;
+            Email = CurrentUser.Email;
+            Phone = CurrentUser.Phone;
+            Addresses.Clear();
+            foreach (var addr in CurrentUser.Addresses)
+            {
+                Addresses.Add(addr);
+            }
+            OnPropertyChanged(nameof(TotalOrders));
+            OnPropertyChanged(nameof(DeliveredOrders));
+            OnPropertyChanged(nameof(TotalSpent));
+            OnPropertyChanged(nameof(FormattedTotalSpent));
+        }
+    }
+
+    public void ManageAddresses()
+    {
+        // TODO: Implement address management dialog
+        MessageBox.Show("Gerenciamento de endereços será implementado em breve", "Em Desenvolvimento", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    public void ManagePaymentMethods()
+    {
+        // TODO: Implement payment methods management
+        MessageBox.Show("Gerenciamento de formas de pagamento será implementado em breve", "Em Desenvolvimento", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    public void Settings()
+    {
+        // TODO: Implement settings dialog
+        MessageBox.Show("Configurações serão implementadas em breve", "Em Desenvolvimento", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
 }

@@ -10,13 +10,8 @@
              Background="{StaticResource BackgroundBrush}">
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-
         <!-- Orders List -->
-        <Border Grid.Column="0" Style="{StaticResource CardStyle}" Margin="24,24,12,24" Padding="0">
+        <Border Style="{StaticResource CardStyle}" Margin="24,24,24,24" Padding="0">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -43,8 +38,21 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"
-                                        Background="{Binding IsSelected, Converter={StaticResource BoolToBackgroundConverter}, ConverterParameter=selected}"
-                                        Padding="20" Margin="0">
+                                        Padding="20" Margin="0"
+                                        Cursor="Hand"
+                                        Background="Transparent"
+                                        ToolTip="Clique para ver detalhes"
+                                        MouseLeftButtonUp="OrderItem_MouseLeftButtonUp">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource SurfaceColor}" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -92,227 +100,14 @@
                 <Border Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="40"
                         Visibility="{Binding Orders.Count, Converter={StaticResource EmptyToVisibilityConverter}}">
                     <StackPanel HorizontalAlignment="Center">
-                        <TextBlock Text="📦" FontSize="64" />
-                        <TextBlock Text="Nenhum pedido ainda" Style="{StaticResource TitleStyle}" Margin="0,16,0,8" />
-                        <TextBlock Text="Faça seu primeiro pedido no cardápio" Style="{StaticResource SubtitleStyle}" TextAlignment="Center" MaxWidth="300" />
-                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="Ir ao Cardápio" Padding="24,12" Margin="0,24,0,0"
+                        <TextBlock Text="📦" FontSize="56" />
+                        <TextBlock Text="Nenhum pedido ainda" Style="{StaticResource TitleStyle}" FontSize="20" Margin="0,16,0,8" />
+                        <TextBlock Text="Faça seu primeiro pedido no cardápio" Style="{StaticResource SubtitleStyle}" FontSize="14" TextAlignment="Center" MaxWidth="280" Margin="0,0,0,20" />
+                        <Button Style="{StaticResource PrimaryButtonStyle}" Content="Ir ao Cardápio" Padding="20,10" FontSize="14"
                                 Command="{Binding GoToMenuCommand}" />
                     </StackPanel>
                 </Border>
             </Grid>
-        </Border>
-
-        <!-- Order Detail (Sidebar) -->
-        <Border Grid.Column="1" Width="400" Style="{StaticResource CardStyle}" Margin="12,24,24,24" Padding="0"
-                Visibility="{Binding HasSelectedOrder, Converter={StaticResource BoolToVisibilityConverter}}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <!-- Header -->
-                <Border Grid.Row="0" Background="{StaticResource PrimaryBrush}" Padding="20" CornerRadius="12,12,0,0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Detalhes do Pedido" Style="{StaticResource TitleStyle}" Foreground="White" />
-                        <Button Grid.Column="1" Style="{StaticResource IconButtonStyle}" Content="✕" FontSize="16" FontWeight="Bold"
-                                Command="{Binding ClearSelectionCommand}" ToolTip="Fechar" />
-                    </Grid>
-                </Border>
-
-                <!-- Detail Content -->
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20">
-                    <ContentControl Content="{Binding SelectedOrder}">
-                        <ContentControl.ContentTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <!-- Order Header -->
-                                    <Grid Margin="0,0,0,16">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" Width="56" Height="56" CornerRadius="28"
-                                                Background="{Binding Status, Converter={StaticResource OrderStatusToColorConverter}}">
-                                            <TextBlock Text="📦" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Border>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0,0,0">
-                                            <TextBlock Text="{Binding ShortId, StringFormat='Pedido #{0}'}" Style="{StaticResource TitleStyle}" FontSize="18" />
-                                            <TextBlock Text="{Binding FormattedCreatedAt}" Style="{StaticResource SubtitleStyle}" Margin="0,4,0,0" />
-                                        </StackPanel>
-                                    </Grid>
-
-                                    <!-- Status Badge -->
-                                    <Border Background="{Binding Status, Converter={StaticResource OrderStatusToColorConverter}}"
-                                            CornerRadius="20" Padding="12,8" HorizontalAlignment="Left" Margin="0,0,0,8">
-                                        <TextBlock Text="{Binding StatusDisplayName}" FontSize="13" FontWeight="Bold" Foreground="White" />
-                                    </Border>
-
-                                    <!-- PAGO Badge (for confirmed/paid orders) -->
-                                    <Border Background="#FF28A745" CornerRadius="20" Padding="12,8" HorizontalAlignment="Left" Margin="0,0,0,20"
-                                            Visibility="{Binding Status, Converter={StaticResource OrderStatusToPaidVisibilityConverter}}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="✓" FontSize="12" FontWeight="Bold" Foreground="White" Margin="0,0,6,0" VerticalAlignment="Center" />
-                                            <TextBlock Text="PAGO" FontSize="13" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Delivery Time Estimate (Prominent) -->
-                                    <Border Background="#FFE8F5E9" BorderBrush="#FF4CAF50" BorderThickness="1" CornerRadius="10" Padding="16" Margin="0,0,0,20"
-                                            Visibility="{Binding EstimatedDeliveryTime, Converter={StaticResource BoolToVisibilityConverter}}">
-                                        <StackPanel>
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,6">
-                                                <TextBlock Text="⏱" FontSize="16" Margin="0,0,6,0" VerticalAlignment="Center" />
-                                                <TextBlock Text="Previsão de Entrega" Style="{StaticResource CaptionStyle}" FontWeight="Medium" Foreground="#FF2E7D32" VerticalAlignment="Center" />
-                                            </StackPanel>
-                                            <TextBlock Text="{Binding FormattedEstimatedDelivery}" Style="{StaticResource BodyStyle}" FontWeight="Bold" Foreground="#FF1B5E20" FontSize="18" TextAlignment="Center" />
-                                            <TextBlock Text="Entregamos quentinho na sua casa! 🍕" Style="{StaticResource CaptionStyle}" Foreground="#FF4CAF50" TextAlignment="Center" Margin="0,6,0,0" />
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Timeline -->
-                                    <TextBlock Text="📋 Linha do Tempo" Style="{StaticResource TitleStyle}" Margin="0,0,0,12" />
-                                    <ItemsControl ItemsSource="{Binding Timeline}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border Padding="0,8,0,8" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto" />
-                                                            <ColumnDefinition Width="*" />
-                                                            <ColumnDefinition Width="Auto" />
-                                                        </Grid.ColumnDefinitions>
-                                                        <Border Grid.Column="0" Width="32" Height="32" CornerRadius="16"
-                                                                Background="{Binding Status, Converter={StaticResource OrderStatusToColorConverter}}"
-                                                                Margin="0,0,12,0">
-                                                            <TextBlock Text="📍" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                        </Border>
-                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                            <TextBlock Text="{Binding StatusDisplayName}" Style="{StaticResource BodyStyle}" FontWeight="Medium" />
-                                                            <TextBlock Text="{Binding Note}" Style="{StaticResource CaptionStyle}" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,0"
-                                                                       Visibility="{Binding Note, Converter={StaticResource EmptyToVisibilityConverter}}" />
-                                                        </StackPanel>
-                                                        <TextBlock Grid.Column="2" Text="{Binding FormattedTime}" Style="{StaticResource CaptionStyle}" VerticalAlignment="Center" />
-                                                    </Grid>
-                                                </Border>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-
-                                    <!-- Divider -->
-                                    <Border Height="1" Background="{StaticResource BorderBrush}" Margin="0,20,0,20" />
-
-                                    <!-- Items -->
-                                    <TextBlock Text="🍕 Itens do Pedido" Style="{StaticResource TitleStyle}" Margin="0,0,0,12" />
-                                    <ItemsControl ItemsSource="{Binding Items}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border Padding="0,8,0,8" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto" />
-                                                            <ColumnDefinition Width="*" />
-                                                            <ColumnDefinition Width="Auto" />
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Grid.Column="0" Text="{Binding Product, Converter={StaticResource CategoryToIconConverter}}" FontSize="24" VerticalAlignment="Center" Margin="0,0,12,0" />
-                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                            <TextBlock Text="{Binding Product.Name}" Style="{StaticResource BodyStyle}" FontWeight="Medium" />
-                                                            <TextBlock Text="{Binding Quantity, StringFormat='Qtd: {0} • {1}'}" Style="{StaticResource CaptionStyle}" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,0" />
-                                                        </StackPanel>
-                                                        <TextBlock Grid.Column="2" Text="{Binding FormattedTotalPrice}" Style="{StaticResource BodyStyle}" FontWeight="Medium" VerticalAlignment="Center" />
-                                                    </Grid>
-                                                </Border>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-
-                                    <!-- Divider -->
-                                    <Border Height="1" Background="{StaticResource BorderBrush}" Margin="0,20,0,20" />
-
-                                    <!-- Payment & Delivery Info -->
-                                    <StackPanel>
-                                        <Grid Margin="0,0,0,8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="💳 Pagamento: " Style="{StaticResource BodyStyle}" />
-                                            <TextBlock Grid.Column="1" Text="{Binding PaymentMethod}" Style="{StaticResource BodyStyle}" FontWeight="Medium" />
-                                        </Grid>
-                                        <Grid Margin="0,0,0,8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="📍 Entregar em: " Style="{StaticResource BodyStyle}" />
-                                            <TextBlock Grid.Column="1" Text="{Binding DeliveryAddress.FullAddress}" Style="{StaticResource BodyStyle}" FontWeight="Medium" TextWrapping="Wrap" />
-                                        </Grid>
-                                        <Grid Margin="0,0,0,8" Visibility="{Binding Notes, Converter={StaticResource EmptyToVisibilityConverter}}">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="📝 Obs: " Style="{StaticResource BodyStyle}" VerticalAlignment="Top" />
-                                            <TextBlock Grid.Column="1" Text="{Binding Notes}" Style="{StaticResource BodyStyle}" TextWrapping="Wrap" />
-                                        </Grid>
-                                    </StackPanel>
-
-                                    <!-- Divider -->
-                                    <Border Height="1" Background="{StaticResource BorderBrush}" Margin="0,20,0,20" />
-
-                                    <!-- Totals -->
-                                    <StackPanel>
-                                        <Grid Margin="0,0,0,8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="Subtotal" Style="{StaticResource BodyStyle}" />
-                                            <TextBlock Grid.Column="1" Text="{Binding FormattedSubtotal}" Style="{StaticResource BodyStyle}" FontWeight="Medium" />
-                                        </Grid>
-                                        <Grid Margin="0,0,0,8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="Taxa de Entrega" Style="{StaticResource BodyStyle}" />
-                                            <TextBlock Grid.Column="1" Text="{Binding FormattedDeliveryFee}" Style="{StaticResource BodyStyle}" FontWeight="Medium" />
-                                        </Grid>
-                                        <Border Height="1" Background="{StaticResource BorderBrush}" Margin="0,8,0,8" />
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="Total" Style="{StaticResource TitleStyle}" FontSize="18" />
-                                            <TextBlock Grid.Column="1" Text="{Binding FormattedTotal}" Style="{StaticResource TitleStyle}" FontSize="18" Foreground="{StaticResource PrimaryBrush}" />
-                                        </Grid>
-                                    </StackPanel>
-
-                                    <!-- Reorder Button -->
-                                    <Button Style="{StaticResource SecondaryButtonStyle}" Content="🔄 Pedir Novamente" Padding="16,10" Margin="0,20,0,0" HorizontalAlignment="Stretch"
-                                            Command="{Binding DataContext.ReorderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ContentControl.ContentTemplate>
-                    </ContentControl>
-                </ScrollViewer>
-            </Grid>
-        </Border>
-
-        <!-- Empty Detail State -->
-        <Border Grid.Column="1" Width="400" Style="{StaticResource CardStyle}" Margin="12,24,24,24" Padding="40"
-                Visibility="{Binding HasSelectedOrder, Converter={StaticResource InverseBoolToVisibilityConverter}}"
-                VerticalAlignment="Center" HorizontalAlignment="Center">
-            <StackPanel HorizontalAlignment="Center">
-                <TextBlock Text="📦" FontSize="64" />
-                <TextBlock Text="Selecione um pedido" Style="{StaticResource TitleStyle}" Margin="0,16,0,8" />
-                <TextBlock Text="Clique em um pedido na lista para ver os detalhes" Style="{StaticResource SubtitleStyle}" TextAlignment="Center" MaxWidth="300" />
-            </StackPanel>
         </Border>
     </Grid>
 </UserControl>

@@ -4,6 +4,9 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Data;
+using PizzariaDesktop.Data.Repositories;
+using System.Threading.Tasks;
+using PizzariaDesktop.Services;
 
 public class OrdersViewModel : BaseViewModel
 {
@@ -21,6 +24,9 @@ public class OrdersViewModel : BaseViewModel
         GoToHomeCommand = new RelayCommand(_ => _mainViewModel.NavigateToHome());
         GoToMenuCommand = new RelayCommand(_ => _mainViewModel.NavigateToMenu());
         ReorderCommand = new RelayCommand(o => Reorder((Order)o!));
+
+        // Load orders from database when view is created
+        LoadOrdersFromDatabaseAsync();
     }
 
     public ObservableCollection<Order> Orders { get; }
@@ -55,6 +61,29 @@ public class OrdersViewModel : BaseViewModel
             _mainViewModel.AddToCart(item.Product, item.Quantity);
         }
         _mainViewModel.NavigateToCart();
+    }
+
+    public async void LoadOrdersFromDatabaseAsync()
+    {
+        if (_mainViewModel.CurrentUser == null) return;
+
+        try
+        {
+            var orderRepo = ServiceLocator.GetService<IOrderRepository>();
+            if (orderRepo != null)
+            {
+                var orders = await orderRepo.GetByUserIdAsync(_mainViewModel.CurrentUser.Id);
+                Orders.Clear();
+                foreach (var order in orders)
+                {
+                    Orders.Add(order);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar pedidos: {ex.Message}");
+        }
     }
 }
 

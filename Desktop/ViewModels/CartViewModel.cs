@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Data;
 using PizzariaDesktop.Views.Cart;
+using PizzariaDesktop.Data.Repositories;
+using PizzariaDesktop.Services;
 
 public class CartViewModel : BaseViewModel
 {
@@ -124,7 +126,21 @@ public class CartViewModel : BaseViewModel
             // Store delivery time for success display
             _lastOrderDeliveryTime = order.EstimatedDeliveryTime;
 
-            // Add to orders list
+            // Save order to database
+            try
+            {
+                var orderRepo = ServiceLocator.GetService<IOrderRepository>();
+                if (orderRepo != null)
+                {
+                    await orderRepo.CreateAsync(order);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao salvar pedido no banco: {ex.Message}");
+            }
+
+            // Add to orders list (in-memory for immediate UI update)
             _mainViewModel.AddOrderToHistory(order);
 
             // Clear the cart

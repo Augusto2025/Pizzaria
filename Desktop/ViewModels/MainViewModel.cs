@@ -199,7 +199,7 @@ public class MainViewModel : BaseViewModel
 
         CurrentUser = null;
         IsLoggedIn = false;
-        NavigateTo(new LoginViewModel());
+        NavigateTo(CreateLoginViewModel());
     }
 
     public void NavigateToHome() => NavigateTo(new HomeViewModel(this));

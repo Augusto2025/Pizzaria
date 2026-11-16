@@ -121,8 +121,31 @@ public class ProfileViewModel : BaseViewModel
 
     public void ManageAddresses()
     {
-        // TODO: Implement address management dialog
-        MessageBox.Show("Gerenciamento de endereços será implementado em breve", "Em Desenvolvimento", MessageBoxButton.OK, MessageBoxImage.Information);
+        if (CurrentUser == null) return;
+
+        try
+        {
+            var dialog = new ManageAddressesDialog(CurrentUser);
+            var result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                // Reload user data from database to get updated addresses
+                RefreshUserData();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao abrir Gerenciar Endereços: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                System.Diagnostics.Debug.WriteLine($"Inner StackTrace: {ex.InnerException.StackTrace}");
+            }
+            MessageBox.Show($"Erro ao abrir gerenciador de endereços: {ex.Message}", "Erro",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     public void ManagePaymentMethods()

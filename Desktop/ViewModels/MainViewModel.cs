@@ -9,6 +9,7 @@ using PizzariaDesktop.Services;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using PizzariaDesktop.Data.Repositories;
 
 public class MainViewModel : BaseViewModel
 {
@@ -34,8 +35,8 @@ public class MainViewModel : BaseViewModel
         set => SetProperty(ref _currentUser, value);
     }
 
-    public ObservableCollection<CartItem> CartItems { get; } = new(MockData.CartItems);
-    public ObservableCollection<Order> UserOrders { get; } = new(MockData.Orders.OrderByDescending(o => o.CreatedAt));
+    public ObservableCollection<CartItem> CartItems { get; } = new();
+    public ObservableCollection<Order> UserOrders { get; } = new();
 
     public int CartItemCount => CartItems.Sum(c => c.Quantity);
     public double CartSubtotal => CartItems.Sum(c => c.TotalPrice);
@@ -112,15 +113,69 @@ public class MainViewModel : BaseViewModel
         CurrentView = viewModel;
     }
 
-    public void Login(User user)
+    public async void Login(User user)
     {
         CurrentUser = user;
         IsLoggedIn = true;
+        await LoadCartFromDatabaseAsync();
         NavigateTo(new HomeViewModel(this));
     }
 
-    public void Logout()
+    public async Task LoadCartFromDatabaseAsync()
     {
+        if (CurrentUser == null) return;
+
+        try
+        {
+            var cartRepo = ServiceLocator.GetService<ICartRepository>();
+            if (cartRepo != null)
+            {
+                var cartItems = await cartRepo.GetByUserIdAsync(CurrentUser.Id);
+                CartItems.Clear();
+                foreach (var item in cartItems)
+                {
+                    item.PropertyChanged += (s, e) => OnCartChanged();
+                    CartItems.Add(item);
+                }
+                OnCartChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar carrinho: {ex.Message}");
+        }
+    }
+
+    public async Task SaveCartToDatabaseAsync()
+    {
+        if (CurrentUser == null) return;
+
+        try
+        {
+            var cartRepo = ServiceLocator.GetService<ICartRepository>();
+            if (cartRepo != null)
+            {
+                await cartRepo.ClearAsync(CurrentUser.Id);
+                foreach (var item in CartItems)
+                {
+                    await cartRepo.AddAsync(item, CurrentUser.Id);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao salvar carrinho: {ex.Message}");
+        }
+    }
+
+    public async void Logout()
+    {
+        // Save cart to database before logging out
+        if (CurrentUser != null && CartItems.Count > 0)
+        {
+            await SaveCartToDatabaseAsync();
+        }
+
         CurrentUser = null;
         IsLoggedIn = false;
         NavigateTo(new LoginViewModel());
@@ -132,7 +187,7 @@ public class MainViewModel : BaseViewModel
     public void NavigateToOrders() => NavigateTo(new OrdersViewModel(this));
     public void NavigateToProfile() => NavigateTo(new ProfileViewModel(this));
 
-    public void AddToCart(Product product, int quantity = 1)
+    public async void AddToCart(Product product, int quantity = 1)
     {
         var existingItem = CartItems.FirstOrDefault(c => c.Product.Id == product.Id);
         if (existingItem != null)
@@ -146,19 +201,21 @@ public class MainViewModel : BaseViewModel
             CartItems.Add(newItem);
         }
         OnCartChanged();
+        await SaveCartToDatabaseAsync();
     }
 
-    public void RemoveFromCart(string cartItemId)
+    public async void RemoveFromCart(string cartItemId)
     {
         var item = CartItems.FirstOrDefault(c => c.Id == cartItemId);
         if (item != null)
         {
             CartItems.Remove(item);
             OnCartChanged();
+            await SaveCartToDatabaseAsync();
         }
     }
 
-    public void UpdateCartItemQuantity(string cartItemId, int quantity)
+    public async void UpdateCartItemQuantity(string cartItemId, int quantity)
     {
         var item = CartItems.FirstOrDefault(c => c.Id == cartItemId);
         if (item != null)
@@ -172,10 +229,11 @@ public class MainViewModel : BaseViewModel
                 item.Quantity = quantity;
             }
             OnCartChanged();
+            await SaveCartToDatabaseAsync();
         }
     }
 
-    public void ClearCart()
+    public async void ClearCart()
     {
         foreach (var item in CartItems)
         {
@@ -183,6 +241,23 @@ public class MainViewModel : BaseViewModel
         }
         CartItems.Clear();
         OnCartChanged();
+
+        // Also clear from database
+        if (CurrentUser != null)
+        {
+            try
+            {
+                var cartRepo = ServiceLocator.GetService<ICartRepository>();
+                if (cartRepo != null)
+                {
+                    await cartRepo.ClearAsync(CurrentUser.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao limpar carrinho do banco: {ex.Message}");
+            }
+        }
     }
 
     public void AddOrderToHistory(Order order)

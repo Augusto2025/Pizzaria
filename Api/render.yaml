@@ -1,0 +1,32 @@
+services:
+  # API Web Service
+  - type: web
+    name: pizzaria-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon  # ou frankfurt para EU
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      # Configure estas no dashboard do Render (não commitar segredos):
+      # - key: DATABASE_CONNECTION_STRING
+      #   sync: false
+      # - key: JWT_SECRET
+      #   sync: false
+    autoDeploy: true
+
+# Opcional: PostgreSQL gerenciado no Render (grátis 90 dias, depois $7/mês)
+# Se preferir usar o Neon existente, NÃO descomente abaixo e use a env var DATABASE_CONNECTION_STRING
+#
+# databases:
+#   - name: pizzaria-db
+#     databaseName: pizzaria
+#     user: pizzaria_user
+#     plan: free
+#     region: oregon
+#     ipAllowList: []  # permite conexões externas (para o Neon não precisa)

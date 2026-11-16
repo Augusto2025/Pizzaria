@@ -1,0 +1,15 @@
+[build]
+builder = "docker"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 10
+
+[env]
+# These will be set in Railway dashboard
+# DATABASE_CONNECTION_STRING = "postgresql://..."
+# JWT_SECRET = "your-super-secret-jwt-key-min-32-chars"
+# ASPNETCORE_ENVIRONMENT = "Production"

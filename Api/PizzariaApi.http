@@ -1,0 +1,11 @@
+@PizzariaApi_HostAddress = http://localhost:5139
+
+GET {{PizzariaApi_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+###
+
+GET {{PizzariaApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

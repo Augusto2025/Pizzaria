@@ -153,7 +153,7 @@ namespace PizzariaDesktop
             Console.WriteLine("=== Running database schema fix ===");
             try
             {
-                // Cria tabelas faltantes (sem ALTER TABLE que falham)
+                // Cria tabelas faltantes
                 var sql = @"
                     -- Cria tabelas faltantes
                     CREATE TABLE IF NOT EXISTS users (
@@ -266,8 +266,45 @@ namespace PizzariaDesktop
                     ON CONFLICT (name) DO NOTHING;
                 ";
 
-                Console.WriteLine("Executing SQL...");
+                Console.WriteLine("Executing CREATE TABLE SQL...");
                 await dbContext.Database.ExecuteSqlRawAsync(sql);
+
+                // Fix column types for existing tables (ALTER TABLE)
+                var alterSql = @"
+                    -- Fix users table column types
+                    ALTER TABLE users
+                        ALTER COLUMN created_at DROP DEFAULT,
+                        ALTER COLUMN created_at TYPE TIMESTAMP WITH TIME ZONE USING created_at::TIMESTAMP WITH TIME ZONE,
+                        ALTER COLUMN created_at SET DEFAULT NOW();
+
+                    -- Fix addresses table column types
+                    ALTER TABLE addresses
+                        ALTER COLUMN latitude TYPE DOUBLE PRECISION USING latitude::DOUBLE PRECISION,
+                        ALTER COLUMN longitude TYPE DOUBLE PRECISION USING longitude::DOUBLE PRECISION,
+                        ALTER COLUMN is_default TYPE BOOLEAN USING is_default::BOOLEAN;
+
+                    -- Fix cart_items table column types
+                    ALTER TABLE cart_items
+                        ALTER COLUMN created_at DROP DEFAULT,
+                        ALTER COLUMN created_at TYPE TIMESTAMP WITH TIME ZONE USING created_at::TIMESTAMP WITH TIME ZONE,
+                        ALTER COLUMN created_at SET DEFAULT NOW();
+
+                    -- Fix orders table column types
+                    ALTER TABLE orders
+                        ALTER COLUMN created_at DROP DEFAULT,
+                        ALTER COLUMN created_at TYPE TIMESTAMP WITH TIME ZONE USING created_at::TIMESTAMP WITH TIME ZONE,
+                        ALTER COLUMN created_at SET DEFAULT NOW(),
+                        ALTER COLUMN estimated_delivery_time TYPE TIMESTAMP WITH TIME ZONE USING estimated_delivery_time::TIMESTAMP WITH TIME ZONE;
+
+                    -- Fix order_status_timeline table column types
+                    ALTER TABLE order_status_timeline
+                        ALTER COLUMN timestamp DROP DEFAULT,
+                        ALTER COLUMN timestamp TYPE TIMESTAMP WITH TIME ZONE USING timestamp::TIMESTAMP WITH TIME ZONE,
+                        ALTER COLUMN timestamp SET DEFAULT NOW();
+                ";
+
+                Console.WriteLine("Executing ALTER TABLE SQL...");
+                await dbContext.Database.ExecuteSqlRawAsync(alterSql);
                 Console.WriteLine("Database schema fixed successfully!");
             }
             catch (Exception ex)

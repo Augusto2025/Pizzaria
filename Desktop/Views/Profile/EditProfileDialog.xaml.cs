@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Extensions.DependencyInjection;
+using PizzariaDesktop;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Data.Repositories;
 using PizzariaDesktop.Services;
@@ -155,16 +156,20 @@ public partial class EditProfileDialog : Window
                 hasChanges = true;
             }
 
-            if (hasChanges && _userRepository != null)
+            if (hasChanges)
             {
+                System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] Saving changes for user ID: {_currentUser.Id}, Email: {_currentUser.Email}");
+
                 // Update user in database (name, phone)
                 var success = await _userRepository.UpdateAsync(_currentUser);
+                System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] UpdateAsync result: {success}");
 
                 // If password changed, update it separately
                 if (success && !string.IsNullOrWhiteSpace(newPassword))
                 {
                     var passwordHash = BCrypt.HashPassword(newPassword);
                     success = await _userRepository.UpdatePasswordAsync(_currentUser.Id, passwordHash);
+                    System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] UpdatePasswordAsync result: {success}");
                 }
 
                 if (success)
@@ -179,7 +184,8 @@ public partial class EditProfileDialog : Window
                 }
                 else
                 {
-                    ShowMessage("Erro ao salvar alterações", isError: true);
+                    System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] UpdateAsync returned false - user not found or save failed");
+                    ShowMessage("Erro ao salvar alterações: usuário não encontrado no banco de dados", isError: true);
                 }
             }
             else if (!hasChanges)
@@ -189,7 +195,13 @@ public partial class EditProfileDialog : Window
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erro ao salvar perfil: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] ERRO ao salvar perfil: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] StackTrace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] InnerException: {ex.InnerException.Message}");
+                System.Diagnostics.Debug.WriteLine($"[EditProfileDialog] InnerStackTrace: {ex.InnerException.StackTrace}");
+            }
             ShowMessage($"Erro ao salvar: {ex.Message}", isError: true);
         }
         finally

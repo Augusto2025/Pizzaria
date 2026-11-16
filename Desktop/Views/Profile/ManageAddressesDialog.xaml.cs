@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
+using PizzariaDesktop;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Data.Repositories;
 using PizzariaDesktop.Services;
@@ -179,6 +180,8 @@ public partial class ManageAddressesDialog : Window
 
         try
         {
+            System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] Saving address - UserID: {_currentUser.Id}, IsEditing: {_isEditing}, IsDefault: {isDefault}");
+
             if (_isEditing && _editingAddress != null)
             {
                 // Update existing address
@@ -193,13 +196,22 @@ public partial class ManageAddressesDialog : Window
                 _editingAddress.IsDefault = isDefault;
 
                 var success = await _addressRepository.UpdateAsync(_editingAddress);
+                System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] UpdateAsync result: {success} for address ID: {_editingAddress.Id}");
+
                 if (success)
                 {
                     // If this is set as default, update others
                     if (isDefault)
                     {
                         await _addressRepository.SetDefaultAsync(_currentUser.Id, _editingAddress.Id);
+                        System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] SetDefaultAsync called for address ID: {_editingAddress.Id}");
                     }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] UpdateAsync returned false - address not found");
+                    MessageBox.Show("Erro ao atualizar endereço: endereço não encontrado", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
             }
             else
@@ -219,11 +231,20 @@ public partial class ManageAddressesDialog : Window
                 };
 
                 var createdAddress = await _addressRepository.CreateAsync(newAddress, _currentUser.Id);
+                System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] CreateAsync result: {createdAddress?.Id ?? "null"}");
+
+                if (createdAddress == null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] CreateAsync returned null");
+                    MessageBox.Show("Erro ao criar endereço", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
                 // If this is the first address or set as default, make it default
                 if (_addresses.Count == 0 || isDefault)
                 {
                     await _addressRepository.SetDefaultAsync(_currentUser.Id, createdAddress.Id);
+                    System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] SetDefaultAsync called for new address ID: {createdAddress.Id}");
                     createdAddress.IsDefault = true;
                 }
 
@@ -241,7 +262,13 @@ public partial class ManageAddressesDialog : Window
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erro ao salvar endereço: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] ERRO ao salvar endereço: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] StackTrace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] InnerException: {ex.InnerException.Message}");
+                System.Diagnostics.Debug.WriteLine($"[ManageAddressesDialog] InnerStackTrace: {ex.InnerException.StackTrace}");
+            }
             MessageBox.Show($"Erro ao salvar endereço: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }

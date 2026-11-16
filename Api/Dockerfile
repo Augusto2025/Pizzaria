@@ -2,13 +2,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copy csproj and restore dependencies
-COPY ["PizzariaApi.csproj", "."]
-RUN dotnet restore "PizzariaApi.csproj"
+# Copy csproj and restore dependencies (context = repo root)
+COPY ["Api/PizzariaApi.csproj", "Api/"]
+RUN dotnet restore "Api/PizzariaApi.csproj"
 
 # Copy everything else and build
-COPY . .
-RUN dotnet publish "PizzariaApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
+COPY Api/. Api/.
+RUN dotnet publish "Api/PizzariaApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final

@@ -44,10 +44,40 @@
         <Border Grid.Row="1" Padding="24,0,24,16">
             <StackPanel>
                 <!-- Search -->
-                <TextBox Style="{StaticResource InputStyle}"
-                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                         Tag="🔍 Buscar por nome..."
-                         Margin="0,0,0,16" />
+                <Border Margin="0,16,0,16" Style="{StaticResource CardStyle}" Background="{StaticResource BackgroundBrush}">
+                    <Grid>
+                        <TextBox x:Name="SearchBox"
+                                 Style="{StaticResource InputStyle}"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                 Padding="40,10,12,10"
+                                 FontSize="14"
+                                 Background="Transparent"
+                                 BorderThickness="0" />
+                        <TextBlock Text="🔍 Buscar por nome..."
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontSize="14"
+                                   VerticalAlignment="Center"
+                                   Margin="44,0,0,0"
+                                   IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox, Converter={StaticResource EmptyToVisibilityConverter}, ConverterParameter=inverse}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </Border>
 
                 <!-- Category Tabs -->
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">

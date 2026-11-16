@@ -246,6 +246,25 @@ public class EmptyToVisibilityConverter : IValueConverter
     }
 }
 
+public class StringToVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        var str = value as string;
+        bool isEmpty = string.IsNullOrEmpty(str);
+        bool inverse = parameter is string param && param.Equals("inverse", StringComparison.OrdinalIgnoreCase);
+
+        if (inverse)
+            return isEmpty ? Visibility.Collapsed : Visibility.Visible;
+        return isEmpty ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
 public class CategoryBackgroundMultiConverter : IMultiValueConverter
 {
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)

@@ -219,7 +219,7 @@ public class CartViewModel : BaseViewModel
 
     private async Task<Order> CreateOrderFromCartAsync()
     {
-        var now = DateTime.Now;
+        var now = DateTime.UtcNow;
         // Calculate estimated delivery based on items (more items = longer prep)
         var maxPrepTime = CartItems.Any() ? CartItems.Max(c => c.Product.PrepTimeMinutes) : 25;
         var estimatedDelivery = now.AddMinutes(maxPrepTime + 15); // prep + delivery
@@ -377,15 +377,33 @@ public class CartViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
+            var fullMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                fullMessage += $"\n\nInner Exception: {ex.InnerException.Message}";
+                if (ex.InnerException.InnerException != null)
+                {
+                    fullMessage += $"\n\nDeep Inner Exception: {ex.InnerException.InnerException.Message}";
+                }
+            }
+
             System.Diagnostics.Debug.WriteLine($"[CartViewModel] Erro ao salvar endereço: {ex.Message}");
             System.Diagnostics.Debug.WriteLine($"[CartViewModel] StackTrace: {ex.StackTrace}");
             if (ex.InnerException != null)
             {
                 System.Diagnostics.Debug.WriteLine($"[CartViewModel] InnerException: {ex.InnerException.Message}");
                 System.Diagnostics.Debug.WriteLine($"[CartViewModel] InnerStackTrace: {ex.InnerException.StackTrace}");
+                if (ex.InnerException.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[CartViewModel] Deep InnerException: {ex.InnerException.InnerException.Message}");
+                    System.Diagnostics.Debug.WriteLine($"[CartViewModel] Deep InnerStackTrace: {ex.InnerException.InnerException.StackTrace}");
+                }
             }
-        }
 
-        return address;
+            // Show error to user and throw to prevent order creation with invalid address
+            MessageBox.Show($"Erro ao salvar endereço no banco de dados:\n{fullMessage}", "Erro ao Salvar Endereço",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+            throw;
+        }
     }
 }

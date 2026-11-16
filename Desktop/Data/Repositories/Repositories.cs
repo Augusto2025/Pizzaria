@@ -439,8 +439,26 @@ public class OrderRepository : IOrderRepository
     {
         var entity = OrderEntity.FromModel(order);
         _context.Orders.Add(entity);
-        await _context.SaveChangesAsync();
-        return entity.ToModel();
+        try
+        {
+            await _context.SaveChangesAsync();
+            return entity.ToModel();
+        }
+        catch (DbUpdateException ex)
+        {
+            // Log the full inner exception details
+            var innerMessage = ex.InnerException?.Message ?? "No inner exception";
+            var innerStackTrace = ex.InnerException?.StackTrace ?? "No stack trace";
+
+            Console.WriteLine($"=== ORDER CREATE DB ERROR ===");
+            Console.WriteLine($"Message: {ex.Message}");
+            Console.WriteLine($"Inner Exception: {innerMessage}");
+            Console.WriteLine($"Inner StackTrace: {innerStackTrace}");
+            Console.WriteLine($"Order ID: {entity.Id}, UserId: {entity.UserId}, AddressId: {entity.DeliveryAddressId}");
+            Console.WriteLine($"=============================");
+
+            throw; // Re-throw to preserve original behavior
+        }
     }
 
     public async Task<bool> UpdateAsync(Order order)

@@ -1,65 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pizza/core/constants/app_colors.dart';
 import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/constants/app_routes.dart';
+import 'package:pizza/core/providers/auth_providers.dart';
+import 'package:pizza/core/providers/order_providers.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
+import 'package:pizza/data/models/auth_models.dart';
 
 /// Tela de Perfil do Usuário
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: Obter dados do usuário do estado de auth
-    const userName = 'João da Silva';
-    const userEmail = 'joao@email.com';
-    const userPhone = '(11) 99999-9999';
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUser = ref.watch(currentUserProvider);
+    final authState = ref.watch(authProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(AppStrings.profile)),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100), // Bottom padding for NavigationBar
-        child: Column(
-          children: [
-            // User Info Card
-            _buildUserInfoCard(context, userName, userEmail, userPhone),
+      body: currentUser == null
+          ? _buildLoadingState(context)
+          : SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100), // Bottom padding for NavigationBar
+              child: Column(
+                children: [
+                  // User Info Card
+                  _buildUserInfoCard(context, ref, currentUser),
 
-            const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-            // Menu Options
-            _buildMenuOptions(context),
+                  // Menu Options
+                  _buildMenuOptions(context),
 
-            const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-            // Logout Button
-            CustomButton(
-              text: AppStrings.logout,
-              isOutlined: true,
-              backgroundColor: AppColors.error.withValues(alpha: 0.1),
-              foregroundColor: AppColors.error,
-              onPressed: () => _showLogoutDialog(context),
-            ),
+                  // Logout Button
+                  CustomButton(
+                    text: AppStrings.logout,
+                    isOutlined: true,
+                    backgroundColor: AppColors.error.withValues(alpha: 0.1),
+                    foregroundColor: AppColors.error,
+                    isLoading: authState.isLoading,
+                    onPressed: () => _showLogoutDialog(context, ref),
+                  ),
 
-            const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-            // Delete Account
-            TextButton(
-              onPressed: () => _showDeleteAccountDialog(context),
-              child: Text(
-                AppStrings.deleteAccount,
-                style: TextStyle(color: AppColors.error),
+                  // Delete Account
+                  TextButton(
+                    onPressed: () => _showDeleteAccountDialog(context, ref),
+                    child: Text(
+                      AppStrings.deleteAccount,
+                      style: TextStyle(color: AppColors.error),
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+                ],
               ),
             ),
-
-            const SizedBox(height: 32),
-          ],
-        ),
-      ),
     );
   }
 
-  Widget _buildUserInfoCard(BuildContext context, String name, String email, String phone) {
+  Widget _buildLoadingState(BuildContext context) {
+    return const Center(child: CircularProgressIndicator());
+  }
+
+  Widget _buildUserInfoCard(BuildContext context, WidgetRef ref, UserDto user) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -69,7 +78,7 @@ class ProfileScreen extends StatelessWidget {
               radius: 48,
               backgroundColor: AppColors.primary.withValues(alpha: 0.15),
               child: Text(
-                name.isNotEmpty ? name[0].toUpperCase() : '?',
+                user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
@@ -79,7 +88,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              name,
+              user.name,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -90,7 +99,7 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 Icon(Icons.email_outlined, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 6),
-                Text(email, style: TextStyle(color: AppColors.textSecondary)),
+                Text(user.email, style: TextStyle(color: AppColors.textSecondary)),
               ],
             ),
             const SizedBox(height: 4),
@@ -99,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 Icon(Icons.phone_outlined, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 6),
-                Text(phone, style: TextStyle(color: AppColors.textSecondary)),
+                Text(user.phone, style: TextStyle(color: AppColors.textSecondary)),
               ],
             ),
             const SizedBox(height: 16),
@@ -148,7 +157,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -160,10 +169,12 @@ class ProfileScreen extends StatelessWidget {
             child: const Text('Cancelar'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(dialogContext);
-              // TODO: Chamar AuthService.logout()
-              context.go(AppRoutes.login);
+              await ref.read(authProvider.notifier).logout();
+              if (context.mounted) {
+                context.go(AppRoutes.login);
+              }
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: const Text('Sair'),
@@ -173,7 +184,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showDeleteAccountDialog(BuildContext context) {
+  void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -185,9 +196,9 @@ class ProfileScreen extends StatelessWidget {
             child: const Text('Cancelar'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(dialogContext);
-              // TODO: Implementar exclusão de conta
+              // TODO: Implementar exclusão de conta via API
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Funcionalidade em desenvolvimento')),
               );

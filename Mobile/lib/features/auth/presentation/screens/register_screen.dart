@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pizza/core/constants/app_colors.dart';
 import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/constants/app_routes.dart';
+import 'package:pizza/core/providers/auth_providers.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
 import 'package:pizza/shared/widgets/custom_text_field.dart';
 
 /// Tela de Registro/Cadastro
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -23,7 +25,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  bool _isLoading = false;
   bool _acceptTerms = false;
 
   @override
@@ -45,19 +46,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
+    final success = await ref.read(authProvider.notifier).register(
+      name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      phone: _phoneController.text.replaceAll(RegExp(r'[^0-9]'), ''),
+      password: _passwordController.text,
+      confirmPassword: _confirmPasswordController.text,
+    );
 
-    // TODO: Implementar registro real
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (mounted) {
-      setState(() => _isLoading = false);
+    if (success && mounted) {
       context.go(AppRoutes.home);
+    } else if (mounted) {
+      final error = ref.read(authProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error?.toString() ?? 'Erro ao cadastrar'),
+          backgroundColor: AppColors.error,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final isLoading = authState.isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -299,7 +313,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Register Button
                 CustomButton(
                   text: AppStrings.register,
-                  isLoading: _isLoading,
+                  isLoading: isLoading,
                   onPressed: _handleRegister,
                 ),
 

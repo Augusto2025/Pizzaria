@@ -9,6 +9,8 @@ import 'package:pizza/features/cart/presentation/screens/cart_screen.dart';
 import 'package:pizza/features/orders/presentation/screens/orders_screen.dart';
 import 'package:pizza/features/orders/presentation/screens/order_detail_screen.dart';
 import 'package:pizza/features/profile/presentation/screens/profile_screen.dart';
+import 'package:pizza/features/profile/presentation/screens/addresses_screen.dart';
+import 'package:pizza/features/profile/presentation/screens/add_edit_address_screen.dart';
 
 /// Configuração de rotas da aplicação usando go_router com ShellRoute para bottom navigation
 class AppRouter {

@@ -1,33 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pizza/core/constants/app_colors.dart';
 import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/constants/app_routes.dart';
+import 'package:pizza/core/providers/order_providers.dart';
 import 'package:pizza/shared/models/order_models.dart';
 import 'package:intl/intl.dart';
 
 /// Tela de Lista de Pedidos
-class OrdersScreen extends StatelessWidget {
+class OrdersScreen extends ConsumerWidget {
   const OrdersScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final orders = _getMockOrders();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ordersAsync = ref.watch(ordersProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(AppStrings.orders),
       ),
-      body: orders.isEmpty
-          ? _buildEmptyState(context)
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: orders.length,
-              itemBuilder: (context, index) => _OrderCard(
-                order: orders[index],
-                onTap: () => context.push('${AppRoutes.orderDetail}/${orders[index].id}'),
-              ),
+      body: ordersAsync.when(
+        data: (response) {
+          final orders = response.orders;
+
+          if (orders.isEmpty) {
+            return _buildEmptyState(context);
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: orders.length,
+            itemBuilder: (context, index) => _OrderCard(
+              order: orders[index],
+              onTap: () => context.push('${AppRoutes.orderDetail}/${orders[index].id}'),
             ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 64, color: AppColors.error),
+              const SizedBox(height: 16),
+              Text(
+                'Erro ao carregar pedidos',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.error,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                error.toString(),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () => ref.invalidate(ordersProvider),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Tentar novamente'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -61,57 +101,10 @@ class OrdersScreen extends StatelessWidget {
       ),
     );
   }
-
-  List<_MockOrder> _getMockOrders() {
-    return [
-      _MockOrder(
-        id: 'ORD-2024-001',
-        date: DateTime.now().subtract(const Duration(days: 1)),
-        status: OrderStatus.delivered,
-        total: 112.60,
-        itemsCount: 3,
-        estimatedDelivery: DateTime.now().subtract(const Duration(hours: 2)),
-      ),
-      _MockOrder(
-        id: 'ORD-2024-002',
-        date: DateTime.now().subtract(const Duration(days: 3)),
-        status: OrderStatus.delivered,
-        total: 89.90,
-        itemsCount: 2,
-        estimatedDelivery: DateTime.now().subtract(const Duration(days: 3, hours: 1)),
-      ),
-      _MockOrder(
-        id: 'ORD-2024-003',
-        date: DateTime.now().subtract(const Duration(days: 7)),
-        status: OrderStatus.cancelled,
-        total: 65.00,
-        itemsCount: 1,
-        estimatedDelivery: null,
-      ),
-    ];
-  }
-}
-
-class _MockOrder {
-  final String id;
-  final DateTime date;
-  final OrderStatus status;
-  final double total;
-  final int itemsCount;
-  final DateTime? estimatedDelivery;
-
-  const _MockOrder({
-    required this.id,
-    required this.date,
-    required this.status,
-    required this.total,
-    required this.itemsCount,
-    this.estimatedDelivery,
-  });
 }
 
 class _OrderCard extends StatelessWidget {
-  final _MockOrder order;
+  final OrderDto order;
   final VoidCallback onTap;
 
   const _OrderCard({required this.order, required this.onTap});
@@ -143,13 +136,13 @@ class _OrderCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: order.status.color.withValues(alpha: 0.15),
+                      color: Color(int.parse(order.status.color.replaceAll('#', '0xFF'))).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       order.status.label,
                       style: TextStyle(
-                        color: order.status.color,
+                        color: Color(int.parse(order.status.color.replaceAll('#', '0xFF'))),
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
@@ -159,7 +152,7 @@ class _OrderCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                formatter.format(order.date),
+                formatter.format(order.createdAt),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -171,20 +164,20 @@ class _OrderCard extends StatelessWidget {
                 children: [
                   _InfoChip(
                     icon: Icons.fastfood,
-                    label: '${order.itemsCount} ${order.itemsCount == 1 ? 'item' : 'itens'}',
+                    label: '${order.items.length} ${order.items.length == 1 ? 'item' : 'itens'}',
                   ),
                   _InfoChip(
                     icon: Icons.attach_money,
                     label: 'R\$ ${order.total.toStringAsFixed(2).replaceAll('.', ',')}',
                   ),
-                  if (order.estimatedDelivery != null)
+                  if (order.estimatedDeliveryTime != null)
                     _InfoChip(
                       icon: Icons.access_time,
-                      label: 'Entregue ${formatter.format(order.estimatedDelivery!)}',
+                      label: 'Entregue ${formatter.format(order.estimatedDeliveryTime!)}',
                     ),
                 ],
               ),
-              if (order.status.isActive) ...[
+              if (order.status.value < OrderStatus.delivered.index) ...[
                 const SizedBox(height: 12),
                 const Divider(height: 1),
                 const SizedBox(height: 12),

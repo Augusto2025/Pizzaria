@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pizza/core/constants/app_colors.dart';
 import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/constants/app_routes.dart';
+import 'package:pizza/core/providers/menu_providers.dart';
+import 'package:pizza/core/providers/cart_providers.dart';
+import 'package:pizza/data/models/menu_models.dart';
+import 'package:pizza/data/models/cart_models.dart';
 
 /// Tela do Cardápio/Menu
-class MenuScreen extends StatefulWidget {
+class MenuScreen extends ConsumerStatefulWidget {
   final String? initialCategory;
 
   const MenuScreen({super.key, this.initialCategory});
 
   @override
-  State<MenuScreen> createState() => _MenuScreenState();
+  ConsumerState<MenuScreen> createState() => _MenuScreenState();
 }
 
-class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateMixin {
+class _MenuScreenState extends ConsumerState<MenuScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final List<String> _categories = [
     AppStrings.pizzas,
@@ -70,180 +75,76 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildCategoryList(String category) {
-    // Dados mockados - futuramente virão do backend
-    final products = _getMockProducts(category);
+    // Usa o provider para buscar produtos por categoria
+    final productsAsync = ref.watch(productsByCategoryProvider(category));
 
-    if (products.isEmpty) {
-      return Center(
+    return productsAsync.when(
+      data: (products) {
+        if (products.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.restaurant_menu, size: 64, color: AppColors.textDisabled),
+                const SizedBox(height: 16),
+                Text(
+                  'Nenhum item nesta categoria',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: products.length,
+          itemBuilder: (context, index) => _ProductCard(product: products[index]),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.restaurant_menu, size: 64, color: AppColors.textDisabled),
+            Icon(Icons.error_outline, size: 64, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
-              'Nenhum item nesta categoria',
+              'Erro ao carregar produtos',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppColors.error,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error.toString(),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () => ref.invalidate(menuProvider),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Tentar novamente'),
             ),
           ],
         ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: products.length,
-      itemBuilder: (context, index) => _ProductCard(product: products[index]),
+      ),
     );
   }
-
-  List<_MockProduct> _getMockProducts(String category) {
-    switch (category) {
-      case 'Pizzas':
-        return [
-          _MockProduct(
-            id: '1',
-            name: 'Pizza Margherita',
-            description: 'Molho de tomate, mussarela, manjericão e azeite',
-            price: 42.90,
-            imageUrl: 'https://picsum.photos/seed/pizza1/300/300',
-            prepTime: 25,
-            isAvailable: true,
-          ),
-          _MockProduct(
-            id: '2',
-            name: 'Pizza Pepperoni',
-            description: 'Molho de tomate, mussarela, pepperoni e orégano',
-            price: 48.90,
-            imageUrl: 'https://picsum.photos/seed/pizza2/300/300',
-            prepTime: 25,
-            isAvailable: true,
-          ),
-          _MockProduct(
-            id: '3',
-            name: 'Pizza Portuguesa',
-            description: 'Molho de tomate, mussarela, presunto, ovos, cebola, azeitona e ervilha',
-            price: 52.90,
-            imageUrl: 'https://picsum.photos/seed/pizza3/300/300',
-            prepTime: 30,
-            isAvailable: true,
-          ),
-          _MockProduct(
-            id: '4',
-            name: 'Pizza Quatro Queijos',
-            description: 'Mussarela, provolone, gorgonzola e parmesão',
-            price: 55.90,
-            imageUrl: 'https://picsum.photos/seed/pizza4/300/300',
-            prepTime: 25,
-            isAvailable: false,
-          ),
-        ];
-      case 'Bebidas':
-        return [
-          _MockProduct(
-            id: '5',
-            name: 'Coca-Cola 2L',
-            description: 'Refrigerante Coca-Cola 2 litros',
-            price: 12.90,
-            imageUrl: 'https://picsum.photos/seed/drink1/300/300',
-            prepTime: 0,
-            isAvailable: true,
-          ),
-          _MockProduct(
-            id: '6',
-            name: 'Guaraná Antarctica 2L',
-            description: 'Refrigerante Guaraná 2 litros',
-            price: 10.90,
-            imageUrl: 'https://picsum.photos/seed/drink2/300/300',
-            prepTime: 0,
-            isAvailable: true,
-          ),
-          _MockProduct(
-            id: '7',
-            name: 'Suco de Laranja 1L',
-            description: 'Suco natural de laranja 1 litro',
-            price: 14.90,
-            imageUrl: 'https://picsum.photos/seed/drink3/300/300',
-            prepTime: 0,
-            isAvailable: true,
-          ),
-        ];
-      case 'Sobremesas':
-        return [
-          _MockProduct(
-            id: '8',
-            name: 'Petit Gateau',
-            description: 'Bolo de chocolate com sorvete de creme',
-            price: 18.90,
-            imageUrl: 'https://picsum.photos/seed/dessert1/300/300',
-            prepTime: 10,
-            isAvailable: true,
-          ),
-          _MockProduct(
-            id: '9',
-            name: 'Pudim de Leite',
-            description: 'Pudim caseiro com calda de caramelo',
-            price: 12.90,
-            imageUrl: 'https://picsum.photos/seed/dessert2/300/300',
-            prepTime: 5,
-            isAvailable: true,
-          ),
-        ];
-      case 'Acompanhamentos':
-        return [
-          _MockProduct(
-            id: '10',
-            name: 'Batata Frita',
-            description: 'Porção de batata frita crocante',
-            price: 15.90,
-            imageUrl: 'https://picsum.photos/seed/side1/300/300',
-            prepTime: 15,
-            isAvailable: true,
-          ),
-          _MockProduct(
-            id: '11',
-            name: 'Onion Rings',
-            description: 'Anéis de cebola empanados',
-            price: 16.90,
-            imageUrl: 'https://picsum.photos/seed/side2/300/300',
-            prepTime: 15,
-            isAvailable: true,
-          ),
-        ];
-      default:
-        return [];
-    }
-  }
 }
 
-class _MockProduct {
-  final String id;
-  final String name;
-  final String description;
-  final double price;
-  final String imageUrl;
-  final int prepTime;
-  final bool isAvailable;
-
-  const _MockProduct({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.price,
-    required this.imageUrl,
-    required this.prepTime,
-    required this.isAvailable,
-  });
-}
-
-class _ProductCard extends StatelessWidget {
-  final _MockProduct product;
+class _ProductCard extends ConsumerWidget {
+  final ProductDto product;
 
   const _ProductCard({required this.product});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
@@ -326,7 +227,7 @@ class _ProductCard extends StatelessWidget {
                         Icon(Icons.timer_outlined, size: 14, color: AppColors.textDisabled),
                         const SizedBox(width: 4),
                         Text(
-                          '${product.prepTime} ${AppStrings.minutes}',
+                          '${product.prepTimeMinutes} ${AppStrings.minutes}',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -355,12 +256,7 @@ class _ProductCard extends StatelessWidget {
                     if (product.isAvailable)
                       IconButton(
                         icon: const Icon(Icons.add_shopping_cart, color: AppColors.primary, size: 28),
-                        onPressed: () {
-                          // TODO: Adicionar ao carrinho
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('${product.name} adicionado ao carrinho')),
-                          );
-                        },
+                        onPressed: () => _addToCart(ref, context),
                         tooltip: 'Adicionar ao carrinho',
                         style: IconButton.styleFrom(
                           backgroundColor: AppColors.primary.withValues(alpha: 0.1),
@@ -379,5 +275,28 @@ class _ProductCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _addToCart(WidgetRef ref, BuildContext context) async {
+    final request = AddCartItemRequest(
+      productId: product.id,
+      quantity: 1,
+      selectedCustomizations: null,
+      notes: null,
+    );
+
+    await ref.read(cartNotifierProvider.notifier).addItem(request);
+
+    if (ref.read(cartNotifierProvider).hasError) {
+      // Error handling is done by the notifier
+    } else if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${product.name} adicionado ao carrinho'),
+          backgroundColor: AppColors.success,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 }

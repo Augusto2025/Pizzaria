@@ -1,56 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pizza/core/constants/app_colors.dart';
 import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/constants/app_routes.dart';
+import 'package:pizza/core/providers/cart_providers.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
+import 'package:pizza/data/models/cart_models.dart';
 
 /// Tela do Carrinho
-class CartScreen extends StatelessWidget {
+class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Mock cart items
-    final cartItems = _getMockCartItems();
-    final subtotal = cartItems.fold(0.0, (sum, item) => sum + item.totalPrice);
-    const deliveryFee = 5.90;
-    final total = subtotal + deliveryFee;
-
-    if (cartItems.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: Text(AppStrings.cart)),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.shopping_cart_outlined, size: 80, color: AppColors.textDisabled),
-              const SizedBox(height: 16),
-              Text(
-                AppStrings.cartEmpty,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                AppStrings.addItems,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textDisabled,
-                    ),
-              ),
-              const SizedBox(height: 24),
-              CustomButton(
-                text: AppStrings.menu,
-                isFullWidth: false,
-                icon: Icons.restaurant_menu,
-                onPressed: () => context.go(AppRoutes.menu),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cartAsync = ref.watch(cartProvider);
+    final cartNotifier = ref.watch(cartNotifierProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -67,9 +32,7 @@ class CartScreen extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              // TODO: Limpar carrinho
-            },
+            onPressed: () => cartNotifier.clear(),
             child: Text(
               AppStrings.clearCart,
               style: const TextStyle(color: AppColors.error),
@@ -77,107 +40,144 @@ class CartScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Items List
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: cartItems.length,
-              itemBuilder: (context, index) => _CartItemCard(
-                item: cartItems[index],
-                onQuantityChanged: (newQty) {
-                  // TODO: Atualizar quantidade
-                },
-                onRemove: () {
-                  // TODO: Remover item
-                },
-              ),
-            ),
-          ),
+      body: cartAsync.when(
+        data: (cart) {
+          final items = cart.items;
+          final subtotal = cart.subtotal;
+          const deliveryFee = 5.90;
+          final total = subtotal + deliveryFee;
 
-          // Summary
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.background,
-              border: Border(top: BorderSide(color: AppColors.divider)),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadow,
-                  blurRadius: 8,
-                  offset: const Offset(0, -2),
+          if (items.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.shopping_cart_outlined, size: 80, color: AppColors.textDisabled),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppStrings.cartEmpty,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppStrings.addItems,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textDisabled,
+                        ),
+                  ),
+                  const SizedBox(height: 24),
+                  CustomButton(
+                    text: AppStrings.menu,
+                    isFullWidth: false,
+                    icon: Icons.restaurant_menu,
+                    onPressed: () => context.go(AppRoutes.menu),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return Column(
+            children: [
+              // Items List
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: items.length,
+                  itemBuilder: (context, index) => _CartItemCard(
+                    item: items[index],
+                    onQuantityChanged: (newQty) {
+                      cartNotifier.updateItem(
+                        items[index].id,
+                        UpdateCartItemRequest(
+                          quantity: newQty,
+                          selectedCustomizations: null,
+                          notes: null,
+                        ),
+                      );
+                    },
+                    onRemove: () {
+                      cartNotifier.removeItem(items[index].id);
+                    },
+                  ),
                 ),
-              ],
-            ),
-            child: Column(
-              children: [
-                _SummaryRow(label: AppStrings.subtotal, value: subtotal),
-                _SummaryRow(label: AppStrings.deliveryFee, value: deliveryFee),
-                const Divider(height: 16),
-                _SummaryRow(
-                  label: AppStrings.total,
-                  value: total,
-                  isTotal: true,
+              ),
+
+              // Summary
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  border: Border(top: BorderSide(color: AppColors.divider)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.shadow,
+                      blurRadius: 8,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                CustomButton(
-                  text: '${AppStrings.checkout} - R\$ ${total.toStringAsFixed(2).replaceAll('.', ',')}',
-                  icon: Icons.arrow_forward,
-                  onPressed: () => context.push(AppRoutes.checkout),
+                child: Column(
+                  children: [
+                    _SummaryRow(label: AppStrings.subtotal, value: subtotal),
+                    _SummaryRow(label: AppStrings.deliveryFee, value: deliveryFee),
+                    const Divider(height: 16),
+                    _SummaryRow(
+                      label: AppStrings.total,
+                      value: total,
+                      isTotal: true,
+                    ),
+                    const SizedBox(height: 16),
+                    CustomButton(
+                      text: '${AppStrings.checkout} - R\$ ${total.toStringAsFixed(2).replaceAll('.', ',')}',
+                      icon: Icons.arrow_forward,
+                      onPressed: () => context.push(AppRoutes.checkout),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 64, color: AppColors.error),
+              const SizedBox(height: 16),
+              Text(
+                'Erro ao carregar carrinho',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.error,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                error.toString(),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () => ref.invalidate(cartProvider),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Tentar novamente'),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
-
-  List<_CartItem> _getMockCartItems() {
-    return [
-      _CartItem(
-        id: '1',
-        name: 'Pizza Margherita',
-        description: 'Molho de tomate, mussarela, manjericão',
-        price: 42.90,
-        quantity: 1,
-        imageUrl: 'https://picsum.photos/seed/pizza1/100/100',
-      ),
-      _CartItem(
-        id: '2',
-        name: 'Coca-Cola 2L',
-        description: '',
-        price: 12.90,
-        quantity: 2,
-        imageUrl: 'https://picsum.photos/seed/drink1/100/100',
-      ),
-    ];
-  }
-}
-
-class _CartItem {
-  final String id;
-  final String name;
-  final String description;
-  final double price;
-  final int quantity;
-  final String imageUrl;
-
-  const _CartItem({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.price,
-    required this.quantity,
-    required this.imageUrl,
-  });
-
-  double get totalPrice => price * quantity;
 }
 
 class _CartItemCard extends StatelessWidget {
-  final _CartItem item;
+  final CartItemDto item;
   final ValueChanged<int> onQuantityChanged;
   final VoidCallback onRemove;
 
@@ -198,7 +198,7 @@ class _CartItemCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                item.imageUrl,
+                item.product.imageUrl,
                 width: 70,
                 height: 70,
                 fit: BoxFit.cover,
@@ -216,15 +216,15 @@ class _CartItemCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item.name,
+                    item.product.name,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                   ),
-                  if (item.description.isNotEmpty) ...[
+                  if (item.notes != null && item.notes!.isNotEmpty) ...[
                     const SizedBox(height: 2),
                     Text(
-                      item.description,
+                      item.notes!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -232,7 +232,7 @@ class _CartItemCard extends StatelessWidget {
                   ],
                   const SizedBox(height: 8),
                   Text(
-                    'R\$ ${item.price.toStringAsFixed(2).replaceAll('.', ',')}',
+                    'R\$ ${item.product.price.toStringAsFixed(2).replaceAll('.', ',')}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.w600,

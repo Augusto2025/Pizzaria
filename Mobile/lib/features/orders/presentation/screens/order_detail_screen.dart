@@ -1,23 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:pizza/core/constants/app_colors.dart';
 import 'package:pizza/core/constants/app_strings.dart';
-import 'package:pizza/shared/models/order_models.dart';
+import 'package:pizza/core/providers/order_providers.dart';
+import 'package:pizza/data/models/address_models.dart';
+import 'package:pizza/data/models/order_models.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
-import 'package:intl/intl.dart';
 
 /// Tela de Detalhes do Pedido + Rastreamento
-class OrderDetailScreen extends StatefulWidget {
+class OrderDetailScreen extends ConsumerStatefulWidget {
   final String orderId;
 
   const OrderDetailScreen({super.key, required this.orderId});
 
   @override
-  State<OrderDetailScreen> createState() => _OrderDetailScreenState();
+  ConsumerState<OrderDetailScreen> createState() => _OrderDetailScreenState();
 }
 
-class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTickerProviderStateMixin {
+class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
+
+  // Status values (matching backend)
+  static const int statusPending = 0;
+  static const int statusConfirmed = 1;
+  static const int statusPreparing = 2;
+  static const int statusBaking = 3;
+  static const int statusReady = 4;
+  static const int statusOutForDelivery = 5;
+  static const int statusDelivered = 6;
+  static const int statusCancelled = 7;
 
   @override
   void initState() {
@@ -36,13 +49,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    // Mock order data
-    final order = _getMockOrder(widget.orderId);
+    final orderAsync = ref.watch(orderProvider(widget.orderId));
     final formatter = DateFormat('dd/MM/yyyy HH:mm', 'pt_BR');
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('$AppStrings.orderNumber ${order.id}'),
+        title: Text('$AppStrings.orderNumber ${widget.orderId}'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -54,55 +66,91 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
               // TODO: Compartilhar pedido
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.invalidate(orderProvider(widget.orderId)),
+          ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Status Timeline
-            _buildStatusTimeline(order),
+      body: orderAsync.when(
+        data: (order) => SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Status Timeline
+              _buildStatusTimeline(order),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            // Order Info
-            _buildOrderInfo(order, formatter),
+              // Order Info
+              _buildOrderInfo(order, formatter),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            // Items
-            _buildItemsSection(order),
+              // Items
+              _buildItemsSection(order),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            // Payment & Address
-            _buildPaymentAddressSection(order),
+              // Payment & Address
+              _buildPaymentAddressSection(order, formatter),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            // Actions
-            if (order.status != OrderStatus.delivered && order.status != OrderStatus.cancelled)
-              _buildActionsSection(order),
-          ],
+              // Actions
+              if (order.status.value < statusDelivered && order.status.value != statusCancelled)
+                _buildActionsSection(order),
+            ],
+          ),
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 64, color: AppColors.error),
+              const SizedBox(height: 16),
+              Text(
+                'Erro ao carregar pedido',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.error,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                error.toString(),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () => ref.invalidate(orderProvider(widget.orderId)),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Tentar novamente'),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildStatusTimeline(_MockOrderDetail order) {
+  Widget _buildStatusTimeline(OrderDto order) {
     final statuses = [
-      OrderStatus.pending,
-      OrderStatus.confirmed,
-      OrderStatus.preparing,
-      OrderStatus.baking,
-      OrderStatus.ready,
-      OrderStatus.outForDelivery,
-      OrderStatus.delivered,
+      _TimelineStatus(value: statusPending, label: 'Pendente', color: AppColors.statusPending),
+      _TimelineStatus(value: statusConfirmed, label: 'Confirmado', color: AppColors.statusConfirmed),
+      _TimelineStatus(value: statusPreparing, label: 'Preparando', color: AppColors.statusPreparing),
+      _TimelineStatus(value: statusBaking, label: 'Assando', color: AppColors.statusBaking),
+      _TimelineStatus(value: statusReady, label: 'Pronto', color: AppColors.statusReady),
+      _TimelineStatus(value: statusOutForDelivery, label: 'Saiu para entrega', color: AppColors.statusOutForDelivery),
+      _TimelineStatus(value: statusDelivered, label: 'Entregue', color: AppColors.statusDelivered),
     ];
 
-    final currentIndex = statuses.indexOf(order.status);
-    final isCancelled = order.status == OrderStatus.cancelled;
+    final currentIndex = statuses.indexWhere((s) => s.value == order.status.value);
+    final isCancelled = order.status.value == statusCancelled;
 
     return Card(
       child: Padding(
@@ -136,7 +184,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                   isCompleted: isCompleted,
                   isCurrent: isCurrent,
                   isLast: isLast,
-                  time: _getStatusTime(order, status),
+                  time: _getStatusTime(order, status.value),
                 );
               }),
             ] else ...[
@@ -183,30 +231,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
     );
   }
 
-  DateTime? _getStatusTime(_MockOrderDetail order, OrderStatus status) {
-    // Mock times for each status
-    final baseTime = order.createdAt;
-    switch (status) {
-      case OrderStatus.pending:
-        return baseTime;
-      case OrderStatus.confirmed:
-        return baseTime.add(const Duration(minutes: 5));
-      case OrderStatus.preparing:
-        return baseTime.add(const Duration(minutes: 15));
-      case OrderStatus.baking:
-        return baseTime.add(const Duration(minutes: 25));
-      case OrderStatus.ready:
-        return baseTime.add(const Duration(minutes: 35));
-      case OrderStatus.outForDelivery:
-        return baseTime.add(const Duration(minutes: 40));
-      case OrderStatus.delivered:
-        return order.estimatedDelivery;
-      case OrderStatus.cancelled:
-        return null;
-    }
+  DateTime? _getStatusTime(OrderDto order, int statusValue) {
+    // Find the timeline entry for this status
+    final timelineEntry = order.timeline.firstWhere(
+      (t) => t.status.value == statusValue,
+      orElse: () => null,
+    );
+    return timelineEntry?.timestamp;
   }
 
-  Widget _buildOrderInfo(_MockOrderDetail order, DateFormat formatter) {
+  Widget _buildOrderInfo(OrderDto order, DateFormat formatter) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -221,16 +255,36 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
             ),
             const SizedBox(height: 16),
             _InfoRow(label: AppStrings.orderDate, value: formatter.format(order.createdAt)),
-            _InfoRow(label: AppStrings.estimatedDelivery, value: formatter.format(order.estimatedDelivery)),
-            _InfoRow(label: AppStrings.deliveryAddressLabel, value: order.address),
-            _InfoRow(label: AppStrings.paymentMethodLabel, value: order.paymentMethod),
+            if (order.estimatedDeliveryTime != null)
+              _InfoRow(label: AppStrings.estimatedDelivery, value: formatter.format(order.estimatedDeliveryTime!)),
+            _InfoRow(label: AppStrings.deliveryAddressLabel, value: _formatAddress(order.deliveryAddress)),
+            _InfoRow(label: AppStrings.paymentMethodLabel, value: _getPaymentMethodLabel(order.paymentMethod)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildItemsSection(_MockOrderDetail order) {
+  String _formatAddress(AddressDto address) {
+    return '${address.street}, ${address.number}${address.complement.isNotEmpty ? ', ${address.complement}' : ''} - ${address.neighborhood}, ${address.city} - ${address.state}';
+  }
+
+  String _getPaymentMethodLabel(int paymentMethod) {
+    switch (paymentMethod) {
+      case 0:
+        return 'Dinheiro';
+      case 1:
+        return 'Cartão';
+      case 2:
+        return 'PIX';
+      case 3:
+        return 'Saldo do App';
+      default:
+        return 'Desconhecido';
+    }
+  }
+
+  Widget _buildItemsSection(OrderDto order) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -245,8 +299,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
-                ),
-              ],
+              ),
+            ],
             ),
             const SizedBox(height: 16),
             ...order.items.map((item) => _OrderItemRow(item: item)),
@@ -271,7 +325,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
     );
   }
 
-  Widget _buildPaymentAddressSection(_MockOrderDetail order) {
+  Widget _buildPaymentAddressSection(OrderDto order, DateFormat formatter) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -285,7 +339,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                   ),
             ),
             const SizedBox(height: 16),
-            _InfoRow(label: AppStrings.paymentMethodLabel, value: order.paymentMethod),
+            _InfoRow(label: AppStrings.paymentMethodLabel, value: _getPaymentMethodLabel(order.paymentMethod)),
             const SizedBox(height: 12),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -304,7 +358,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        order.address,
+                        _formatAddress(order.deliveryAddress),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: AppColors.textPrimary,
                             ),
@@ -320,15 +374,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
     );
   }
 
-  Widget _buildActionsSection(_MockOrderDetail order) {
+  Widget _buildActionsSection(OrderDto order) {
     return Column(
       children: [
-        if (order.status != OrderStatus.pending)
+        if (order.status.value != statusPending)
           CustomButton(
             text: AppStrings.reorder,
             isOutlined: true,
-            onPressed: () {
-              // TODO: Reorder
+            onPressed: () async {
+              await ref.read(orderNotifierProvider.notifier).reorder(order.id);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Itens adicionados ao carrinho')),
+                );
+              }
             },
           ),
         const SizedBox(height: 12),
@@ -343,7 +402,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
     );
   }
 
-  void _showCancelDialog(BuildContext context, _MockOrderDetail order) {
+  void _showCancelDialog(BuildContext context, OrderDto order) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -355,9 +414,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
             child: Text(AppStrings.cancel),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              // TODO: Cancel order
+              await ref.read(orderNotifierProvider.notifier).cancelOrder(order.id);
+              if (mounted) {
+                context.pop(); // Go back to orders list
+              }
             },
             child: Text(AppStrings.confirm, style: const TextStyle(color: AppColors.error)),
           ),
@@ -365,29 +427,22 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with SingleTicker
       ),
     );
   }
+}
 
-  _MockOrderDetail _getMockOrder(String orderId) {
-    return _MockOrderDetail(
-      id: orderId,
-      createdAt: DateTime.now().subtract(const Duration(hours: 1)),
-      status: OrderStatus.preparing,
-      estimatedDelivery: DateTime.now().add(const Duration(minutes: 30)),
-      subtotal: 95.70,
-      deliveryFee: 5.90,
-      total: 101.60,
-      address: 'Rua das Flores, 123 - Centro, São Paulo/SP',
-      paymentMethod: 'PIX',
-      items: [
-        _MockOrderItem(name: 'Pizza Margherita', quantity: 1, price: 42.90),
-        _MockOrderItem(name: 'Pizza Pepperoni', quantity: 1, price: 48.90),
-        _MockOrderItem(name: 'Coca-Cola 2L', quantity: 1, price: 12.90),
-      ],
-    );
-  }
+class _TimelineStatus {
+  final int value;
+  final String label;
+  final Color color;
+
+  const _TimelineStatus({
+    required this.value,
+    required this.label,
+    required this.color,
+  });
 }
 
 class _TimelineStep extends StatefulWidget {
-  final OrderStatus status;
+  final _TimelineStatus status;
   final bool isCompleted;
   final bool isCurrent;
   final bool isLast;
@@ -525,7 +580,7 @@ class _TimelineStepState extends State<_TimelineStep> with SingleTickerProviderS
 }
 
 class _OrderItemRow extends StatelessWidget {
-  final _MockOrderItem item;
+  final OrderItemDto item;
 
   const _OrderItemRow({required this.item});
 
@@ -540,7 +595,7 @@ class _OrderItemRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.name,
+                  item.productName,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -555,7 +610,7 @@ class _OrderItemRow extends StatelessWidget {
             ),
           ),
           Text(
-            'R\$ ${(item.price * item.quantity).toStringAsFixed(2).replaceAll('.', ',')}',
+            'R\$ ${(item.unitPrice * item.quantity).toStringAsFixed(2).replaceAll('.', ',')}',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -565,44 +620,6 @@ class _OrderItemRow extends StatelessWidget {
       ),
     );
   }
-}
-
-class _MockOrderItem {
-  final String name;
-  final int quantity;
-  final double price;
-
-  const _MockOrderItem({
-    required this.name,
-    required this.quantity,
-    required this.price,
-  });
-}
-
-class _MockOrderDetail {
-  final String id;
-  final DateTime createdAt;
-  final OrderStatus status;
-  final DateTime estimatedDelivery;
-  final double subtotal;
-  final double deliveryFee;
-  final double total;
-  final String address;
-  final String paymentMethod;
-  final List<_MockOrderItem> items;
-
-  const _MockOrderDetail({
-    required this.id,
-    required this.createdAt,
-    required this.status,
-    required this.estimatedDelivery,
-    required this.subtotal,
-    required this.deliveryFee,
-    required this.total,
-    required this.address,
-    required this.paymentMethod,
-    required this.items,
-  });
 }
 
 class _InfoRow extends StatelessWidget {

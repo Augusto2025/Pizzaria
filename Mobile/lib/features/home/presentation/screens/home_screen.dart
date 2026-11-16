@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pizza/core/constants/app_colors.dart';
 import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/constants/app_routes.dart';
+import 'package:pizza/core/providers/auth_providers.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
 
 /// Tela inicial (Home/Dashboard)
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: Obter nome do usuário do estado de auth
-    const userName = 'João';
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUser = ref.watch(currentUserProvider);
+    final userName = currentUser?.name.split(' ').first ?? 'Usuário';
 
     return Scaffold(
       appBar: AppBar(

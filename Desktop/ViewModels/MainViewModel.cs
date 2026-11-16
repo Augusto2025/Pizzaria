@@ -199,7 +199,12 @@ public class MainViewModel : BaseViewModel
 
         CurrentUser = null;
         IsLoggedIn = false;
-        NavigateTo(CreateLoginViewModel());
+
+        // Create and configure LoginViewModel with event subscriptions (same as constructor)
+        var loginVM = CreateLoginViewModel();
+        loginVM.OnLoginSuccess += user => Login(user);
+        loginVM.OnGoToRegister += NavigateToRegister;
+        NavigateTo(loginVM);
     }
 
     public void NavigateToHome() => NavigateTo(new HomeViewModel(this));

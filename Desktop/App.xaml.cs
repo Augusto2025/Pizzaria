@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using PizzariaDesktop.Data;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Services;
@@ -34,6 +38,9 @@ namespace PizzariaDesktop
 
             // Inicializa ServiceLocator
             ServiceLocator.Initialize(Services);
+
+            // Inicia API Web em background thread para o mobile
+            _ = Task.Run(() => StartWebApiAsync(Services, Configuration));
 
             // Inicializa banco de dados
             await InitializeDatabaseAsync();
@@ -146,6 +153,44 @@ namespace PizzariaDesktop
 
             // Fix column names to snake_case if needed - SEMPRE roda
             await FixColumnNamesAsync(dbContext);
+        }
+
+        // Inicia a Web API ASP.NET Core em background
+        private async Task StartWebApiAsync(IServiceProvider services, IConfiguration configuration)
+        {
+            try
+            {
+                var builder = WebApplication.CreateBuilder();
+
+                // Copia a configuração
+                builder.Configuration.AddConfiguration(configuration);
+
+                // Registra os serviços necessários para a API
+                // O DbContext já está registrado no services principal, vamos reusar
+                builder.Services.AddPizzariaServices(configuration);
+
+                var app = builder.Build();
+
+                // Configura pipeline HTTP
+                app.UseAuthentication();
+                app.UseAuthorization();
+                app.MapControllers();
+
+                // Swagger em desenvolvimento
+                if (app.Environment.IsDevelopment())
+                {
+                    app.UseSwagger();
+                    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pizzaria Desktop API v1"));
+                }
+
+                // Inicia na porta 5000 (HTTP) e 5001 (HTTPS)
+                await app.RunAsync("http://0.0.0.0:5000");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao iniciar Web API: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+            }
         }
 
         private async Task FixColumnNamesAsync(PizzariaDbContext dbContext)

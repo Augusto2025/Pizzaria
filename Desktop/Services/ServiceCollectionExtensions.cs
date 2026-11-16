@@ -3,8 +3,13 @@ namespace PizzariaDesktop.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 using PizzariaDesktop.Data;
 using PizzariaDesktop.Data.Repositories;
+using PizzariaDesktop.Api.Middleware;
 using System.IO;
 using System.Web;
 using Npgsql;
@@ -49,6 +54,44 @@ public static class ServiceCollectionExtensions
         // Serviços
         services.AddScoped<IAuthService, AuthService>();
         services.AddSingleton<ILastLoginService, LastLoginService>();
+
+        // JWT Authentication
+        services.AddJwtAuthentication(config);
+
+        // Controllers & Swagger
+        services.AddControllers();
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Pizzaria Desktop API",
+                Version = "v1",
+                Description = "API para o aplicativo mobile Pizzaria Delivery"
+            });
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+        });
 
         return services;
     }

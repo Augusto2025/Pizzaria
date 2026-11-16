@@ -69,7 +69,8 @@ class ApiService {
   }
 
   Future<OrderDto> createOrder(CreateOrderRequest request) async {
-    final response = await _dio.post('/api/v1/orders', data: request.toJson());
+    // Desktop API uses /api/v1/cart/checkout for creating orders
+    final response = await _dio.post('/api/v1/cart/checkout', data: request.toJson());
     return OrderDto.fromJson(response.data);
   }
 

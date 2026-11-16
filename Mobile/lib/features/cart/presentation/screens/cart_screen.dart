@@ -282,7 +282,7 @@ class _CartItemCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 // Total price
                 Text(
-                  'R\$ ${item.totalPrice.toStringAsFixed(2).replaceAll('.', ',')}',
+                  'R\$ ${(item.product.price * item.quantity).toStringAsFixed(2).replaceAll('.', ',')}',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,

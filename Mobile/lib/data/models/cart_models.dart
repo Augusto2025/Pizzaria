@@ -40,8 +40,6 @@ abstract class AddCartItemRequest with _$AddCartItemRequest {
   }) = _AddCartItemRequest;
 
   factory AddCartItemRequest.fromJson(Map<String, dynamic> json) => _$AddCartItemRequestFromJson(json);
-
-  Map<String, dynamic> toJson() => _$AddCartItemRequestToJson(this);
 }
 
 @freezed
@@ -53,6 +51,4 @@ abstract class UpdateCartItemRequest with _$UpdateCartItemRequest {
   }) = _UpdateCartItemRequest;
 
   factory UpdateCartItemRequest.fromJson(Map<String, dynamic> json) => _$UpdateCartItemRequestFromJson(json);
-
-  Map<String, dynamic> toJson() => _$UpdateCartItemRequestToJson(this);
 }

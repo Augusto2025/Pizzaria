@@ -5,7 +5,7 @@ import 'package:pizza/core/constants/app_colors.dart';
 import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/constants/app_routes.dart';
 import 'package:pizza/core/providers/order_providers.dart';
-import 'package:pizza/shared/models/order_models.dart';
+import 'package:pizza/data/models/order_models.dart';
 import 'package:intl/intl.dart';
 
 /// Tela de Lista de Pedidos
@@ -177,7 +177,7 @@ class _OrderCard extends StatelessWidget {
                     ),
                 ],
               ),
-              if (order.status.value < OrderStatus.delivered.index) ...[
+              if (order.status.value < 6) ...[ // 6 = delivered
                 const SizedBox(height: 12),
                 const Divider(height: 1),
                 const SizedBox(height: 12),

@@ -49,13 +49,12 @@ abstract class CreateAddressRequest with _$CreateAddressRequest {
   }) = _CreateAddressRequest;
 
   factory CreateAddressRequest.fromJson(Map<String, dynamic> json) => _$CreateAddressRequestFromJson(json);
-
-  Map<String, dynamic> toJson() => _$CreateAddressRequestToJson(this);
 }
 
 @freezed
 abstract class UpdateAddressRequest with _$UpdateAddressRequest {
   const factory UpdateAddressRequest({
+    required String id,
     String? label,
     String? street,
     String? number,
@@ -70,6 +69,4 @@ abstract class UpdateAddressRequest with _$UpdateAddressRequest {
   }) = _UpdateAddressRequest;
 
   factory UpdateAddressRequest.fromJson(Map<String, dynamic> json) => _$UpdateAddressRequestFromJson(json);
-
-  Map<String, dynamic> toJson() => _$UpdateAddressRequestToJson(this);
 }

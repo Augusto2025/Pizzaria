@@ -233,10 +233,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
 
   DateTime? _getStatusTime(OrderDto order, int statusValue) {
     // Find the timeline entry for this status
-    final timelineEntry = order.timeline.firstWhere(
-      (t) => t.status.value == statusValue,
-      orElse: () => null,
-    );
+    final timelineEntry = order.timeline.where((t) => t.status.value == statusValue).firstOrNull;
     return timelineEntry?.timestamp;
   }
 

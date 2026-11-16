@@ -55,7 +55,7 @@ abstract class UserDto with _$UserDto {
     required String email,
     required String phone,
     required DateTime createdAt,
-    @Default([]) List<AddressDto> addresses,
+    required List<AddressDto> addresses,
   }) = _UserDto;
 
   factory UserDto.fromJson(Map<String, dynamic> json) => _$UserDtoFromJson(json);
@@ -75,6 +75,7 @@ abstract class UserStatsDto with _$UserStatsDto {
 @freezed
 abstract class UpdateProfileRequest with _$UpdateProfileRequest {
   const factory UpdateProfileRequest({
+    required String userId,
     String? name,
     String? phone,
     String? currentPassword,
@@ -83,6 +84,4 @@ abstract class UpdateProfileRequest with _$UpdateProfileRequest {
   }) = _UpdateProfileRequest;
 
   factory UpdateProfileRequest.fromJson(Map<String, dynamic> json) => _$UpdateProfileRequestFromJson(json);
-
-  Map<String, dynamic> toJson() => _$UpdateProfileRequestToJson(this);
 }

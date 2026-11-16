@@ -36,7 +36,7 @@ abstract class OrderItemDto with _$OrderItemDto {
     required String productImageUrl,
     required int quantity,
     required double unitPrice,
-    @Default({}) Map<String, String> customizations,
+    required Map<String, String> customizations,
     String? notes,
     required double totalPrice,
   }) = _OrderItemDto;
@@ -58,8 +58,8 @@ abstract class OrderDto with _$OrderDto {
     required double total,
     String? notes,
     DateTime? estimatedDeliveryTime,
-    @Default([]) List<OrderItemDto> items,
-    @Default([]) List<StatusTimelineDto> timeline,
+    required List<OrderItemDto> items,
+    required List<StatusTimelineDto> timeline,
   }) = _OrderDto;
 
   factory OrderDto.fromJson(Map<String, dynamic> json) => _$OrderDtoFromJson(json);
@@ -68,7 +68,7 @@ abstract class OrderDto with _$OrderDto {
 @freezed
 abstract class OrdersResponse with _$OrdersResponse {
   const factory OrdersResponse({
-    @Default([]) List<OrderDto> orders,
+    required List<OrderDto> orders,
   }) = _OrdersResponse;
 
   factory OrdersResponse.fromJson(Map<String, dynamic> json) => _$OrdersResponseFromJson(json);
@@ -83,6 +83,4 @@ abstract class CreateOrderRequest with _$CreateOrderRequest {
   }) = _CreateOrderRequest;
 
   factory CreateOrderRequest.fromJson(Map<String, dynamic> json) => _$CreateOrderRequestFromJson(json);
-
-  Map<String, dynamic> toJson() => _$CreateOrderRequestToJson(this);
 }

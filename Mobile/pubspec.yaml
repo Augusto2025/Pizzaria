@@ -25,7 +25,7 @@ dependencies:
   shared_preferences: ^2.2.2
   flutter_secure_storage: ^9.0.0
 
-  # JSON Serialization
+  # JSON Serialization - use freezed 2.5.2 (last before analyzer ^6.5.0 req)
   json_annotation: ^4.9.0
   freezed_annotation: ^2.4.1
 
@@ -48,11 +48,12 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   riverpod_generator: ^2.4.0
-  build_runner: ^2.4.8
+  build_runner: ^2.4.13
   json_serializable: ^6.8.0
-  freezed: ^2.5.0
+  freezed: ^2.5.2
+  freezed_annotation: ^2.4.1
   custom_lint: ^0.6.4
-  riverpod_lint: ^2.3.0
+  riverpod_lint: ^2.3.10
 
 flutter:
   uses-material-design: true

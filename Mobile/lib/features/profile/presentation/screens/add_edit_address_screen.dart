@@ -95,6 +95,7 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
       final notifier = ref.read(addressNotifierProvider.notifier);
       if (_isEditing) {
         final updateRequest = UpdateAddressRequest(
+          id: widget.addressId!,
           label: request.label,
           street: request.street,
           number: request.number,

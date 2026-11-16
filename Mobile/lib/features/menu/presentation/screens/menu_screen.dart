@@ -76,64 +76,30 @@ class _MenuScreenState extends ConsumerState<MenuScreen> with SingleTickerProvid
 
   Widget _buildCategoryList(String category) {
     // Usa o provider para buscar produtos por categoria
-    final productsAsync = ref.watch(productsByCategoryProvider(category));
+    final products = ref.watch(productsByCategoryProvider(category));
 
-    return productsAsync.when(
-      data: (products) {
-        if (products.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.restaurant_menu, size: 64, color: AppColors.textDisabled),
-                const SizedBox(height: 16),
-                Text(
-                  'Nenhum item nesta categoria',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: products.length,
-          itemBuilder: (context, index) => _ProductCard(product: products[index]),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
+    if (products.isEmpty) {
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: AppColors.error),
+            Icon(Icons.restaurant_menu, size: 64, color: AppColors.textDisabled),
             const SizedBox(height: 16),
             Text(
-              'Erro ao carregar produtos',
+              'Nenhum item nesta categoria',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.error,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error.toString(),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: () => ref.invalidate(menuProvider),
-              icon: const Icon(Icons.refresh),
-              label: const Text('Tentar novamente'),
             ),
           ],
         ),
-      ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: products.length,
+      itemBuilder: (context, index) => _ProductCard(product: products[index]),
     );
   }
 }

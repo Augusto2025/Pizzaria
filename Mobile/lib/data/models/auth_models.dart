@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'address_models.dart';
 
 part 'auth_models.freezed.dart';
 part 'auth_models.g.dart';

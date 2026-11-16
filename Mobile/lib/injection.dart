@@ -38,13 +38,19 @@ Future<void> configureDependencies() async {
 
 /// Cria instância do Dio com configurações padrão
 Dio _createDio() {
-  // TODO: Configurar a URL base do API do desktop
-  // Se o desktop estiver rodando localmente, use: http://10.0.2.2:5000 (Android emulator)
-  // Para iOS simulator: http://localhost:5000
-  // Para dispositivo físico: http://<IP_DO_COMPUTADOR>:5000
+  // ============================================================
+  // CONFIGURE AQUI A URL DO SEU DESKTOP API
+  // ============================================================
+  // Emulador Android:     'http://10.0.2.2:5000'
+  // Simulador iOS:        'http://localhost:5000'
+  // Celular físico (WiFi): 'http://SEU_IP_LOCAL:5000'  <-- DESCUBRA COM: ipconfig (Windows) / ifconfig (Mac/Linux)
+  // Celular físico (USB):  'http://10.0.2.2:5000'  (após: adb reverse tcp:5000 tcp:5000)
+  // ============================================================
+  const String apiBaseUrl = 'http://10.0.2.2:5000'; // ALTERE AQUI PARA SEU IP SE USAR CELULAR FÍSICO
+
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'http://10.0.2.2:5000', // URL do API do desktop (ajustar conforme necessário)
+      baseUrl: apiBaseUrl,
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       headers: {

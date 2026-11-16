@@ -157,16 +157,37 @@ public class CartViewModel : BaseViewModel
             }
             catch (Exception ex)
             {
+                var fullMessage = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    fullMessage += $"\n\nInner Exception: {ex.InnerException.Message}";
+                    if (ex.InnerException.InnerException != null)
+                    {
+                        fullMessage += $"\n\nDeep Inner Exception: {ex.InnerException.InnerException.Message}";
+                    }
+                }
+
                 System.Diagnostics.Debug.WriteLine($"[CartViewModel] Erro ao salvar pedido no banco: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"[CartViewModel] StackTrace: {ex.StackTrace}");
                 if (ex.InnerException != null)
                 {
                     System.Diagnostics.Debug.WriteLine($"[CartViewModel] InnerException: {ex.InnerException.Message}");
                     System.Diagnostics.Debug.WriteLine($"[CartViewModel] InnerStackTrace: {ex.InnerException.StackTrace}");
+                    if (ex.InnerException.InnerException != null)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[CartViewModel] Deep InnerException: {ex.InnerException.InnerException.Message}");
+                        System.Diagnostics.Debug.WriteLine($"[CartViewModel] Deep InnerStackTrace: {ex.InnerException.InnerException.StackTrace}");
+                    }
                 }
+
+                // Show error to user and don't proceed
+                IsProcessing = false;
+                MessageBox.Show($"Erro ao salvar pedido no banco de dados:\n{fullMessage}", "Erro ao Salvar Pedido",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
 
-            // Add to orders list (in-memory for immediate UI update)
+            // Add to orders list (in-memory for immediate UI update) - only if DB save succeeded
             _mainViewModel.AddOrderToHistory(order);
 
             // Clear the cart

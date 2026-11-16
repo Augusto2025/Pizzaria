@@ -49,7 +49,7 @@
                         <TextBox x:Name="SearchBox"
                                  Style="{StaticResource InputStyle}"
                                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                 Padding="40,10,12,10"
+                                 Padding="8,6,12,6"
                                  FontSize="14"
                                  Background="Transparent"
                                  BorderThickness="0" />
@@ -57,19 +57,13 @@
                                    Foreground="{StaticResource TextSecondaryBrush}"
                                    FontSize="14"
                                    VerticalAlignment="Center"
-                                   Margin="44,0,0,0"
+                                   Margin="20,0,0,0"
                                    IsHitTestVisible="False">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Visibility" Value="Visible" />
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="{x:Null}">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox, Converter={StaticResource EmptyToVisibilityConverter}, ConverterParameter=inverse}" Value="True">
+                                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox, Converter={StaticResource EmptyToVisibilityConverter}, ConverterParameter=inverse}" Value="{x:Static Visibility.Visible}">
                                             <Setter Property="Visibility" Value="Collapsed" />
                                         </DataTrigger>
                                     </Style.Triggers>

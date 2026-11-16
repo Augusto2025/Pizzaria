@@ -138,6 +138,30 @@
                                    FontSize="12"
                                    Visibility="{Binding ErrorMessage, Converter={StaticResource InverseBoolToVisibilityConverter}, ConverterParameter=empty}" />
 
+                        <!-- Last Access Button -->
+                        <Button x:Name="LastAccessButton"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Background="Transparent"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="1"
+                                Padding="16,10"
+                                Margin="0,0,0,14"
+                                FontSize="14"
+                                FontWeight="Medium"
+                                HorizontalAlignment="Stretch"
+                                Visibility="{Binding HasLastLogin, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Command="{Binding UseLastLoginCommand}"
+                                IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}"
+                                ToolTip="Entrar com a última conta usada">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="🕐" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="Último acesso" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <TextBlock Text="{Binding LastLoginEmail}" FontSize="14" FontWeight="Medium" Foreground="{StaticResource TextPrimaryBrush}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+
                         <!-- Login Button -->
                         <Button Style="{StaticResource PrimaryButtonStyle}"
                                 Content="Entrar"

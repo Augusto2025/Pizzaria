@@ -76,14 +76,18 @@ public class MainViewModel : BaseViewModel
 
     private LoginViewModel CreateLoginViewModel()
     {
-        // LoginViewModel now creates its own scope during login operation
-        return new LoginViewModel();
+        // Get ILastLoginService from DI container
+        using var scope = App.Services.CreateScope();
+        var lastLoginService = scope.ServiceProvider.GetRequiredService<ILastLoginService>();
+        return new LoginViewModel(lastLoginService);
     }
 
     private RegisterViewModel CreateRegisterViewModel()
     {
-        // RegisterViewModel now creates its own scope during registration operation
-        return new RegisterViewModel();
+        // Get ILastLoginService from DI container
+        using var scope = App.Services.CreateScope();
+        var lastLoginService = scope.ServiceProvider.GetRequiredService<ILastLoginService>();
+        return new RegisterViewModel(lastLoginService);
     }
 
     public void NavigateToRegister()

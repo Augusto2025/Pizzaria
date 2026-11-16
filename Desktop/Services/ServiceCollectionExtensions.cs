@@ -48,6 +48,7 @@ public static class ServiceCollectionExtensions
 
         // Serviços
         services.AddScoped<IAuthService, AuthService>();
+        services.AddSingleton<ILastLoginService, LastLoginService>();
 
         return services;
     }

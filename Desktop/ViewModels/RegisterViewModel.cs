@@ -11,6 +11,7 @@ using PizzariaDesktop.Services;
 
 public class RegisterViewModel : BaseViewModel
 {
+    private readonly ILastLoginService _lastLoginService;
     private string _name = string.Empty;
     private string _email = string.Empty;
     private string _phone = string.Empty;
@@ -102,8 +103,9 @@ public class RegisterViewModel : BaseViewModel
     public ICommand RegisterCommand { get; }
     public ICommand GoToLoginCommand { get; }
 
-    public RegisterViewModel()
+    public RegisterViewModel(ILastLoginService lastLoginService)
     {
+        _lastLoginService = lastLoginService;
         RegisterCommand = new RelayCommand(async _ => await RegisterAsync());
         GoToLoginCommand = new RelayCommand(_ => GoToLogin());
     }
@@ -198,6 +200,8 @@ public class RegisterViewModel : BaseViewModel
 
             if (result.Success && result.User != null)
             {
+                // Save last login for next time
+                _lastLoginService.SaveLastLogin(Email, trimmedPassword);
                 Console.WriteLine($"Registration successful, invoking OnRegisterSuccess");
                 OnRegisterSuccess?.Invoke(result.User);
             }

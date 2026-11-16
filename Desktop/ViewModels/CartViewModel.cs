@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Data;
 using PizzariaDesktop.Views.Cart;
@@ -146,18 +147,23 @@ public class CartViewModel : BaseViewModel
             // Store delivery time for success display
             _lastOrderDeliveryTime = order.EstimatedDeliveryTime;
 
-            // Save order to database
+            // Save order to database using a scoped service provider
             try
             {
-                var orderRepo = ServiceLocator.GetService<IOrderRepository>();
-                if (orderRepo != null)
-                {
-                    await orderRepo.CreateAsync(order);
-                }
+                using var scope = App.Services.CreateScope();
+                var orderRepo = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
+                await orderRepo.CreateAsync(order);
+                System.Diagnostics.Debug.WriteLine($"[CartViewModel] Order saved to database: {order.Id}");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erro ao salvar pedido no banco: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[CartViewModel] Erro ao salvar pedido no banco: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[CartViewModel] StackTrace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[CartViewModel] InnerException: {ex.InnerException.Message}");
+                    System.Diagnostics.Debug.WriteLine($"[CartViewModel] InnerStackTrace: {ex.InnerException.StackTrace}");
+                }
             }
 
             // Add to orders list (in-memory for immediate UI update)
@@ -303,25 +309,25 @@ public class CartViewModel : BaseViewModel
 
         try
         {
-            var addressRepo = ServiceLocator.GetServiceOrDefault<IAddressRepository>();
-            if (addressRepo != null)
-            {
-                var addresses = await addressRepo.GetByUserIdAsync(_mainViewModel.CurrentUser.Id);
-                _savedAddresses.Clear();
-                _savedAddresses.AddRange(addresses);
-                OnPropertyChanged(nameof(SavedAddresses));
+            using var scope = App.Services.CreateScope();
+            var addressRepo = scope.ServiceProvider.GetRequiredService<IAddressRepository>();
+            var addresses = await addressRepo.GetByUserIdAsync(_mainViewModel.CurrentUser.Id);
+            _savedAddresses.Clear();
+            _savedAddresses.AddRange(addresses);
+            OnPropertyChanged(nameof(SavedAddresses));
 
-                // Select default address or first address
-                if (_savedAddresses.Any())
-                {
-                    var defaultAddress = _savedAddresses.FirstOrDefault(a => a.IsDefault) ?? _savedAddresses.First();
-                    SelectedAddress = defaultAddress;
-                }
+            // Select default address or first address
+            if (_savedAddresses.Any())
+            {
+                var defaultAddress = _savedAddresses.FirstOrDefault(a => a.IsDefault) ?? _savedAddresses.First();
+                SelectedAddress = defaultAddress;
             }
+            System.Diagnostics.Debug.WriteLine($"[CartViewModel] Loaded {addresses.Count} addresses from database");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erro ao carregar endereços: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[CartViewModel] Erro ao carregar endereços: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[CartViewModel] StackTrace: {ex.StackTrace}");
         }
     }
 
@@ -340,18 +346,23 @@ public class CartViewModel : BaseViewModel
         // Save new address to database
         try
         {
-            var addressRepo = ServiceLocator.GetServiceOrDefault<IAddressRepository>();
-            if (addressRepo != null)
-            {
-                var savedAddress = await addressRepo.CreateAsync(address, _mainViewModel.CurrentUser.Id);
-                _savedAddresses.Add(savedAddress);
-                OnPropertyChanged(nameof(SavedAddresses));
-                return savedAddress;
-            }
+            using var scope = App.Services.CreateScope();
+            var addressRepo = scope.ServiceProvider.GetRequiredService<IAddressRepository>();
+            var savedAddress = await addressRepo.CreateAsync(address, _mainViewModel.CurrentUser.Id);
+            _savedAddresses.Add(savedAddress);
+            OnPropertyChanged(nameof(SavedAddresses));
+            System.Diagnostics.Debug.WriteLine($"[CartViewModel] New address saved to database: {savedAddress.Id}");
+            return savedAddress;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erro ao salvar endereço: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[CartViewModel] Erro ao salvar endereço: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[CartViewModel] StackTrace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"[CartViewModel] InnerException: {ex.InnerException.Message}");
+                System.Diagnostics.Debug.WriteLine($"[CartViewModel] InnerStackTrace: {ex.InnerException.StackTrace}");
+            }
         }
 
         return address;

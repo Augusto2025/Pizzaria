@@ -2,6 +2,7 @@ namespace PizzariaDesktop.ViewModels;
 
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
 using PizzariaDesktop.Models;
 using PizzariaDesktop.Data;
 using PizzariaDesktop.Data.Repositories;
@@ -69,20 +70,25 @@ public class OrdersViewModel : BaseViewModel
 
         try
         {
-            var orderRepo = ServiceLocator.GetService<IOrderRepository>();
-            if (orderRepo != null)
+            using var scope = App.Services.CreateScope();
+            var orderRepo = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
+            var orders = await orderRepo.GetByUserIdAsync(_mainViewModel.CurrentUser.Id);
+            Orders.Clear();
+            foreach (var order in orders)
             {
-                var orders = await orderRepo.GetByUserIdAsync(_mainViewModel.CurrentUser.Id);
-                Orders.Clear();
-                foreach (var order in orders)
-                {
-                    Orders.Add(order);
-                }
+                Orders.Add(order);
             }
+            System.Diagnostics.Debug.WriteLine($"[OrdersViewModel] Loaded {orders.Count} orders from database for user {_mainViewModel.CurrentUser.Id}");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erro ao carregar pedidos: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[OrdersViewModel] Erro ao carregar pedidos: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[OrdersViewModel] StackTrace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"[OrdersViewModel] InnerException: {ex.InnerException.Message}");
+                System.Diagnostics.Debug.WriteLine($"[OrdersViewModel] InnerStackTrace: {ex.InnerException.StackTrace}");
+            }
         }
     }
 }

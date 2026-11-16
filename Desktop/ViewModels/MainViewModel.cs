@@ -76,28 +76,18 @@ public class MainViewModel : BaseViewModel
 
     private LoginViewModel CreateLoginViewModel()
     {
-        // Try to get IAuthService from ServiceLocator if available
-        IAuthService? authService = null;
-        try
-        {
-            authService = ServiceLocator.GetService<IAuthService>();
-        }
-        catch { }
-
-        return authService != null ? new LoginViewModel(authService) : new LoginViewModel();
+        // Create scope to get scoped IAuthService
+        using var scope = App.Services.CreateScope();
+        var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+        return new LoginViewModel(authService);
     }
 
     private RegisterViewModel CreateRegisterViewModel()
     {
-        // Try to get IAuthService from ServiceLocator if available
-        IAuthService? authService = null;
-        try
-        {
-            authService = ServiceLocator.GetService<IAuthService>();
-        }
-        catch { }
-
-        return authService != null ? new RegisterViewModel(authService) : new RegisterViewModel();
+        // Create scope to get scoped IAuthService
+        using var scope = App.Services.CreateScope();
+        var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+        return new RegisterViewModel(authService);
     }
 
     public void NavigateToRegister()
@@ -128,17 +118,17 @@ public class MainViewModel : BaseViewModel
 
         try
         {
-            var addressRepo = ServiceLocator.GetServiceOrDefault<IAddressRepository>();
-            if (addressRepo != null)
-            {
-                var addresses = await addressRepo.GetByUserIdAsync(CurrentUser.Id);
-                CurrentUser.Addresses.Clear();
-                CurrentUser.Addresses.AddRange(addresses);
-            }
+            using var scope = App.Services.CreateScope();
+            var addressRepo = scope.ServiceProvider.GetRequiredService<IAddressRepository>();
+            var addresses = await addressRepo.GetByUserIdAsync(CurrentUser.Id);
+            CurrentUser.Addresses.Clear();
+            CurrentUser.Addresses.AddRange(addresses);
+            System.Diagnostics.Debug.WriteLine($"[MainViewModel] Loaded {addresses.Count} addresses from database for user {CurrentUser.Id}");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erro ao carregar endereços do usuário: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[MainViewModel] Erro ao carregar endereços do usuário: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[MainViewModel] StackTrace: {ex.StackTrace}");
         }
     }
 
@@ -148,22 +138,22 @@ public class MainViewModel : BaseViewModel
 
         try
         {
-            var cartRepo = ServiceLocator.GetService<ICartRepository>();
-            if (cartRepo != null)
+            using var scope = App.Services.CreateScope();
+            var cartRepo = scope.ServiceProvider.GetRequiredService<ICartRepository>();
+            var cartItems = await cartRepo.GetByUserIdAsync(CurrentUser.Id);
+            CartItems.Clear();
+            foreach (var item in cartItems)
             {
-                var cartItems = await cartRepo.GetByUserIdAsync(CurrentUser.Id);
-                CartItems.Clear();
-                foreach (var item in cartItems)
-                {
-                    item.PropertyChanged += (s, e) => OnCartChanged();
-                    CartItems.Add(item);
-                }
-                OnCartChanged();
+                item.PropertyChanged += (s, e) => OnCartChanged();
+                CartItems.Add(item);
             }
+            OnCartChanged();
+            System.Diagnostics.Debug.WriteLine($"[MainViewModel] Loaded {cartItems.Count} cart items from database for user {CurrentUser.Id}");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erro ao carregar carrinho: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[MainViewModel] Erro ao carregar carrinho: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[MainViewModel] StackTrace: {ex.StackTrace}");
         }
     }
 
@@ -173,19 +163,19 @@ public class MainViewModel : BaseViewModel
 
         try
         {
-            var cartRepo = ServiceLocator.GetService<ICartRepository>();
-            if (cartRepo != null)
+            using var scope = App.Services.CreateScope();
+            var cartRepo = scope.ServiceProvider.GetRequiredService<ICartRepository>();
+            await cartRepo.ClearAsync(CurrentUser.Id);
+            foreach (var item in CartItems)
             {
-                await cartRepo.ClearAsync(CurrentUser.Id);
-                foreach (var item in CartItems)
-                {
-                    await cartRepo.AddAsync(item, CurrentUser.Id);
-                }
+                await cartRepo.AddAsync(item, CurrentUser.Id);
             }
+            System.Diagnostics.Debug.WriteLine($"[MainViewModel] Saved {CartItems.Count} cart items to database for user {CurrentUser.Id}");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erro ao salvar carrinho: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[MainViewModel] Erro ao salvar carrinho: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[MainViewModel] StackTrace: {ex.StackTrace}");
         }
     }
 
@@ -273,15 +263,15 @@ public class MainViewModel : BaseViewModel
         {
             try
             {
-                var cartRepo = ServiceLocator.GetService<ICartRepository>();
-                if (cartRepo != null)
-                {
-                    await cartRepo.ClearAsync(CurrentUser.Id);
-                }
+                using var scope = App.Services.CreateScope();
+                var cartRepo = scope.ServiceProvider.GetRequiredService<ICartRepository>();
+                await cartRepo.ClearAsync(CurrentUser.Id);
+                System.Diagnostics.Debug.WriteLine($"[MainViewModel] Cleared cart from database for user {CurrentUser.Id}");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erro ao limpar carrinho do banco: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[MainViewModel] Erro ao limpar carrinho do banco: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[MainViewModel] StackTrace: {ex.StackTrace}");
             }
         }
     }

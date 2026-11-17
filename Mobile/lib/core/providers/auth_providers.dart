@@ -22,16 +22,15 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return _getIt<AuthRepository>();
 });
 
-/// State do usuário atual
-final currentUserProvider = StateNotifierProvider<CurrentUserNotifier, UserDto?>((ref) {
-  return CurrentUserNotifier(ref.watch(authRepositoryProvider));
-});
+/// Notifier para gerenciar estado do usuário atual (Riverpod 3.x: Notifier)
+class CurrentUserNotifier extends Notifier<UserDto?> {
+  late final AuthRepository _authRepository;
 
-/// Notifier para gerenciar estado do usuário atual
-class CurrentUserNotifier extends StateNotifier<UserDto?> {
-  final AuthRepository _authRepository;
-
-  CurrentUserNotifier(this._authRepository) : super(null);
+  @override
+  UserDto? build() {
+    _authRepository = ref.watch(authRepositoryProvider);
+    return null;
+  }
 
   Future<void> loadUser() async {
     try {
@@ -56,19 +55,19 @@ class CurrentUserNotifier extends StateNotifier<UserDto?> {
   }
 }
 
-/// Provider de autenticação (login/logout)
-final authProvider = StateNotifierProvider<AuthNotifier, AsyncValue<void>>((ref) {
-  return AuthNotifier(
-    ref.watch(authRepositoryProvider),
-    ref.watch(currentUserProvider.notifier),
-  );
-});
+/// Provider do CurrentUserNotifier (Riverpod 3.x: NotifierProvider)
+final currentUserProvider = NotifierProvider<CurrentUserNotifier, UserDto?>(
+  CurrentUserNotifier.new,
+);
 
-class AuthNotifier extends StateNotifier<AsyncValue<void>> {
-  final AuthRepository _authRepository;
-  final CurrentUserNotifier _currentUserNotifier;
+/// Notifier para autenticação (login/logout) - Riverpod 3.x: AsyncNotifier
+class AuthNotifier extends AsyncNotifier<void> {
+  late final AuthRepository _authRepository;
 
-  AuthNotifier(this._authRepository, this._currentUserNotifier) : super(const AsyncValue.data(null));
+  @override
+  void build() {
+    _authRepository = ref.watch(authRepositoryProvider);
+  }
 
   Future<bool> login(String email, String password) async {
     state = const AsyncValue.loading();
@@ -83,7 +82,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<void>> {
         name: response.user.name,
       );
 
-      _currentUserNotifier.setUser(response.user);
+      ref.read(currentUserProvider.notifier).setUser(response.user);
       state = const AsyncValue.data(null);
       return true;
     } catch (e, stackTrace) {
@@ -117,7 +116,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<void>> {
         name: response.user.name,
       );
 
-      _currentUserNotifier.setUser(response.user);
+      ref.read(currentUserProvider.notifier).setUser(response.user);
       state = const AsyncValue.data(null);
       return true;
     } catch (e, stackTrace) {
@@ -130,10 +129,15 @@ class AuthNotifier extends StateNotifier<AsyncValue<void>> {
     state = const AsyncValue.loading();
     try {
       await AuthService.logout();
-      _currentUserNotifier.clearUser();
+      ref.read(currentUserProvider.notifier).clearUser();
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
   }
 }
+
+/// Provider do AuthNotifier (Riverpod 3.x: AsyncNotifierProvider)
+final authProvider = AsyncNotifierProvider<AuthNotifier, void>(
+  AuthNotifier.new,
+);

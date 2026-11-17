@@ -23,23 +23,21 @@ final orderProvider = FutureProvider.family<OrderDto, String>((ref, id) async {
   return await repository.getOrder(id);
 });
 
-/// Notifier para operações de pedidos
-final orderNotifierProvider = StateNotifierProvider<OrderNotifier, AsyncValue<void>>((ref) {
-  return OrderNotifier(ref.watch(orderRepositoryProvider), ref);
-});
+/// Notifier para operações de pedidos (Riverpod 3.x: AsyncNotifier)
+class OrderNotifier extends AsyncNotifier<void> {
+  late final OrderRepository _orderRepository;
 
-class OrderNotifier extends StateNotifier<AsyncValue<void>> {
-  final OrderRepository _orderRepository;
-  final Ref _ref;
-
-  OrderNotifier(this._orderRepository, this._ref) : super(const AsyncValue.data(null));
+  @override
+  void build() {
+    _orderRepository = ref.watch(orderRepositoryProvider);
+  }
 
   Future<OrderDto> createOrder(CreateOrderRequest request) async {
     state = const AsyncValue.loading();
     try {
       final order = await _orderRepository.createOrder(request);
-      _ref.invalidate(ordersProvider);
-      _ref.invalidate(cartProvider); // Limpa carrinho após pedido
+      ref.invalidate(ordersProvider);
+      ref.invalidate(cartProvider); // Limpa carrinho após pedido
       state = const AsyncValue.data(null);
       return order;
     } catch (e, stackTrace) {
@@ -52,7 +50,7 @@ class OrderNotifier extends StateNotifier<AsyncValue<void>> {
     state = const AsyncValue.loading();
     try {
       await _orderRepository.cancelOrder(id);
-      _ref.invalidate(ordersProvider);
+      ref.invalidate(ordersProvider);
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
@@ -63,10 +61,15 @@ class OrderNotifier extends StateNotifier<AsyncValue<void>> {
     state = const AsyncValue.loading();
     try {
       await _orderRepository.reorder(id);
-      _ref.invalidate(cartProvider);
+      ref.invalidate(cartProvider);
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
   }
 }
+
+/// Provider do OrderNotifier (Riverpod 3.x: AsyncNotifierProvider)
+final orderNotifierProvider = AsyncNotifierProvider<OrderNotifier, void>(
+  OrderNotifier.new,
+);

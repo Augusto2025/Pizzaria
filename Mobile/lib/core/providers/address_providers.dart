@@ -22,22 +22,20 @@ final addressProvider = FutureProvider.family<AddressDto, String>((ref, id) asyn
   return await repository.getAddress(id);
 });
 
-/// Notifier para operações de endereços
-final addressNotifierProvider = StateNotifierProvider<AddressNotifier, AsyncValue<void>>((ref) {
-  return AddressNotifier(ref.watch(addressRepositoryProvider), ref);
-});
+/// Notifier para operações de endereços (Riverpod 3.x: AsyncNotifier)
+class AddressNotifier extends AsyncNotifier<void> {
+  late final AddressRepository _addressRepository;
 
-class AddressNotifier extends StateNotifier<AsyncValue<void>> {
-  final AddressRepository _addressRepository;
-  final Ref _ref;
-
-  AddressNotifier(this._addressRepository, this._ref) : super(const AsyncValue.data(null));
+  @override
+  void build() {
+    _addressRepository = ref.watch(addressRepositoryProvider);
+  }
 
   Future<AddressDto> createAddress(CreateAddressRequest request) async {
     state = const AsyncValue.loading();
     try {
       final address = await _addressRepository.createAddress(request);
-      _ref.invalidate(addressesProvider);
+      ref.invalidate(addressesProvider);
       state = const AsyncValue.data(null);
       return address;
     } catch (e, stackTrace) {
@@ -50,7 +48,7 @@ class AddressNotifier extends StateNotifier<AsyncValue<void>> {
     state = const AsyncValue.loading();
     try {
       final address = await _addressRepository.updateAddress(id, request);
-      _ref.invalidate(addressesProvider);
+      ref.invalidate(addressesProvider);
       state = const AsyncValue.data(null);
       return address;
     } catch (e, stackTrace) {
@@ -63,7 +61,7 @@ class AddressNotifier extends StateNotifier<AsyncValue<void>> {
     state = const AsyncValue.loading();
     try {
       await _addressRepository.deleteAddress(id);
-      _ref.invalidate(addressesProvider);
+      ref.invalidate(addressesProvider);
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
@@ -74,10 +72,15 @@ class AddressNotifier extends StateNotifier<AsyncValue<void>> {
     state = const AsyncValue.loading();
     try {
       await _addressRepository.setDefaultAddress(id);
-      _ref.invalidate(addressesProvider);
+      ref.invalidate(addressesProvider);
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
   }
 }
+
+/// Provider do AddressNotifier (Riverpod 3.x: AsyncNotifierProvider)
+final addressNotifierProvider = AsyncNotifierProvider<AddressNotifier, void>(
+  AddressNotifier.new,
+);

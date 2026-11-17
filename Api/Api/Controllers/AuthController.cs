@@ -1,12 +1,8 @@
 namespace PizzariaDesktop.Api.Controllers;
 
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using PizzariaDesktop.Api.DTOs;
 using PizzariaDesktop.Data;
 using PizzariaDesktop.Models;
@@ -40,7 +36,7 @@ public class AuthController : ControllerBase
                 return BadRequest(new AuthResponse(false, result.ErrorMessage, null, null));
             }
 
-            var token = GenerateJwtToken(result.User);
+            var token = _authService.GenerateJwtToken(result.User);
 
             var userDto = new UserDto(
                 result.User.Id,
@@ -75,7 +71,7 @@ public class AuthController : ControllerBase
                 return BadRequest(new AuthResponse(false, result.ErrorMessage, null, null));
             }
 
-            var token = GenerateJwtToken(result.User);
+            var token = _authService.GenerateJwtToken(result.User);
 
             var userDto = new UserDto(
                 result.User.Id,
@@ -143,31 +139,5 @@ public class AuthController : ControllerBase
         // JWT is stateless, client just discards token
         // Could implement token blacklist here if needed
         return Ok(new { success = true, message = "Logged out successfully" });
-    }
-
-    private string GenerateJwtToken(User user)
-    {
-        var jwtSettings = _configuration.GetSection("Jwt");
-        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim(JwtRegisteredClaimNames.Name, user.Name),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id)
-        };
-
-        var token = new JwtSecurityToken(
-            issuer: jwtSettings["Issuer"],
-            audience: jwtSettings["Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(double.Parse(jwtSettings["ExpiryHours"] ?? "24")),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

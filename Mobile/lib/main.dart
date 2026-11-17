@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:pizza/core/router/app_router.dart';
 import 'package:pizza/core/theme/app_theme.dart';
@@ -10,14 +11,14 @@ void main() async {
   // Inicializa a formatação de datas para o padrão brasileiro (pt_BR)
   // Isso evita o LocaleDataException ao usar DateFormat com 'pt_BR'
   await initializeDateFormatting('pt_BR', null);
-  runApp(const MeuAplicativo());
+  runApp(const ProviderScope(child: MeuAplicativo()));
 }
 
-class MeuAplicativo extends StatelessWidget {
+class MeuAplicativo extends ConsumerWidget {
   const MeuAplicativo({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Pizzaria Delivery',

@@ -39,14 +39,13 @@ Future<void> configureDependencies() async {
 /// Cria instância do Dio com configurações padrão
 Dio _createDio() {
   // ============================================================
-  // CONFIGURE AQUI A URL DO SEU DESKTOP API
+  // CONFIGURE AQUI A URL DA API (Render Cloud)
   // ============================================================
-  // Emulador Android:     'http://10.0.2.2:5000'
-  // Simulador iOS:        'http://localhost:5000'
-  // Celular físico (WiFi): 'http://SEU_IP_LOCAL:5000'  <-- DESCUBRA COM: ipconfig (Windows) / ifconfig (Mac/Linux)
-  // Celular físico (USB):  'http://10.0.2.2:5000'  (após: adb reverse tcp:5000 tcp:5000)
+  // Render API:    'https://pizzaria-api-ffie.onrender.com'
+  // Local (emulador): 'http://10.0.2.2:5000'
+  // Local (iOS):        'http://localhost:5000'
   // ============================================================
-  const String apiBaseUrl = 'http://10.0.2.2:5000'; // ALTERE AQUI PARA SEU IP SE USAR CELULAR FÍSICO
+  const String apiBaseUrl = 'https://pizzaria-api-ffie.onrender.com'; // API Render (Produção)
 
   final dio = Dio(
     BaseOptions(

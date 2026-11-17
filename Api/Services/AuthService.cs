@@ -193,8 +193,8 @@ public class AuthService : IAuthService
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.Name, user.Name),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(JwtRegisteredClaimNames.Aud, audience)
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
+            // Aud não precisa aqui — já vai no constructor do JwtSecurityToken (audience: audience)
         };
 
         var token = new JwtSecurityToken(

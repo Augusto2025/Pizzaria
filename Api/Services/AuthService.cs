@@ -179,7 +179,7 @@ public class AuthService : IAuthService
 
     public string GenerateJwtToken(User user)
     {
-        var secretKey = _configuration["JWT_SECRET_KEY"] ?? "PizzariaDesktop_SecretKey_2024_ChangeInProduction_UseStrongRandomKey!";
+        var secretKey = _configuration["JWT_SECRET_KEY"] ?? _configuration["JWT_SECRET"] ?? "PizzariaDesktop_SecretKey_2024_ChangeInProduction_UseStrongRandomKey!";
         var issuer = _configuration["JWT_ISSUER"] ?? "PizzariaDesktop";
         var audience = _configuration["JWT_AUDIENCE"] ?? "PizzariaDesktopUsers";
         var expiryHours = int.TryParse(_configuration["JWT_EXPIRY_HOURS"], out var hours) ? hours : 24;
@@ -214,7 +214,7 @@ public class AuthService : IAuthService
 
         try
         {
-            var secretKey = _configuration["JWT_SECRET_KEY"] ?? "PizzariaDesktop_SecretKey_2024_ChangeInProduction_UseStrongRandomKey!";
+            var secretKey = _configuration["JWT_SECRET_KEY"] ?? _configuration["JWT_SECRET"] ?? "PizzariaDesktop_SecretKey_2024_ChangeInProduction_UseStrongRandomKey!";
             var issuer = _configuration["JWT_ISSUER"] ?? "PizzariaDesktop";
             var audience = _configuration["JWT_AUDIENCE"] ?? "PizzariaDesktopUsers";
 

@@ -6,15 +6,14 @@ part of 'menu_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$CategoryDtoImpl _$$CategoryDtoImplFromJson(Map<String, dynamic> json) =>
-    _$CategoryDtoImpl(
-      id: (json['id'] as num).toInt(),
-      name: json['name'] as String,
-      displayName: json['displayName'] as String,
-      sortOrder: (json['sortOrder'] as num).toInt(),
-    );
+_CategoryDto _$CategoryDtoFromJson(Map<String, dynamic> json) => _CategoryDto(
+  id: (json['id'] as num).toInt(),
+  name: json['name'] as String,
+  displayName: json['displayName'] as String,
+  sortOrder: (json['sortOrder'] as num).toInt(),
+);
 
-Map<String, dynamic> _$$CategoryDtoImplToJson(_$CategoryDtoImpl instance) =>
+Map<String, dynamic> _$CategoryDtoToJson(_CategoryDto instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
@@ -22,69 +21,73 @@ Map<String, dynamic> _$$CategoryDtoImplToJson(_$CategoryDtoImpl instance) =>
       'sortOrder': instance.sortOrder,
     };
 
-_$CustomizationChoiceDtoImpl _$$CustomizationChoiceDtoImplFromJson(
-        Map<String, dynamic> json) =>
-    _$CustomizationChoiceDtoImpl(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      additionalPrice: (json['additionalPrice'] as num).toDouble(),
-      sortOrder: (json['sortOrder'] as num).toInt(),
-    );
+_CustomizationChoiceDto _$CustomizationChoiceDtoFromJson(
+  Map<String, dynamic> json,
+) => _CustomizationChoiceDto(
+  id: json['id'] as String,
+  name: json['name'] as String,
+  additionalPrice: (json['additionalPrice'] as num).toDouble(),
+  sortOrder: (json['sortOrder'] as num).toInt(),
+);
 
-Map<String, dynamic> _$$CustomizationChoiceDtoImplToJson(
-        _$CustomizationChoiceDtoImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'additionalPrice': instance.additionalPrice,
-      'sortOrder': instance.sortOrder,
-    };
+Map<String, dynamic> _$CustomizationChoiceDtoToJson(
+  _CustomizationChoiceDto instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'additionalPrice': instance.additionalPrice,
+  'sortOrder': instance.sortOrder,
+};
 
-_$CustomizationOptionDtoImpl _$$CustomizationOptionDtoImplFromJson(
-        Map<String, dynamic> json) =>
-    _$CustomizationOptionDtoImpl(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      isRequired: json['isRequired'] as bool,
-      allowMultiple: json['allowMultiple'] as bool,
-      sortOrder: (json['sortOrder'] as num).toInt(),
-      choices: (json['choices'] as List<dynamic>?)
-              ?.map((e) =>
-                  CustomizationChoiceDto.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
-    );
+_CustomizationOptionDto _$CustomizationOptionDtoFromJson(
+  Map<String, dynamic> json,
+) => _CustomizationOptionDto(
+  id: json['id'] as String,
+  name: json['name'] as String,
+  isRequired: json['isRequired'] as bool,
+  allowMultiple: json['allowMultiple'] as bool,
+  sortOrder: (json['sortOrder'] as num).toInt(),
+  choices:
+      (json['choices'] as List<dynamic>?)
+          ?.map(
+            (e) => CustomizationChoiceDto.fromJson(e as Map<String, dynamic>),
+          )
+          .toList() ??
+      const [],
+);
 
-Map<String, dynamic> _$$CustomizationOptionDtoImplToJson(
-        _$CustomizationOptionDtoImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'isRequired': instance.isRequired,
-      'allowMultiple': instance.allowMultiple,
-      'sortOrder': instance.sortOrder,
-      'choices': instance.choices,
-    };
+Map<String, dynamic> _$CustomizationOptionDtoToJson(
+  _CustomizationOptionDto instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'isRequired': instance.isRequired,
+  'allowMultiple': instance.allowMultiple,
+  'sortOrder': instance.sortOrder,
+  'choices': instance.choices,
+};
 
-_$ProductDtoImpl _$$ProductDtoImplFromJson(Map<String, dynamic> json) =>
-    _$ProductDtoImpl(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      imageUrl: json['imageUrl'] as String,
-      price: (json['price'] as num).toDouble(),
-      categoryId: (json['categoryId'] as num).toInt(),
-      categoryName: json['categoryName'] as String,
-      prepTimeMinutes: (json['prepTimeMinutes'] as num).toInt(),
-      isAvailable: json['isAvailable'] as bool,
-      customizationOptions: (json['customizationOptions'] as List<dynamic>?)
-              ?.map((e) =>
-                  CustomizationOptionDto.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
-    );
+_ProductDto _$ProductDtoFromJson(Map<String, dynamic> json) => _ProductDto(
+  id: json['id'] as String,
+  name: json['name'] as String,
+  description: json['description'] as String,
+  imageUrl: json['imageUrl'] as String,
+  price: (json['price'] as num).toDouble(),
+  categoryId: (json['categoryId'] as num).toInt(),
+  categoryName: json['categoryName'] as String,
+  categoryDisplayName: json['categoryDisplayName'] as String,
+  prepTimeMinutes: (json['prepTimeMinutes'] as num).toInt(),
+  isAvailable: json['isAvailable'] as bool,
+  customizationOptions:
+      (json['customizationOptions'] as List<dynamic>?)
+          ?.map(
+            (e) => CustomizationOptionDto.fromJson(e as Map<String, dynamic>),
+          )
+          .toList() ??
+      const [],
+);
 
-Map<String, dynamic> _$$ProductDtoImplToJson(_$ProductDtoImpl instance) =>
+Map<String, dynamic> _$ProductDtoToJson(_ProductDto instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
@@ -93,24 +96,27 @@ Map<String, dynamic> _$$ProductDtoImplToJson(_$ProductDtoImpl instance) =>
       'price': instance.price,
       'categoryId': instance.categoryId,
       'categoryName': instance.categoryName,
+      'categoryDisplayName': instance.categoryDisplayName,
       'prepTimeMinutes': instance.prepTimeMinutes,
       'isAvailable': instance.isAvailable,
       'customizationOptions': instance.customizationOptions,
     };
 
-_$MenuResponseImpl _$$MenuResponseImplFromJson(Map<String, dynamic> json) =>
-    _$MenuResponseImpl(
-      categories: (json['categories'] as List<dynamic>?)
+_MenuResponse _$MenuResponseFromJson(Map<String, dynamic> json) =>
+    _MenuResponse(
+      categories:
+          (json['categories'] as List<dynamic>?)
               ?.map((e) => CategoryDto.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      products: (json['products'] as List<dynamic>?)
+      products:
+          (json['products'] as List<dynamic>?)
               ?.map((e) => ProductDto.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
     );
 
-Map<String, dynamic> _$$MenuResponseImplToJson(_$MenuResponseImpl instance) =>
+Map<String, dynamic> _$MenuResponseToJson(_MenuResponse instance) =>
     <String, dynamic>{
       'categories': instance.categories,
       'products': instance.products,

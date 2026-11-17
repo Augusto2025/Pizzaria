@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'auth_models.dart';
@@ -9,1391 +9,1996 @@ part of 'auth_models.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-LoginRequest _$LoginRequestFromJson(Map<String, dynamic> json) {
-  return _LoginRequest.fromJson(json);
-}
 
 /// @nodoc
 mixin _$LoginRequest {
-  String get email => throw _privateConstructorUsedError;
-  String get password => throw _privateConstructorUsedError;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $LoginRequestCopyWith<LoginRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get email; String get password;
+/// Create a copy of LoginRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LoginRequestCopyWith<LoginRequest> get copyWith => _$LoginRequestCopyWithImpl<LoginRequest>(this as LoginRequest, _$identity);
+
+  /// Serializes this LoginRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as LoginRequest;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginRequest&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.password, _this.password) || other.password == _this.password));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as LoginRequest;
+  return Object.hash(runtimeType,_this.email,_this.password);
+}
+
+@override
+String toString() {
+  final _this = this as LoginRequest;
+  return 'LoginRequest(email: ${_this.email}, password: ${_this.password})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $LoginRequestCopyWith<$Res> {
-  factory $LoginRequestCopyWith(
-          LoginRequest value, $Res Function(LoginRequest) then) =
-      _$LoginRequestCopyWithImpl<$Res, LoginRequest>;
-  @useResult
-  $Res call({String email, String password});
-}
+abstract mixin class $LoginRequestCopyWith<$Res>  {
+  factory $LoginRequestCopyWith(LoginRequest value, $Res Function(LoginRequest) _then) = _$LoginRequestCopyWithImpl;
+@useResult
+$Res call({
+ String email, String password
+});
 
+
+
+
+}
 /// @nodoc
-class _$LoginRequestCopyWithImpl<$Res, $Val extends LoginRequest>
+class _$LoginRequestCopyWithImpl<$Res>
     implements $LoginRequestCopyWith<$Res> {
-  _$LoginRequestCopyWithImpl(this._value, this._then);
+  _$LoginRequestCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final LoginRequest _self;
+  final $Res Function(LoginRequest) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? email = null,
-    Object? password = null,
-  }) {
-    return _then(_value.copyWith(
-      email: null == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String,
-      password: null == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of LoginRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? password = null,}) {
+  return _then(LoginRequest(
+email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$LoginRequestImplCopyWith<$Res>
-    implements $LoginRequestCopyWith<$Res> {
-  factory _$$LoginRequestImplCopyWith(
-          _$LoginRequestImpl value, $Res Function(_$LoginRequestImpl) then) =
-      __$$LoginRequestImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String email, String password});
 }
 
-/// @nodoc
-class __$$LoginRequestImplCopyWithImpl<$Res>
-    extends _$LoginRequestCopyWithImpl<$Res, _$LoginRequestImpl>
-    implements _$$LoginRequestImplCopyWith<$Res> {
-  __$$LoginRequestImplCopyWithImpl(
-      _$LoginRequestImpl _value, $Res Function(_$LoginRequestImpl) _then)
-      : super(_value, _then);
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? email = null,
-    Object? password = null,
-  }) {
-    return _then(_$LoginRequestImpl(
-      email: null == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String,
-      password: null == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
+/// Adds pattern-matching-related methods to [LoginRequest].
+extension LoginRequestPatterns on LoginRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _LoginRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _LoginRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _LoginRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _LoginRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _LoginRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _LoginRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String password)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _LoginRequest() when $default != null:
+return $default(_that.email,_that.password);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String password)  $default,) {final _that = this;
+switch (_that) {
+case _LoginRequest():
+return $default(_that.email,_that.password);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String password)?  $default,) {final _that = this;
+switch (_that) {
+case _LoginRequest() when $default != null:
+return $default(_that.email,_that.password);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$LoginRequestImpl implements _LoginRequest {
-  const _$LoginRequestImpl({required this.email, required this.password});
 
-  factory _$LoginRequestImpl.fromJson(Map<String, dynamic> json) =>
-      _$$LoginRequestImplFromJson(json);
+class _LoginRequest implements LoginRequest {
+  const _LoginRequest({required this.email, required this.password});
+  factory _LoginRequest.fromJson(Map<String, dynamic> json) => _$LoginRequestFromJson(json);
 
-  @override
-  final String email;
-  @override
-  final String password;
+@override final  String email;
+@override final  String password;
 
-  @override
-  String toString() {
+/// Create a copy of LoginRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LoginRequestCopyWith<_LoginRequest> get copyWith => __$LoginRequestCopyWithImpl<_LoginRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$LoginRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginRequest&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,email,password);
+}
+
+@override
+String toString() {
     return 'LoginRequest(email: $email, password: $password)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LoginRequestImpl &&
-            (identical(other.email, email) || other.email == email) &&
-            (identical(other.password, password) ||
-                other.password == password));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, email, password);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$LoginRequestImplCopyWith<_$LoginRequestImpl> get copyWith =>
-      __$$LoginRequestImplCopyWithImpl<_$LoginRequestImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$LoginRequestImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class _LoginRequest implements LoginRequest {
-  const factory _LoginRequest(
-      {required String email,
-      required String password}) = _$LoginRequestImpl;
 
-  factory _LoginRequest.fromJson(Map<String, dynamic> json) =
-      _$LoginRequestImpl.fromJson;
-
-  @override
-  String get email;
-  @override
-  String get password;
-  @override
-  @JsonKey(ignore: true)
-  _$$LoginRequestImplCopyWith<_$LoginRequestImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
-LoginResponse _$LoginResponseFromJson(Map<String, dynamic> json) {
-  return _LoginResponse.fromJson(json);
+/// @nodoc
+abstract mixin class _$LoginRequestCopyWith<$Res> implements $LoginRequestCopyWith<$Res> {
+  factory _$LoginRequestCopyWith(_LoginRequest value, $Res Function(_LoginRequest) _then) = __$LoginRequestCopyWithImpl;
+@override @useResult
+$Res call({
+ String email, String password
+});
+
+
+
+
 }
+/// @nodoc
+class __$LoginRequestCopyWithImpl<$Res>
+    implements _$LoginRequestCopyWith<$Res> {
+  __$LoginRequestCopyWithImpl(this._self, this._then);
+
+  final _LoginRequest _self;
+  final $Res Function(_LoginRequest) _then;
+
+/// Create a copy of LoginRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? password = null,}) {
+  return _then(_LoginRequest(
+email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
 
 /// @nodoc
 mixin _$LoginResponse {
-  String get token => throw _privateConstructorUsedError;
-  UserDto get user => throw _privateConstructorUsedError;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $LoginResponseCopyWith<LoginResponse> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get token; UserDto get user;
+/// Create a copy of LoginResponse
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LoginResponseCopyWith<LoginResponse> get copyWith => _$LoginResponseCopyWithImpl<LoginResponse>(this as LoginResponse, _$identity);
+
+  /// Serializes this LoginResponse to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as LoginResponse;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginResponse&&(identical(other.token, _this.token) || other.token == _this.token)&&(identical(other.user, _this.user) || other.user == _this.user));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as LoginResponse;
+  return Object.hash(runtimeType,_this.token,_this.user);
+}
+
+@override
+String toString() {
+  final _this = this as LoginResponse;
+  return 'LoginResponse(token: ${_this.token}, user: ${_this.user})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $LoginResponseCopyWith<$Res> {
-  factory $LoginResponseCopyWith(
-          LoginResponse value, $Res Function(LoginResponse) then) =
-      _$LoginResponseCopyWithImpl<$Res, LoginResponse>;
-  @useResult
-  $Res call({String token, UserDto user});
+abstract mixin class $LoginResponseCopyWith<$Res>  {
+  factory $LoginResponseCopyWith(LoginResponse value, $Res Function(LoginResponse) _then) = _$LoginResponseCopyWithImpl;
+@useResult
+$Res call({
+ String token, UserDto user
+});
 
-  $UserDtoCopyWith<$Res> get user;
+
+$UserDtoCopyWith<$Res> get user;
+
 }
-
 /// @nodoc
-class _$LoginResponseCopyWithImpl<$Res, $Val extends LoginResponse>
+class _$LoginResponseCopyWithImpl<$Res>
     implements $LoginResponseCopyWith<$Res> {
-  _$LoginResponseCopyWithImpl(this._value, this._then);
+  _$LoginResponseCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final LoginResponse _self;
+  final $Res Function(LoginResponse) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? token = null,
-    Object? user = null,
-  }) {
-    return _then(_value.copyWith(
-      token: null == token
-          ? _value.token
-          : token // ignore: cast_nullable_to_non_nullable
-              as String,
-      user: null == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as UserDto,
-    ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $UserDtoCopyWith<$Res> get user {
-    return $UserDtoCopyWith<$Res>(_value.user, (value) {
-      return _then(_value.copyWith(user: value) as $Val);
-    });
-  }
+/// Create a copy of LoginResponse
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? token = null,Object? user = null,}) {
+  return _then(LoginResponse(
+token: null == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
+as String,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as UserDto,
+  ));
+}
+/// Create a copy of LoginResponse
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserDtoCopyWith<$Res> get user {
+  
+  return $UserDtoCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}
 }
 
-/// @nodoc
-abstract class _$$LoginResponseImplCopyWith<$Res>
-    implements $LoginResponseCopyWith<$Res> {
-  factory _$$LoginResponseImplCopyWith(
-          _$LoginResponseImpl value, $Res Function(_$LoginResponseImpl) then) =
-      __$$LoginResponseImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String token, UserDto user});
 
-  @override
-  $UserDtoCopyWith<$Res> get user;
+/// Adds pattern-matching-related methods to [LoginResponse].
+extension LoginResponsePatterns on LoginResponse {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _LoginResponse value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _LoginResponse() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _LoginResponse value)  $default,){
+final _that = this;
+switch (_that) {
+case _LoginResponse():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _LoginResponse value)?  $default,){
+final _that = this;
+switch (_that) {
+case _LoginResponse() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String token,  UserDto user)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _LoginResponse() when $default != null:
+return $default(_that.token,_that.user);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String token,  UserDto user)  $default,) {final _that = this;
+switch (_that) {
+case _LoginResponse():
+return $default(_that.token,_that.user);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String token,  UserDto user)?  $default,) {final _that = this;
+switch (_that) {
+case _LoginResponse() when $default != null:
+return $default(_that.token,_that.user);case _:
+  return null;
+
+}
 }
 
-/// @nodoc
-class __$$LoginResponseImplCopyWithImpl<$Res>
-    extends _$LoginResponseCopyWithImpl<$Res, _$LoginResponseImpl>
-    implements _$$LoginResponseImplCopyWith<$Res> {
-  __$$LoginResponseImplCopyWithImpl(
-      _$LoginResponseImpl _value, $Res Function(_$LoginResponseImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? token = null,
-    Object? user = null,
-  }) {
-    return _then(_$LoginResponseImpl(
-      token: null == token
-          ? _value.token
-          : token // ignore: cast_nullable_to_non_nullable
-              as String,
-      user: null == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as UserDto,
-    ));
-  }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$LoginResponseImpl implements _LoginResponse {
-  const _$LoginResponseImpl({required this.token, required this.user});
 
-  factory _$LoginResponseImpl.fromJson(Map<String, dynamic> json) =>
-      _$$LoginResponseImplFromJson(json);
+class _LoginResponse implements LoginResponse {
+  const _LoginResponse({required this.token, required this.user});
+  factory _LoginResponse.fromJson(Map<String, dynamic> json) => _$LoginResponseFromJson(json);
 
-  @override
-  final String token;
-  @override
-  final UserDto user;
+@override final  String token;
+@override final  UserDto user;
 
-  @override
-  String toString() {
+/// Create a copy of LoginResponse
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LoginResponseCopyWith<_LoginResponse> get copyWith => __$LoginResponseCopyWithImpl<_LoginResponse>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$LoginResponseToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginResponse&&(identical(other.token, token) || other.token == token)&&(identical(other.user, user) || other.user == user));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,token,user);
+}
+
+@override
+String toString() {
     return 'LoginResponse(token: $token, user: $user)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LoginResponseImpl &&
-            (identical(other.token, token) || other.token == token) &&
-            (identical(other.user, user) || other.user == user));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, token, user);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$LoginResponseImplCopyWith<_$LoginResponseImpl> get copyWith =>
-      __$$LoginResponseImplCopyWithImpl<_$LoginResponseImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$LoginResponseImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class _LoginResponse implements LoginResponse {
-  const factory _LoginResponse(
-      {required String token,
-      required UserDto user}) = _$LoginResponseImpl;
 
-  factory _LoginResponse.fromJson(Map<String, dynamic> json) =
-      _$LoginResponseImpl.fromJson;
-
-  @override
-  String get token;
-  @override
-  UserDto get user;
-  @override
-  @JsonKey(ignore: true)
-  _$$LoginResponseImplCopyWith<_$LoginResponseImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
-RegisterRequest _$RegisterRequestFromJson(Map<String, dynamic> json) {
-  return _RegisterRequest.fromJson(json);
+/// @nodoc
+abstract mixin class _$LoginResponseCopyWith<$Res> implements $LoginResponseCopyWith<$Res> {
+  factory _$LoginResponseCopyWith(_LoginResponse value, $Res Function(_LoginResponse) _then) = __$LoginResponseCopyWithImpl;
+@override @useResult
+$Res call({
+ String token, UserDto user
+});
+
+
+@override $UserDtoCopyWith<$Res> get user;
+
 }
+/// @nodoc
+class __$LoginResponseCopyWithImpl<$Res>
+    implements _$LoginResponseCopyWith<$Res> {
+  __$LoginResponseCopyWithImpl(this._self, this._then);
+
+  final _LoginResponse _self;
+  final $Res Function(_LoginResponse) _then;
+
+/// Create a copy of LoginResponse
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? token = null,Object? user = null,}) {
+  return _then(_LoginResponse(
+token: null == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
+as String,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as UserDto,
+  ));
+}
+
+/// Create a copy of LoginResponse
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserDtoCopyWith<$Res> get user {
+  
+  return $UserDtoCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}
+}
+
 
 /// @nodoc
 mixin _$RegisterRequest {
-  String get name => throw _privateConstructorUsedError;
-  String get email => throw _privateConstructorUsedError;
-  String get phone => throw _privateConstructorUsedError;
-  String get password => throw _privateConstructorUsedError;
-  String get confirmPassword => throw _privateConstructorUsedError;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $RegisterRequestCopyWith<RegisterRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get name; String get email; String get phone; String get password; String get confirmPassword;
+/// Create a copy of RegisterRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$RegisterRequestCopyWith<RegisterRequest> get copyWith => _$RegisterRequestCopyWithImpl<RegisterRequest>(this as RegisterRequest, _$identity);
+
+  /// Serializes this RegisterRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as RegisterRequest;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RegisterRequest&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.password, _this.password) || other.password == _this.password)&&(identical(other.confirmPassword, _this.confirmPassword) || other.confirmPassword == _this.confirmPassword));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as RegisterRequest;
+  return Object.hash(runtimeType,_this.name,_this.email,_this.phone,_this.password,_this.confirmPassword);
+}
+
+@override
+String toString() {
+  final _this = this as RegisterRequest;
+  return 'RegisterRequest(name: ${_this.name}, email: ${_this.email}, phone: ${_this.phone}, password: ${_this.password}, confirmPassword: ${_this.confirmPassword})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $RegisterRequestCopyWith<$Res> {
-  factory $RegisterRequestCopyWith(
-          RegisterRequest value, $Res Function(RegisterRequest) then) =
-      _$RegisterRequestCopyWithImpl<$Res, RegisterRequest>;
-  @useResult
-  $Res call(
-      {String name,
-      String email,
-      String phone,
-      String password,
-      String confirmPassword});
-}
+abstract mixin class $RegisterRequestCopyWith<$Res>  {
+  factory $RegisterRequestCopyWith(RegisterRequest value, $Res Function(RegisterRequest) _then) = _$RegisterRequestCopyWithImpl;
+@useResult
+$Res call({
+ String name, String email, String phone, String password, String confirmPassword
+});
 
+
+
+
+}
 /// @nodoc
-class _$RegisterRequestCopyWithImpl<$Res, $Val extends RegisterRequest>
+class _$RegisterRequestCopyWithImpl<$Res>
     implements $RegisterRequestCopyWith<$Res> {
-  _$RegisterRequestCopyWithImpl(this._value, this._then);
+  _$RegisterRequestCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final RegisterRequest _self;
+  final $Res Function(RegisterRequest) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? email = null,
-    Object? phone = null,
-    Object? password = null,
-    Object? confirmPassword = null,
-  }) {
-    return _then(_value.copyWith(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      email: null == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String,
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-      password: null == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String,
-      confirmPassword: null == confirmPassword
-          ? _value.confirmPassword
-          : confirmPassword // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
+/// Create a copy of RegisterRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? email = null,Object? phone = null,Object? password = null,Object? confirmPassword = null,}) {
+  return _then(RegisterRequest(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,confirmPassword: null == confirmPassword ? _self.confirmPassword : confirmPassword // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$RegisterRequestImplCopyWith<$Res>
-    implements $RegisterRequestCopyWith<$Res> {
-  factory _$$RegisterRequestImplCopyWith(_$RegisterRequestImpl value,
-          $Res Function(_$RegisterRequestImpl) then) =
-      __$$RegisterRequestImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String name,
-      String email,
-      String phone,
-      String password,
-      String confirmPassword});
 }
 
-/// @nodoc
-class __$$RegisterRequestImplCopyWithImpl<$Res>
-    extends _$RegisterRequestCopyWithImpl<$Res, _$RegisterRequestImpl>
-    implements _$$RegisterRequestImplCopyWith<$Res> {
-  __$$RegisterRequestImplCopyWithImpl(
-      _$RegisterRequestImpl _value, $Res Function(_$RegisterRequestImpl) _then)
-      : super(_value, _then);
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? email = null,
-    Object? phone = null,
-    Object? password = null,
-    Object? confirmPassword = null,
-  }) {
-    return _then(_$RegisterRequestImpl(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      email: null == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String,
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-      password: null == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String,
-      confirmPassword: null == confirmPassword
-          ? _value.confirmPassword
-          : confirmPassword // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
+/// Adds pattern-matching-related methods to [RegisterRequest].
+extension RegisterRequestPatterns on RegisterRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _RegisterRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _RegisterRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _RegisterRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _RegisterRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _RegisterRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _RegisterRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String email,  String phone,  String password,  String confirmPassword)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _RegisterRequest() when $default != null:
+return $default(_that.name,_that.email,_that.phone,_that.password,_that.confirmPassword);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String email,  String phone,  String password,  String confirmPassword)  $default,) {final _that = this;
+switch (_that) {
+case _RegisterRequest():
+return $default(_that.name,_that.email,_that.phone,_that.password,_that.confirmPassword);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String email,  String phone,  String password,  String confirmPassword)?  $default,) {final _that = this;
+switch (_that) {
+case _RegisterRequest() when $default != null:
+return $default(_that.name,_that.email,_that.phone,_that.password,_that.confirmPassword);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$RegisterRequestImpl implements _RegisterRequest {
-  const _$RegisterRequestImpl(
-      {required this.name,
-      required this.email,
-      required this.phone,
-      required this.password,
-      required this.confirmPassword});
 
-  factory _$RegisterRequestImpl.fromJson(Map<String, dynamic> json) =>
-      _$$RegisterRequestImplFromJson(json);
+class _RegisterRequest implements RegisterRequest {
+  const _RegisterRequest({required this.name, required this.email, required this.phone, required this.password, required this.confirmPassword});
+  factory _RegisterRequest.fromJson(Map<String, dynamic> json) => _$RegisterRequestFromJson(json);
 
-  @override
-  final String name;
-  @override
-  final String email;
-  @override
-  final String phone;
-  @override
-  final String password;
-  @override
-  final String confirmPassword;
+@override final  String name;
+@override final  String email;
+@override final  String phone;
+@override final  String password;
+@override final  String confirmPassword;
 
-  @override
-  String toString() {
+/// Create a copy of RegisterRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RegisterRequestCopyWith<_RegisterRequest> get copyWith => __$RegisterRequestCopyWithImpl<_RegisterRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$RegisterRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterRequest&&(identical(other.name, name) || other.name == name)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.password, password) || other.password == password)&&(identical(other.confirmPassword, confirmPassword) || other.confirmPassword == confirmPassword));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,name,email,phone,password,confirmPassword);
+}
+
+@override
+String toString() {
     return 'RegisterRequest(name: $name, email: $email, phone: $phone, password: $password, confirmPassword: $confirmPassword)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$RegisterRequestImpl &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.email, email) || other.email == email) &&
-            (identical(other.phone, phone) || other.phone == phone) &&
-            (identical(other.password, password) ||
-                other.password == password) &&
-            (identical(other.confirmPassword, confirmPassword) ||
-                other.confirmPassword == confirmPassword));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, name, email, phone, password, confirmPassword);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$RegisterRequestImplCopyWith<_$RegisterRequestImpl> get copyWith =>
-      __$$RegisterRequestImplCopyWithImpl<_$RegisterRequestImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$RegisterRequestImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class _RegisterRequest implements RegisterRequest {
-  const factory _RegisterRequest(
-      {required String name,
-      required String email,
-      required String phone,
-      required String password,
-      required String confirmPassword}) = _$RegisterRequestImpl;
 
-  factory _RegisterRequest.fromJson(Map<String, dynamic> json) =
-      _$RegisterRequestImpl.fromJson;
-
-  @override
-  String get name;
-  @override
-  String get email;
-  @override
-  String get phone;
-  @override
-  String get password;
-  @override
-  String get confirmPassword;
-  @override
-  @JsonKey(ignore: true)
-  _$$RegisterRequestImplCopyWith<_$RegisterRequestImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
-RegisterResponse _$RegisterResponseFromJson(Map<String, dynamic> json) {
-  return _RegisterResponse.fromJson(json);
+/// @nodoc
+abstract mixin class _$RegisterRequestCopyWith<$Res> implements $RegisterRequestCopyWith<$Res> {
+  factory _$RegisterRequestCopyWith(_RegisterRequest value, $Res Function(_RegisterRequest) _then) = __$RegisterRequestCopyWithImpl;
+@override @useResult
+$Res call({
+ String name, String email, String phone, String password, String confirmPassword
+});
+
+
+
+
 }
+/// @nodoc
+class __$RegisterRequestCopyWithImpl<$Res>
+    implements _$RegisterRequestCopyWith<$Res> {
+  __$RegisterRequestCopyWithImpl(this._self, this._then);
+
+  final _RegisterRequest _self;
+  final $Res Function(_RegisterRequest) _then;
+
+/// Create a copy of RegisterRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? email = null,Object? phone = null,Object? password = null,Object? confirmPassword = null,}) {
+  return _then(_RegisterRequest(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,confirmPassword: null == confirmPassword ? _self.confirmPassword : confirmPassword // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
 
 /// @nodoc
 mixin _$RegisterResponse {
-  String get token => throw _privateConstructorUsedError;
-  UserDto get user => throw _privateConstructorUsedError;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $RegisterResponseCopyWith<RegisterResponse> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get token; UserDto get user;
+/// Create a copy of RegisterResponse
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$RegisterResponseCopyWith<RegisterResponse> get copyWith => _$RegisterResponseCopyWithImpl<RegisterResponse>(this as RegisterResponse, _$identity);
+
+  /// Serializes this RegisterResponse to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as RegisterResponse;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RegisterResponse&&(identical(other.token, _this.token) || other.token == _this.token)&&(identical(other.user, _this.user) || other.user == _this.user));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as RegisterResponse;
+  return Object.hash(runtimeType,_this.token,_this.user);
+}
+
+@override
+String toString() {
+  final _this = this as RegisterResponse;
+  return 'RegisterResponse(token: ${_this.token}, user: ${_this.user})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $RegisterResponseCopyWith<$Res> {
-  factory $RegisterResponseCopyWith(
-          RegisterResponse value, $Res Function(RegisterResponse) then) =
-      _$RegisterResponseCopyWithImpl<$Res, RegisterResponse>;
-  @useResult
-  $Res call({String token, UserDto user});
+abstract mixin class $RegisterResponseCopyWith<$Res>  {
+  factory $RegisterResponseCopyWith(RegisterResponse value, $Res Function(RegisterResponse) _then) = _$RegisterResponseCopyWithImpl;
+@useResult
+$Res call({
+ String token, UserDto user
+});
 
-  $UserDtoCopyWith<$Res> get user;
+
+$UserDtoCopyWith<$Res> get user;
+
 }
-
 /// @nodoc
-class _$RegisterResponseCopyWithImpl<$Res, $Val extends RegisterResponse>
+class _$RegisterResponseCopyWithImpl<$Res>
     implements $RegisterResponseCopyWith<$Res> {
-  _$RegisterResponseCopyWithImpl(this._value, this._then);
+  _$RegisterResponseCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final RegisterResponse _self;
+  final $Res Function(RegisterResponse) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? token = null,
-    Object? user = null,
-  }) {
-    return _then(_value.copyWith(
-      token: null == token
-          ? _value.token
-          : token // ignore: cast_nullable_to_non_nullable
-              as String,
-      user: null == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as UserDto,
-    ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $UserDtoCopyWith<$Res> get user {
-    return $UserDtoCopyWith<$Res>(_value.user, (value) {
-      return _then(_value.copyWith(user: value) as $Val);
-    });
-  }
+/// Create a copy of RegisterResponse
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? token = null,Object? user = null,}) {
+  return _then(RegisterResponse(
+token: null == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
+as String,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as UserDto,
+  ));
+}
+/// Create a copy of RegisterResponse
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserDtoCopyWith<$Res> get user {
+  
+  return $UserDtoCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}
 }
 
-/// @nodoc
-abstract class _$$RegisterResponseImplCopyWith<$Res>
-    implements $RegisterResponseCopyWith<$Res> {
-  factory _$$RegisterResponseImplCopyWith(_$RegisterResponseImpl value,
-          $Res Function(_$RegisterResponseImpl) then) =
-      __$$RegisterResponseImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String token, UserDto user});
 
-  @override
-  $UserDtoCopyWith<$Res> get user;
+/// Adds pattern-matching-related methods to [RegisterResponse].
+extension RegisterResponsePatterns on RegisterResponse {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _RegisterResponse value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _RegisterResponse() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _RegisterResponse value)  $default,){
+final _that = this;
+switch (_that) {
+case _RegisterResponse():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _RegisterResponse value)?  $default,){
+final _that = this;
+switch (_that) {
+case _RegisterResponse() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String token,  UserDto user)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _RegisterResponse() when $default != null:
+return $default(_that.token,_that.user);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String token,  UserDto user)  $default,) {final _that = this;
+switch (_that) {
+case _RegisterResponse():
+return $default(_that.token,_that.user);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String token,  UserDto user)?  $default,) {final _that = this;
+switch (_that) {
+case _RegisterResponse() when $default != null:
+return $default(_that.token,_that.user);case _:
+  return null;
+
+}
 }
 
-/// @nodoc
-class __$$RegisterResponseImplCopyWithImpl<$Res>
-    extends _$RegisterResponseCopyWithImpl<$Res, _$RegisterResponseImpl>
-    implements _$$RegisterResponseImplCopyWith<$Res> {
-  __$$RegisterResponseImplCopyWithImpl(_$RegisterResponseImpl _value,
-      $Res Function(_$RegisterResponseImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? token = null,
-    Object? user = null,
-  }) {
-    return _then(_$RegisterResponseImpl(
-      token: null == token
-          ? _value.token
-          : token // ignore: cast_nullable_to_non_nullable
-              as String,
-      user: null == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as UserDto,
-    ));
-  }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$RegisterResponseImpl implements _RegisterResponse {
-  const _$RegisterResponseImpl({required this.token, required this.user});
 
-  factory _$RegisterResponseImpl.fromJson(Map<String, dynamic> json) =>
-      _$$RegisterResponseImplFromJson(json);
+class _RegisterResponse implements RegisterResponse {
+  const _RegisterResponse({required this.token, required this.user});
+  factory _RegisterResponse.fromJson(Map<String, dynamic> json) => _$RegisterResponseFromJson(json);
 
-  @override
-  final String token;
-  @override
-  final UserDto user;
+@override final  String token;
+@override final  UserDto user;
 
-  @override
-  String toString() {
+/// Create a copy of RegisterResponse
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RegisterResponseCopyWith<_RegisterResponse> get copyWith => __$RegisterResponseCopyWithImpl<_RegisterResponse>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$RegisterResponseToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterResponse&&(identical(other.token, token) || other.token == token)&&(identical(other.user, user) || other.user == user));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,token,user);
+}
+
+@override
+String toString() {
     return 'RegisterResponse(token: $token, user: $user)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$RegisterResponseImpl &&
-            (identical(other.token, token) || other.token == token) &&
-            (identical(other.user, user) || other.user == user));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, token, user);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$RegisterResponseImplCopyWith<_$RegisterResponseImpl> get copyWith =>
-      __$$RegisterResponseImplCopyWithImpl<_$RegisterResponseImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$RegisterResponseImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class _RegisterResponse implements RegisterResponse {
-  const factory _RegisterResponse(
-      {required String token,
-      required UserDto user}) = _$RegisterResponseImpl;
 
-  factory _RegisterResponse.fromJson(Map<String, dynamic> json) =
-      _$RegisterResponseImpl.fromJson;
-
-  @override
-  String get token;
-  @override
-  UserDto get user;
-  @override
-  @JsonKey(ignore: true)
-  _$$RegisterResponseImplCopyWith<_$RegisterResponseImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
-UserDto _$UserDtoFromJson(Map<String, dynamic> json) {
-  return _UserDto.fromJson(json);
+/// @nodoc
+abstract mixin class _$RegisterResponseCopyWith<$Res> implements $RegisterResponseCopyWith<$Res> {
+  factory _$RegisterResponseCopyWith(_RegisterResponse value, $Res Function(_RegisterResponse) _then) = __$RegisterResponseCopyWithImpl;
+@override @useResult
+$Res call({
+ String token, UserDto user
+});
+
+
+@override $UserDtoCopyWith<$Res> get user;
+
 }
+/// @nodoc
+class __$RegisterResponseCopyWithImpl<$Res>
+    implements _$RegisterResponseCopyWith<$Res> {
+  __$RegisterResponseCopyWithImpl(this._self, this._then);
+
+  final _RegisterResponse _self;
+  final $Res Function(_RegisterResponse) _then;
+
+/// Create a copy of RegisterResponse
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? token = null,Object? user = null,}) {
+  return _then(_RegisterResponse(
+token: null == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
+as String,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as UserDto,
+  ));
+}
+
+/// Create a copy of RegisterResponse
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserDtoCopyWith<$Res> get user {
+  
+  return $UserDtoCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}
+}
+
 
 /// @nodoc
 mixin _$UserDto {
-  String get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  String get email => throw _privateConstructorUsedError;
-  String get phone => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
-  List<AddressDto> get addresses => throw _privateConstructorUsedError;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $UserDtoCopyWith<UserDto> get copyWith => throw _privateConstructorUsedError;
+ String get id; String get name; String get email; String get phone; DateTime get createdAt; List<AddressDto> get addresses;
+/// Create a copy of UserDto
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UserDtoCopyWith<UserDto> get copyWith => _$UserDtoCopyWithImpl<UserDto>(this as UserDto, _$identity);
+
+  /// Serializes this UserDto to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as UserDto;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserDto&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&const DeepCollectionEquality().equals(other.addresses, _this.addresses));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as UserDto;
+  return Object.hash(runtimeType,_this.id,_this.name,_this.email,_this.phone,_this.createdAt,const DeepCollectionEquality().hash(_this.addresses));
+}
+
+@override
+String toString() {
+  final _this = this as UserDto;
+  return 'UserDto(id: ${_this.id}, name: ${_this.name}, email: ${_this.email}, phone: ${_this.phone}, createdAt: ${_this.createdAt}, addresses: ${_this.addresses})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $UserDtoCopyWith<$Res> {
-  factory $UserDtoCopyWith(UserDto value, $Res Function(UserDto) then) =
-      _$UserDtoCopyWithImpl<$Res, UserDto>;
-  @useResult
-  $Res call(
-      {String id,
-      String name,
-      String email,
-      String phone,
-      DateTime createdAt,
-      List<AddressDto> addresses});
-}
+abstract mixin class $UserDtoCopyWith<$Res>  {
+  factory $UserDtoCopyWith(UserDto value, $Res Function(UserDto) _then) = _$UserDtoCopyWithImpl;
+@useResult
+$Res call({
+ String id, String name, String email, String phone, DateTime createdAt, List<AddressDto> addresses
+});
 
+
+
+
+}
 /// @nodoc
-class _$UserDtoCopyWithImpl<$Res, $Val extends UserDto>
+class _$UserDtoCopyWithImpl<$Res>
     implements $UserDtoCopyWith<$Res> {
-  _$UserDtoCopyWithImpl(this._value, this._then);
+  _$UserDtoCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final UserDto _self;
+  final $Res Function(UserDto) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? email = null,
-    Object? phone = null,
-    Object? createdAt = null,
-    Object? addresses = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      email: null == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String,
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      addresses: null == addresses
-          ? _value.addresses
-          : addresses // ignore: cast_nullable_to_non_nullable
-              as List<AddressDto>,
-    ) as $Val);
-  }
+/// Create a copy of UserDto
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? email = null,Object? phone = null,Object? createdAt = null,Object? addresses = null,}) {
+  return _then(UserDto(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,addresses: null == addresses ? _self.addresses : addresses // ignore: cast_nullable_to_non_nullable
+as List<AddressDto>,
+  ));
 }
 
-/// @nodoc
-abstract class _$$UserDtoImplCopyWith<$Res> implements $UserDtoCopyWith<$Res> {
-  factory _$$UserDtoImplCopyWith(
-          _$UserDtoImpl value, $Res Function(_$UserDtoImpl) then) =
-      __$$UserDtoImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String id,
-      String name,
-      String email,
-      String phone,
-      DateTime createdAt,
-      List<AddressDto> addresses});
 }
 
-/// @nodoc
-class __$$UserDtoImplCopyWithImpl<$Res>
-    extends _$UserDtoCopyWithImpl<$Res, _$UserDtoImpl>
-    implements _$$UserDtoImplCopyWith<$Res> {
-  __$$UserDtoImplCopyWithImpl(
-      _$UserDtoImpl _value, $Res Function(_$UserDtoImpl) _then)
-      : super(_value, _then);
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? email = null,
-    Object? phone = null,
-    Object? createdAt = null,
-    Object? addresses = null,
-  }) {
-    return _then(_$UserDtoImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      email: null == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String,
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      addresses: null == addresses
-          ? _value._addresses
-          : addresses // ignore: cast_nullable_to_non_nullable
-              as List<AddressDto>,
-    ));
-  }
+/// Adds pattern-matching-related methods to [UserDto].
+extension UserDtoPatterns on UserDto {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UserDto value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _UserDto() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UserDto value)  $default,){
+final _that = this;
+switch (_that) {
+case _UserDto():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UserDto value)?  $default,){
+final _that = this;
+switch (_that) {
+case _UserDto() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String email,  String phone,  DateTime createdAt,  List<AddressDto> addresses)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _UserDto() when $default != null:
+return $default(_that.id,_that.name,_that.email,_that.phone,_that.createdAt,_that.addresses);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String email,  String phone,  DateTime createdAt,  List<AddressDto> addresses)  $default,) {final _that = this;
+switch (_that) {
+case _UserDto():
+return $default(_that.id,_that.name,_that.email,_that.phone,_that.createdAt,_that.addresses);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String email,  String phone,  DateTime createdAt,  List<AddressDto> addresses)?  $default,) {final _that = this;
+switch (_that) {
+case _UserDto() when $default != null:
+return $default(_that.id,_that.name,_that.email,_that.phone,_that.createdAt,_that.addresses);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$UserDtoImpl implements _UserDto {
-  const _$UserDtoImpl(
-      {required this.id,
-      required this.name,
-      required this.email,
-      required this.phone,
-      required this.createdAt,
-      required List<AddressDto> addresses})
-      : _addresses = addresses;
 
-  factory _$UserDtoImpl.fromJson(Map<String, dynamic> json) =>
-      _$$UserDtoImplFromJson(json);
+class _UserDto implements UserDto {
+  const _UserDto({required this.id, required this.name, required this.email, required this.phone, required this.createdAt, required  List<AddressDto> addresses}): _addresses = addresses;
+  factory _UserDto.fromJson(Map<String, dynamic> json) => _$UserDtoFromJson(json);
 
-  @override
-  final String id;
-  @override
-  final String name;
-  @override
-  final String email;
-  @override
-  final String phone;
-  @override
-  final DateTime createdAt;
-  final List<AddressDto> _addresses;
-  @override
-  List<AddressDto> get addresses {
-    if (_addresses is EqualUnmodifiableListView) return _addresses;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_addresses);
-  }
+@override final  String id;
+@override final  String name;
+@override final  String email;
+@override final  String phone;
+@override final  DateTime createdAt;
+ final  List<AddressDto> _addresses;
+@override List<AddressDto> get addresses {
+  if (_addresses is EqualUnmodifiableListView) return _addresses;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_addresses);
+}
 
-  @override
-  String toString() {
+
+/// Create a copy of UserDto
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UserDtoCopyWith<_UserDto> get copyWith => __$UserDtoCopyWithImpl<_UserDto>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$UserDtoToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.addresses, _addresses));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,id,name,email,phone,createdAt,const DeepCollectionEquality().hash(_addresses));
+}
+
+@override
+String toString() {
     return 'UserDto(id: $id, name: $name, email: $email, phone: $phone, createdAt: $createdAt, addresses: $addresses)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$UserDtoImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.email, email) || other.email == email) &&
-            (identical(other.phone, phone) || other.phone == phone) &&
-            (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt) &&
-            const DeepCollectionEquality()
-                .equals(other._addresses, _addresses));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, id, name, email, phone,
-      createdAt, const DeepCollectionEquality().hash(_addresses));
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$UserDtoImplCopyWith<_$UserDtoImpl> get copyWith =>
-      __$$UserDtoImplCopyWithImpl<_$UserDtoImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$UserDtoImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class _UserDto implements UserDto {
-  const factory _UserDto(
-      {required String id,
-      required String name,
-      required String email,
-      required String phone,
-      required DateTime createdAt,
-      required List<AddressDto> addresses}) = _$UserDtoImpl;
 
-  factory _UserDto.fromJson(Map<String, dynamic> json) = _$UserDtoImpl.fromJson;
-
-  @override
-  String get id;
-  @override
-  String get name;
-  @override
-  String get email;
-  @override
-  String get phone;
-  @override
-  DateTime get createdAt;
-  @override
-  List<AddressDto> get addresses;
-  @override
-  @JsonKey(ignore: true)
-  _$$UserDtoImplCopyWith<_$UserDtoImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
-UserStatsDto _$UserStatsDtoFromJson(Map<String, dynamic> json) {
-  return _UserStatsDto.fromJson(json);
+/// @nodoc
+abstract mixin class _$UserDtoCopyWith<$Res> implements $UserDtoCopyWith<$Res> {
+  factory _$UserDtoCopyWith(_UserDto value, $Res Function(_UserDto) _then) = __$UserDtoCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String name, String email, String phone, DateTime createdAt, List<AddressDto> addresses
+});
+
+
+
+
 }
+/// @nodoc
+class __$UserDtoCopyWithImpl<$Res>
+    implements _$UserDtoCopyWith<$Res> {
+  __$UserDtoCopyWithImpl(this._self, this._then);
+
+  final _UserDto _self;
+  final $Res Function(_UserDto) _then;
+
+/// Create a copy of UserDto
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? email = null,Object? phone = null,Object? createdAt = null,Object? addresses = null,}) {
+  return _then(_UserDto(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,addresses: null == addresses ? _self._addresses : addresses // ignore: cast_nullable_to_non_nullable
+as List<AddressDto>,
+  ));
+}
+
+
+}
+
 
 /// @nodoc
 mixin _$UserStatsDto {
-  int get totalOrders => throw _privateConstructorUsedError;
-  int get deliveredOrders => throw _privateConstructorUsedError;
-  double get totalSpent => throw _privateConstructorUsedError;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $UserStatsDtoCopyWith<UserStatsDto> get copyWith =>
-      throw _privateConstructorUsedError;
+ int get totalOrders; int get deliveredOrders; double get totalSpent;
+/// Create a copy of UserStatsDto
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UserStatsDtoCopyWith<UserStatsDto> get copyWith => _$UserStatsDtoCopyWithImpl<UserStatsDto>(this as UserStatsDto, _$identity);
+
+  /// Serializes this UserStatsDto to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as UserStatsDto;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserStatsDto&&(identical(other.totalOrders, _this.totalOrders) || other.totalOrders == _this.totalOrders)&&(identical(other.deliveredOrders, _this.deliveredOrders) || other.deliveredOrders == _this.deliveredOrders)&&(identical(other.totalSpent, _this.totalSpent) || other.totalSpent == _this.totalSpent));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as UserStatsDto;
+  return Object.hash(runtimeType,_this.totalOrders,_this.deliveredOrders,_this.totalSpent);
+}
+
+@override
+String toString() {
+  final _this = this as UserStatsDto;
+  return 'UserStatsDto(totalOrders: ${_this.totalOrders}, deliveredOrders: ${_this.deliveredOrders}, totalSpent: ${_this.totalSpent})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $UserStatsDtoCopyWith<$Res> {
-  factory $UserStatsDtoCopyWith(
-          UserStatsDto value, $Res Function(UserStatsDto) then) =
-      _$UserStatsDtoCopyWithImpl<$Res, UserStatsDto>;
-  @useResult
-  $Res call({int totalOrders, int deliveredOrders, double totalSpent});
-}
+abstract mixin class $UserStatsDtoCopyWith<$Res>  {
+  factory $UserStatsDtoCopyWith(UserStatsDto value, $Res Function(UserStatsDto) _then) = _$UserStatsDtoCopyWithImpl;
+@useResult
+$Res call({
+ int totalOrders, int deliveredOrders, double totalSpent
+});
 
+
+
+
+}
 /// @nodoc
-class _$UserStatsDtoCopyWithImpl<$Res, $Val extends UserStatsDto>
+class _$UserStatsDtoCopyWithImpl<$Res>
     implements $UserStatsDtoCopyWith<$Res> {
-  _$UserStatsDtoCopyWithImpl(this._value, this._then);
+  _$UserStatsDtoCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final UserStatsDto _self;
+  final $Res Function(UserStatsDto) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? totalOrders = null,
-    Object? deliveredOrders = null,
-    Object? totalSpent = null,
-  }) {
-    return _then(_value.copyWith(
-      totalOrders: null == totalOrders
-          ? _value.totalOrders
-          : totalOrders // ignore: cast_nullable_to_non_nullable
-              as int,
-      deliveredOrders: null == deliveredOrders
-          ? _value.deliveredOrders
-          : deliveredOrders // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalSpent: null == totalSpent
-          ? _value.totalSpent
-          : totalSpent // ignore: cast_nullable_to_non_nullable
-              as double,
-    ) as $Val);
-  }
+/// Create a copy of UserStatsDto
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? totalOrders = null,Object? deliveredOrders = null,Object? totalSpent = null,}) {
+  return _then(UserStatsDto(
+totalOrders: null == totalOrders ? _self.totalOrders : totalOrders // ignore: cast_nullable_to_non_nullable
+as int,deliveredOrders: null == deliveredOrders ? _self.deliveredOrders : deliveredOrders // ignore: cast_nullable_to_non_nullable
+as int,totalSpent: null == totalSpent ? _self.totalSpent : totalSpent // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
 }
 
-/// @nodoc
-abstract class _$$UserStatsDtoImplCopyWith<$Res>
-    implements $UserStatsDtoCopyWith<$Res> {
-  factory _$$UserStatsDtoImplCopyWith(
-          _$UserStatsDtoImpl value, $Res Function(_$UserStatsDtoImpl) then) =
-      __$$UserStatsDtoImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({int totalOrders, int deliveredOrders, double totalSpent});
 }
 
-/// @nodoc
-class __$$UserStatsDtoImplCopyWithImpl<$Res>
-    extends _$UserStatsDtoCopyWithImpl<$Res, _$UserStatsDtoImpl>
-    implements _$$UserStatsDtoImplCopyWith<$Res> {
-  __$$UserStatsDtoImplCopyWithImpl(
-      _$UserStatsDtoImpl _value, $Res Function(_$UserStatsDtoImpl) _then)
-      : super(_value, _then);
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? totalOrders = null,
-    Object? deliveredOrders = null,
-    Object? totalSpent = null,
-  }) {
-    return _then(_$UserStatsDtoImpl(
-      totalOrders: null == totalOrders
-          ? _value.totalOrders
-          : totalOrders // ignore: cast_nullable_to_non_nullable
-              as int,
-      deliveredOrders: null == deliveredOrders
-          ? _value.deliveredOrders
-          : deliveredOrders // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalSpent: null == totalSpent
-          ? _value.totalSpent
-          : totalSpent // ignore: cast_nullable_to_non_nullable
-              as double,
-    ));
-  }
+/// Adds pattern-matching-related methods to [UserStatsDto].
+extension UserStatsDtoPatterns on UserStatsDto {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UserStatsDto value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _UserStatsDto() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UserStatsDto value)  $default,){
+final _that = this;
+switch (_that) {
+case _UserStatsDto():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UserStatsDto value)?  $default,){
+final _that = this;
+switch (_that) {
+case _UserStatsDto() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int totalOrders,  int deliveredOrders,  double totalSpent)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _UserStatsDto() when $default != null:
+return $default(_that.totalOrders,_that.deliveredOrders,_that.totalSpent);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int totalOrders,  int deliveredOrders,  double totalSpent)  $default,) {final _that = this;
+switch (_that) {
+case _UserStatsDto():
+return $default(_that.totalOrders,_that.deliveredOrders,_that.totalSpent);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int totalOrders,  int deliveredOrders,  double totalSpent)?  $default,) {final _that = this;
+switch (_that) {
+case _UserStatsDto() when $default != null:
+return $default(_that.totalOrders,_that.deliveredOrders,_that.totalSpent);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$UserStatsDtoImpl implements _UserStatsDto {
-  const _$UserStatsDtoImpl(
-      {required this.totalOrders,
-      required this.deliveredOrders,
-      required this.totalSpent});
 
-  factory _$UserStatsDtoImpl.fromJson(Map<String, dynamic> json) =>
-      _$$UserStatsDtoImplFromJson(json);
+class _UserStatsDto implements UserStatsDto {
+  const _UserStatsDto({required this.totalOrders, required this.deliveredOrders, required this.totalSpent});
+  factory _UserStatsDto.fromJson(Map<String, dynamic> json) => _$UserStatsDtoFromJson(json);
 
-  @override
-  final int totalOrders;
-  @override
-  final int deliveredOrders;
-  @override
-  final double totalSpent;
+@override final  int totalOrders;
+@override final  int deliveredOrders;
+@override final  double totalSpent;
 
-  @override
-  String toString() {
+/// Create a copy of UserStatsDto
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UserStatsDtoCopyWith<_UserStatsDto> get copyWith => __$UserStatsDtoCopyWithImpl<_UserStatsDto>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$UserStatsDtoToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserStatsDto&&(identical(other.totalOrders, totalOrders) || other.totalOrders == totalOrders)&&(identical(other.deliveredOrders, deliveredOrders) || other.deliveredOrders == deliveredOrders)&&(identical(other.totalSpent, totalSpent) || other.totalSpent == totalSpent));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,totalOrders,deliveredOrders,totalSpent);
+}
+
+@override
+String toString() {
     return 'UserStatsDto(totalOrders: $totalOrders, deliveredOrders: $deliveredOrders, totalSpent: $totalSpent)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$UserStatsDtoImpl &&
-            (identical(other.totalOrders, totalOrders) ||
-                other.totalOrders == totalOrders) &&
-            (identical(other.deliveredOrders, deliveredOrders) ||
-                other.deliveredOrders == deliveredOrders) &&
-            (identical(other.totalSpent, totalSpent) ||
-                other.totalSpent == totalSpent));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, totalOrders, deliveredOrders, totalSpent);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$UserStatsDtoImplCopyWith<_$UserStatsDtoImpl> get copyWith =>
-      __$$UserStatsDtoImplCopyWithImpl<_$UserStatsDtoImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$UserStatsDtoImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class _UserStatsDto implements UserStatsDto {
-  const factory _UserStatsDto(
-      {required int totalOrders,
-      required int deliveredOrders,
-      required double totalSpent}) = _$UserStatsDtoImpl;
 
-  factory _UserStatsDto.fromJson(Map<String, dynamic> json) =
-      _$UserStatsDtoImpl.fromJson;
-
-  @override
-  int get totalOrders;
-  @override
-  int get deliveredOrders;
-  @override
-  double get totalSpent;
-  @override
-  @JsonKey(ignore: true)
-  _$$UserStatsDtoImplCopyWith<_$UserStatsDtoImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
-UpdateProfileRequest _$UpdateProfileRequestFromJson(Map<String, dynamic> json) {
-  return _UpdateProfileRequest.fromJson(json);
+/// @nodoc
+abstract mixin class _$UserStatsDtoCopyWith<$Res> implements $UserStatsDtoCopyWith<$Res> {
+  factory _$UserStatsDtoCopyWith(_UserStatsDto value, $Res Function(_UserStatsDto) _then) = __$UserStatsDtoCopyWithImpl;
+@override @useResult
+$Res call({
+ int totalOrders, int deliveredOrders, double totalSpent
+});
+
+
+
+
 }
+/// @nodoc
+class __$UserStatsDtoCopyWithImpl<$Res>
+    implements _$UserStatsDtoCopyWith<$Res> {
+  __$UserStatsDtoCopyWithImpl(this._self, this._then);
+
+  final _UserStatsDto _self;
+  final $Res Function(_UserStatsDto) _then;
+
+/// Create a copy of UserStatsDto
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? totalOrders = null,Object? deliveredOrders = null,Object? totalSpent = null,}) {
+  return _then(_UserStatsDto(
+totalOrders: null == totalOrders ? _self.totalOrders : totalOrders // ignore: cast_nullable_to_non_nullable
+as int,deliveredOrders: null == deliveredOrders ? _self.deliveredOrders : deliveredOrders // ignore: cast_nullable_to_non_nullable
+as int,totalSpent: null == totalSpent ? _self.totalSpent : totalSpent // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
+}
+
+
+}
+
 
 /// @nodoc
 mixin _$UpdateProfileRequest {
-  String get userId => throw _privateConstructorUsedError;
-  String? get name => throw _privateConstructorUsedError;
-  String? get phone => throw _privateConstructorUsedError;
-  String? get currentPassword => throw _privateConstructorUsedError;
-  String? get newPassword => throw _privateConstructorUsedError;
-  String? get confirmNewPassword => throw _privateConstructorUsedError;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $UpdateProfileRequestCopyWith<UpdateProfileRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get userId; String? get name; String? get phone; String? get currentPassword; String? get newPassword; String? get confirmNewPassword;
+/// Create a copy of UpdateProfileRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UpdateProfileRequestCopyWith<UpdateProfileRequest> get copyWith => _$UpdateProfileRequestCopyWithImpl<UpdateProfileRequest>(this as UpdateProfileRequest, _$identity);
+
+  /// Serializes this UpdateProfileRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as UpdateProfileRequest;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UpdateProfileRequest&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.currentPassword, _this.currentPassword) || other.currentPassword == _this.currentPassword)&&(identical(other.newPassword, _this.newPassword) || other.newPassword == _this.newPassword)&&(identical(other.confirmNewPassword, _this.confirmNewPassword) || other.confirmNewPassword == _this.confirmNewPassword));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as UpdateProfileRequest;
+  return Object.hash(runtimeType,_this.userId,_this.name,_this.phone,_this.currentPassword,_this.newPassword,_this.confirmNewPassword);
+}
+
+@override
+String toString() {
+  final _this = this as UpdateProfileRequest;
+  return 'UpdateProfileRequest(userId: ${_this.userId}, name: ${_this.name}, phone: ${_this.phone}, currentPassword: ${_this.currentPassword}, newPassword: ${_this.newPassword}, confirmNewPassword: ${_this.confirmNewPassword})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $UpdateProfileRequestCopyWith<$Res> {
-  factory $UpdateProfileRequestCopyWith(UpdateProfileRequest value,
-          $Res Function(UpdateProfileRequest) then) =
-      _$UpdateProfileRequestCopyWithImpl<$Res, UpdateProfileRequest>;
-  @useResult
-  $Res call(
-      {String userId,
-      String? name,
-      String? phone,
-      String? currentPassword,
-      String? newPassword,
-      String? confirmNewPassword});
-}
+abstract mixin class $UpdateProfileRequestCopyWith<$Res>  {
+  factory $UpdateProfileRequestCopyWith(UpdateProfileRequest value, $Res Function(UpdateProfileRequest) _then) = _$UpdateProfileRequestCopyWithImpl;
+@useResult
+$Res call({
+ String userId, String? name, String? phone, String? currentPassword, String? newPassword, String? confirmNewPassword
+});
 
+
+
+
+}
 /// @nodoc
-class _$UpdateProfileRequestCopyWithImpl<$Res,
-        $Val extends UpdateProfileRequest>
+class _$UpdateProfileRequestCopyWithImpl<$Res>
     implements $UpdateProfileRequestCopyWith<$Res> {
-  _$UpdateProfileRequestCopyWithImpl(this._value, this._then);
+  _$UpdateProfileRequestCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final UpdateProfileRequest _self;
+  final $Res Function(UpdateProfileRequest) _then;
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? userId = null,
-    Object? name = freezed,
-    Object? phone = freezed,
-    Object? currentPassword = freezed,
-    Object? newPassword = freezed,
-    Object? confirmNewPassword = freezed,
-  }) {
-    return _then(_value.copyWith(
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: freezed == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      currentPassword: freezed == currentPassword
-          ? _value.currentPassword
-          : currentPassword // ignore: cast_nullable_to_non_nullable
-              as String?,
-      newPassword: freezed == newPassword
-          ? _value.newPassword
-          : newPassword // ignore: cast_nullable_to_non_nullable
-              as String?,
-      confirmNewPassword: freezed == confirmNewPassword
-          ? _value.confirmNewPassword
-          : confirmNewPassword // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
-  }
+/// Create a copy of UpdateProfileRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? name = freezed,Object? phone = freezed,Object? currentPassword = freezed,Object? newPassword = freezed,Object? confirmNewPassword = freezed,}) {
+  return _then(UpdateProfileRequest(
+userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String?,currentPassword: freezed == currentPassword ? _self.currentPassword : currentPassword // ignore: cast_nullable_to_non_nullable
+as String?,newPassword: freezed == newPassword ? _self.newPassword : newPassword // ignore: cast_nullable_to_non_nullable
+as String?,confirmNewPassword: freezed == confirmNewPassword ? _self.confirmNewPassword : confirmNewPassword // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
 }
 
-/// @nodoc
-abstract class _$$UpdateProfileRequestImplCopyWith<$Res>
-    implements $UpdateProfileRequestCopyWith<$Res> {
-  factory _$$UpdateProfileRequestImplCopyWith(_$UpdateProfileRequestImpl value,
-          $Res Function(_$UpdateProfileRequestImpl) then) =
-      __$$UpdateProfileRequestImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String userId,
-      String? name,
-      String? phone,
-      String? currentPassword,
-      String? newPassword,
-      String? confirmNewPassword});
 }
 
-/// @nodoc
-class __$$UpdateProfileRequestImplCopyWithImpl<$Res>
-    extends _$UpdateProfileRequestCopyWithImpl<$Res, _$UpdateProfileRequestImpl>
-    implements _$$UpdateProfileRequestImplCopyWith<$Res> {
-  __$$UpdateProfileRequestImplCopyWithImpl(_$UpdateProfileRequestImpl _value,
-      $Res Function(_$UpdateProfileRequestImpl) _then)
-      : super(_value, _then);
 
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? userId = null,
-    Object? name = freezed,
-    Object? phone = freezed,
-    Object? currentPassword = freezed,
-    Object? newPassword = freezed,
-    Object? confirmNewPassword = freezed,
-  }) {
-    return _then(_$UpdateProfileRequestImpl(
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: freezed == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      currentPassword: freezed == currentPassword
-          ? _value.currentPassword
-          : currentPassword // ignore: cast_nullable_to_non_nullable
-              as String?,
-      newPassword: freezed == newPassword
-          ? _value.newPassword
-          : newPassword // ignore: cast_nullable_to_non_nullable
-              as String?,
-      confirmNewPassword: freezed == confirmNewPassword
-          ? _value.confirmNewPassword
-          : confirmNewPassword // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
+/// Adds pattern-matching-related methods to [UpdateProfileRequest].
+extension UpdateProfileRequestPatterns on UpdateProfileRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UpdateProfileRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _UpdateProfileRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UpdateProfileRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _UpdateProfileRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UpdateProfileRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _UpdateProfileRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String userId,  String? name,  String? phone,  String? currentPassword,  String? newPassword,  String? confirmNewPassword)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _UpdateProfileRequest() when $default != null:
+return $default(_that.userId,_that.name,_that.phone,_that.currentPassword,_that.newPassword,_that.confirmNewPassword);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String userId,  String? name,  String? phone,  String? currentPassword,  String? newPassword,  String? confirmNewPassword)  $default,) {final _that = this;
+switch (_that) {
+case _UpdateProfileRequest():
+return $default(_that.userId,_that.name,_that.phone,_that.currentPassword,_that.newPassword,_that.confirmNewPassword);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String userId,  String? name,  String? phone,  String? currentPassword,  String? newPassword,  String? confirmNewPassword)?  $default,) {final _that = this;
+switch (_that) {
+case _UpdateProfileRequest() when $default != null:
+return $default(_that.userId,_that.name,_that.phone,_that.currentPassword,_that.newPassword,_that.confirmNewPassword);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$UpdateProfileRequestImpl implements _UpdateProfileRequest {
-  const _$UpdateProfileRequestImpl(
-      {required this.userId,
-      this.name,
-      this.phone,
-      this.currentPassword,
-      this.newPassword,
-      this.confirmNewPassword});
 
-  factory _$UpdateProfileRequestImpl.fromJson(Map<String, dynamic> json) =>
-      _$$UpdateProfileRequestImplFromJson(json);
+class _UpdateProfileRequest implements UpdateProfileRequest {
+  const _UpdateProfileRequest({required this.userId, this.name, this.phone, this.currentPassword, this.newPassword, this.confirmNewPassword});
+  factory _UpdateProfileRequest.fromJson(Map<String, dynamic> json) => _$UpdateProfileRequestFromJson(json);
 
-  @override
-  final String userId;
-  @override
-  final String? name;
-  @override
-  final String? phone;
-  @override
-  final String? currentPassword;
-  @override
-  final String? newPassword;
-  @override
-  final String? confirmNewPassword;
+@override final  String userId;
+@override final  String? name;
+@override final  String? phone;
+@override final  String? currentPassword;
+@override final  String? newPassword;
+@override final  String? confirmNewPassword;
 
-  @override
-  String toString() {
+/// Create a copy of UpdateProfileRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UpdateProfileRequestCopyWith<_UpdateProfileRequest> get copyWith => __$UpdateProfileRequestCopyWithImpl<_UpdateProfileRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$UpdateProfileRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateProfileRequest&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.currentPassword, currentPassword) || other.currentPassword == currentPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.confirmNewPassword, confirmNewPassword) || other.confirmNewPassword == confirmNewPassword));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,userId,name,phone,currentPassword,newPassword,confirmNewPassword);
+}
+
+@override
+String toString() {
     return 'UpdateProfileRequest(userId: $userId, name: $name, phone: $phone, currentPassword: $currentPassword, newPassword: $newPassword, confirmNewPassword: $confirmNewPassword)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$UpdateProfileRequestImpl &&
-            (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.phone, phone) || other.phone == phone) &&
-            (identical(other.currentPassword, currentPassword) ||
-                other.currentPassword == currentPassword) &&
-            (identical(other.newPassword, newPassword) ||
-                other.newPassword == newPassword) &&
-            (identical(other.confirmNewPassword, confirmNewPassword) ||
-                other.confirmNewPassword == confirmNewPassword));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, userId, name, phone,
-      currentPassword, newPassword, confirmNewPassword);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$UpdateProfileRequestImplCopyWith<_$UpdateProfileRequestImpl>
-      get copyWith =>
-          __$$UpdateProfileRequestImplCopyWithImpl<_$UpdateProfileRequestImpl>(
-              this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$UpdateProfileRequestImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class _UpdateProfileRequest implements UpdateProfileRequest {
-  const factory _UpdateProfileRequest(
-      {required String userId,
-      String? name,
-      String? phone,
-      String? currentPassword,
-      String? newPassword,
-      String? confirmNewPassword}) = _$UpdateProfileRequestImpl;
 
-  factory _UpdateProfileRequest.fromJson(Map<String, dynamic> json) =
-      _$UpdateProfileRequestImpl.fromJson;
-
-  @override
-  String get userId;
-  @override
-  String? get name;
-  @override
-  String? get phone;
-  @override
-  String? get currentPassword;
-  @override
-  String? get newPassword;
-  @override
-  String? get confirmNewPassword;
-  @override
-  @JsonKey(ignore: true)
-  _$$UpdateProfileRequestImplCopyWith<_$UpdateProfileRequestImpl>
-      get copyWith => throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$UpdateProfileRequestCopyWith<$Res> implements $UpdateProfileRequestCopyWith<$Res> {
+  factory _$UpdateProfileRequestCopyWith(_UpdateProfileRequest value, $Res Function(_UpdateProfileRequest) _then) = __$UpdateProfileRequestCopyWithImpl;
+@override @useResult
+$Res call({
+ String userId, String? name, String? phone, String? currentPassword, String? newPassword, String? confirmNewPassword
+});
+
+
+
+
+}
+/// @nodoc
+class __$UpdateProfileRequestCopyWithImpl<$Res>
+    implements _$UpdateProfileRequestCopyWith<$Res> {
+  __$UpdateProfileRequestCopyWithImpl(this._self, this._then);
+
+  final _UpdateProfileRequest _self;
+  final $Res Function(_UpdateProfileRequest) _then;
+
+/// Create a copy of UpdateProfileRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? name = freezed,Object? phone = freezed,Object? currentPassword = freezed,Object? newPassword = freezed,Object? confirmNewPassword = freezed,}) {
+  return _then(_UpdateProfileRequest(
+userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String?,currentPassword: freezed == currentPassword ? _self.currentPassword : currentPassword // ignore: cast_nullable_to_non_nullable
+as String?,newPassword: freezed == newPassword ? _self.newPassword : newPassword // ignore: cast_nullable_to_non_nullable
+as String?,confirmNewPassword: freezed == confirmNewPassword ? _self.confirmNewPassword : confirmNewPassword // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+// dart format on

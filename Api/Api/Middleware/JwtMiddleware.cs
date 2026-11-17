@@ -12,11 +12,14 @@ public static class JwtMiddlewareExtensions
 {
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtSettings = configuration.GetSection("Jwt");
-        var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not configured");
-        var issuer = jwtSettings["Issuer"] ?? "PizzariaDesktop";
-        var audience = jwtSettings["Audience"] ?? "PizzariaDesktopUsers";
-        var expiryHours = double.Parse(jwtSettings["ExpiryHours"] ?? "24");
+        // Lê das mesmas variáveis que o AuthService usa (JWT_* para compatibilidade com Render)
+        var secretKey = configuration["JWT_SECRET_KEY"]
+                     ?? configuration["JWT_SECRET"]
+                     ?? configuration["Jwt:SecretKey"]
+                     ?? throw new InvalidOperationException("JWT SecretKey not configured (set JWT_SECRET or JWT_SECRET_KEY)");
+        var issuer = configuration["JWT_ISSUER"] ?? configuration["Jwt:Issuer"] ?? "PizzariaDesktop";
+        var audience = configuration["JWT_AUDIENCE"] ?? configuration["Jwt:Audience"] ?? "PizzariaDesktopUsers";
+        var expiryHours = double.TryParse(configuration["JWT_EXPIRY_HOURS"] ?? configuration["Jwt:ExpiryHours"], out var hours) ? hours : 24;
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 

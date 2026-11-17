@@ -20,7 +20,7 @@ final menuProvider = FutureProvider<MenuResponse>((ref) async {
 final productsByCategoryProvider = Provider.family<List<ProductDto>, String>((ref, categoryName) {
   final menuAsync = ref.watch(menuProvider);
   return menuAsync.when(
-    data: (menu) => menu.products.where((p) => p.categoryName.toLowerCase() == categoryName.toLowerCase()).toList(),
+    data: (menu) => menu.products.where((p) => p.categoryDisplayName.toLowerCase() == categoryName.toLowerCase()).toList(),
     loading: () => [],
     error: (_, __) => [],
   );

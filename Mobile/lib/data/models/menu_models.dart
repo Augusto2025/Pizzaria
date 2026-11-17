@@ -51,6 +51,7 @@ abstract class ProductDto with _$ProductDto {
     required double price,
     required int categoryId,
     required String categoryName,
+    required String categoryDisplayName,
     required int prepTimeMinutes,
     required bool isAvailable,
     @Default([]) List<CustomizationOptionDto> customizationOptions,

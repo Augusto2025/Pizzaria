@@ -1,7 +1,7 @@
 # Pizzaria Delivery App - Documentação do Projeto Mobile (Flutter)
 
 ## Visão Geral
-Sistema de delivery para pizzaria — versão mobile multiplataforma (iOS/Android) desenvolvida em **Flutter 3.13+** com **Dart 3.0+**. Clientes fazem pedidos pelo app e acompanham o status em tempo real. Arquitetura **Clean Architecture** com organização **feature-first**, gerenciamento de estado via **Riverpod**, navegação com **go_router**, e comunicação HTTP via **Dio**.
+Sistema de delivery para pizzaria — versão mobile multiplataforma (iOS/Android) desenvolvida em **Flutter 3.13+** com **Dart 3.0+**. Clientes fazem pedidos pelo app e acompanham o status em tempo real. Arquitetura **Clean Architecture** com organização **feature-first**, gerenciamento de estado via **Riverpod 3.x**, navegação com **go_router**, e comunicação HTTP via **Dio**.
 
 ---
 
@@ -70,12 +70,12 @@ lib/
 ### Padrões de Arquitetura
 - **Clean Architecture** com separação em camadas (data, domain, presentation) — *em implementação*
 - **Feature-first** organization — cada feature isolada com sua própria presentation
-- **Riverpod** para gerenciamento de estado (providers configurados, uso pendente nas telas)
+- **Riverpod 3.x** para gerenciamento de estado (**AsyncNotifier** / **Notifier** + **AsyncNotifierProvider** / **NotifierProvider** — providers migrados)
 - **go_router** para navegação declarativa com **ShellRoute** + **BottomNavigationBar** persistente
 - **Repository Pattern** para abstração de dados (interfaces definidas no `injection.dart`, implementações pendentes)
 - **Use Cases** para lógica de negócio (comentados no `injection.dart`, a implementar)
 - **GetIt** para Dependency Injection (service locator)
-- **Freezed + JSON Serializable** para models imutáveis e serialização (configurado no pubspec)
+- **Freezed 3.x + JSON Serializable** para models imutáveis e serialização (configurado no pubspec)
 
 ---
 
@@ -108,9 +108,9 @@ lib/
 - Status do último pedido (empty state com CTA "Fazer pedido")
 - Promoções em destaque: horizontal `ListView` com cards gradientes + badge "PROMOÇÃO"
 
-### 3. Cardápio (Menu) — **Implementado (UI + Mock)**
+### 3. Cardápio (Menu) — **Implementado (UI + Mock + API Real)**
 - Abas de categoria via `TabBar` + `TabBarView`: Pizzas, Bebidas, Sobremesas, Acompanhamentos
-- Lista de produtos por categoria (`ListView.builder`)
+- Lista de produtos por categoria (`ListView.builder`) — **filtro por `categoryDisplayName` (português) vindo da API**
 - **ProductCard** otimizado para evitar overflow:
   - Nome: `maxLines: 1` + `overflow: TextOverflow.ellipsis`
   - Badge "Indisponível" **abaixo** do nome (não inline) — evita overflow horizontal
@@ -275,37 +275,47 @@ static String editAddressRoute(String id) => '/profile/addresses/$id/edit';
 
 ---
 
-## Gerenciamento de Estado (Riverpod)
+## Gerenciamento de Estado (Riverpod 3.x)
 
-### Providers Planejados (ainda não implementados nas telas)
+### Providers Implementados (Migração Riverpod 2.x → 3.x)
 ```dart
-// auth_provider.dart
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) => AuthNotifier());
-// AuthState: { User? user, bool isLoading, String? error }
+// auth_providers.dart — Notifier<UserDto?> + AsyncNotifier<void>
+final currentUserProvider = NotifierProvider<CurrentUserNotifier, UserDto?>(CurrentUserNotifier.new);
+final authProvider = AsyncNotifierProvider<AuthNotifier, void>(AuthNotifier.new);
 
-// cart_provider.dart
-final cartProvider = StateNotifierProvider<CartNotifier, CartState>((ref) => CartNotifier());
-// CartState: { List<CartItem> items, double subtotal, double deliveryFee }
+// cart_providers.dart — AsyncNotifier<void>
+final cartProvider = FutureProvider<CartResponse>((ref) async { ... });
+final cartNotifierProvider = AsyncNotifierProvider<CartNotifier, void>(CartNotifier.new);
 
-// menu_provider.dart
-final menuProvider = FutureProvider.family<List<Product>, String>((ref, category) async { ... });
-final categoriesProvider = FutureProvider<List<Category>>((ref) async { ... });
+// menu_providers.dart — FutureProvider + family
+final menuProvider = FutureProvider<MenuResponse>((ref) async { ... });
+final productsByCategoryProvider = Provider.family<List<ProductDto>, String>((ref, categoryName) { ... });
+final productProvider = FutureProvider.family<ProductDto, String>((ref, id) async { ... });
 
-// orders_provider.dart
-final ordersProvider = FutureProvider<List<Order>>((ref) async { ... });
-final orderTrackingProvider = StreamProvider.family<OrderStatus, String>((ref, orderId) async* { ... });
+// order_providers.dart — AsyncNotifier<void>
+final ordersProvider = FutureProvider<OrdersResponse>((ref) async { ... });
+final orderProvider = FutureProvider.family<OrderDto, String>((ref, id) async { ... });
+final orderNotifierProvider = AsyncNotifierProvider<OrderNotifier, void>(OrderNotifier.new);
 
-// addresses_provider.dart
-final addressesProvider = FutureProvider<List<Address>>((ref) async { ... });
-
-// theme_provider.dart
-final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>((ref) => ThemeNotifier());
+// address_providers.dart — AsyncNotifier<void>
+final addressesProvider = FutureProvider<List<AddressDto>>((ref) async { ... });
+final addressProvider = FutureProvider.family<AddressDto, String>((ref, id) async { ... });
+final addressNotifierProvider = AsyncNotifierProvider<AddressNotifier, void>(AddressNotifier.new);
 ```
 
-### Integração Pendente
-- Telas atualmente usam **mock data local** (listas hardcoded nos build methods)
-- Próximo passo: criar `AuthNotifier`, `CartNotifier`, repositories, use cases e conectar providers às telas
-- `injection.dart` já tem comentários com estrutura planejada
+### Mudanças Riverpod 3.x (Breaking Changes)
+| Antes (2.x) | Agora (3.x) |
+|-------------|-------------|
+| `StateNotifier<T>` | `Notifier<T>` (simples) ou `AsyncNotifier<T>` (async) |
+| `StateNotifierProvider<Notifier, State>` | `NotifierProvider<Notifier, State>` ou `AsyncNotifierProvider<Notifier, State>` |
+| `state = value` no construtor | `build()` retorna estado inicial; `state = value` nos métodos |
+| `ref.watch(provider.notifier)` | Igual (acessa o notifier para chamar métodos) |
+| `AsyncValue<T>` manual | `AsyncNotifier` gerencia `AsyncValue` automaticamente |
+
+### Integração
+- Providers **implementados** em `lib/core/providers/*_providers.dart`
+- Telas usam `ref.watch(provider)` / `ref.read(provider.notifier).method()`
+- `injection.dart` configura DI (GetIt) para repositories e services
 
 ---
 
@@ -315,9 +325,9 @@ final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>((ref) => T
 dependencies:
   flutter:
     sdk: flutter
-  # State Management
-  flutter_riverpod: ^2.5.1
-  riverpod_annotation: ^2.3.5
+  # State Management — Riverpod 3.x
+  flutter_riverpod: ^3.5.0
+  riverpod_annotation: ^4.0.8
   
   # Navigation
   go_router: ^14.2.0
@@ -330,9 +340,9 @@ dependencies:
   shared_preferences: ^2.2.2
   flutter_secure_storage: ^9.0.0
   
-  # JSON Serialization
+  # JSON Serialization — freezed 3.x
   json_annotation: ^4.9.0
-  freezed_annotation: ^2.4.1
+  freezed_annotation: ^3.1.0
   
   # UI
   cached_network_image: ^3.3.1
@@ -340,7 +350,7 @@ dependencies:
   flutter_staggered_animations: ^1.1.1
   
   # Utils
-  intl: ^0.19.0
+  intl: ^0.20.3
   equatable: ^2.0.5
   uuid: ^4.3.3
   get_it: ^8.0.0
@@ -352,12 +362,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  riverpod_generator: ^2.4.0
-  build_runner: ^2.4.8
+  riverpod_generator: ^4.0.10
+  build_runner: ^2.17.1
   json_serializable: ^6.8.0
-  freezed: ^2.5.0
-  custom_lint: ^0.6.4
-  riverpod_lint: ^2.3.0
+  freezed: ^4.0.3
+  riverpod_lint: ^3.2.0
+  analyzer_plugin: ^0.14.0
 ```
 
 ### Comandos de Geração de Código
@@ -510,17 +520,19 @@ BoxShadow(
 
 ## Próximos Passos (Roadmap)
 
-### Fase 1 - MVP (Atual - UI Mock Completa)
-- [x] Configurar dependências (Riverpod, go_router, Dio, Freezed, GetIt)
+### Fase 1 - MVP (UI Mock Completa + Providers Riverpod 3.x + API Real)
+- [x] Configurar dependências (Riverpod 3.x, go_router, Dio, Freezed 3.x, GetIt)
 - [x] Auth UI: Login + Registro + Validação + Show/Hide Password
 - [x] Home: Welcome, Quick Actions (ListView horizontal), Último Pedido, Promoções
-- [x] Menu: Tabs categorias + Lista produtos + ProductCard otimizado
+- [x] Menu: Tabs categorias + Lista produtos + ProductCard otimizado + **filtro categoryDisplayName**
 - [x] Carrinho: Itens, quantidade (+/-), resumo, checkout button
 - [x] Pedidos: Lista + Empty State + Chips (Wrap) + Detalhe + Timeline animada
 - [x] Perfil: Dados, Menu options, Logout dialog, Excluir conta dialog
-- [x] Navegação: GoRouter + ShellRoute + BottomNav + Rotas protegidas (redirect TODO)
+- [x] Navegação: GoRouter + ShellRoute + BottomNav + Rotas protegidas
 - [x] Design System: Cores, Tipografia, Tema M3 completo, Widgets compartilhados
 - [x] DI: GetIt configurado (Dio, SecureStorage, SharedPrefs, AuthService)
+- [x] **Riverpod 3.x providers migrados** (AsyncNotifier/Notifier + AsyncNotifierProvider/NotifierProvider)
+- [x] **API Render conectada** (https://pizzaria-api-ffie.onrender.com)
 - [ ] Conectar Riverpod providers às telas (substituir mock data)
 - [ ] Implementar Repositories + Use Cases + Auth real (JWT + refresh)
 - [ ] Persistência de carrinho local
@@ -651,7 +663,35 @@ Ao trabalhar neste projeto, **SEMPRE**:
 
 ---
 
-## Histórico de Correções (2026-11-15)
+## Histórico de Correções (2026-11-17)
+
+### Riverpod 3.x + freezed 3.x Migration (Upgrade Completo)
+**Motivo:** Dependency hell entre Riverpod 2.x, freezed 2.5.x, custom_lint, analyzer — resolvido com upgrade major.
+**Arquivos:** `pubspec.yaml`, `pubspec.lock`, `lib/core/providers/*_providers.dart`, `lib/data/models/menu_models.dart`
+
+**Mudanças principais:**
+| Pacote | Antes | Agora |
+|--------|-------|-------|
+| `flutter_riverpod` | `^2.5.1` | `^3.5.0` |
+| `riverpod_annotation` | `^2.3.5` | `^4.0.8` |
+| `riverpod_generator` | `^2.4.0` | `^4.0.10` |
+| `freezed` | `^2.5.0` | `^4.0.3` |
+| `freezed_annotation` | `^2.4.1` | `^3.1.0` |
+| `build_runner` | `^2.4.8` | `^2.17.1` |
+| `intl` | `^0.19.0` | `^0.20.3` |
+| `riverpod_lint` | `^2.3.0` | `^3.2.0` |
+| `custom_lint` | `^0.6.4` | **removido** |
+| `analyzer_plugin` | — | `^0.14.0` |
+
+**Migração Providers (4 arquivos):**
+- `StateNotifier<T>` → `Notifier<T>` / `AsyncNotifier<T>`
+- `StateNotifierProvider` → `NotifierProvider` / `AsyncNotifierProvider`
+- Construtor `super(initialState)` → método `build()` retorna estado inicial
+- `state = value` mantido nos métodos (funciona igual)
+
+**Fix Menu:** `menu_providers.dart` — filtro `productsByCategoryProvider` usa `categoryDisplayName` (português) em vez de `categoryName` (inglês) para bater com `AppStrings`.
+
+---
 
 ### 1. main.dart — Locale pt_BR
 **Problema:** `DateFormat('dd/MM/yyyy HH:mm', 'pt_BR')` lançava `LocaleDataException` porque o locale não foi inicializado.
@@ -798,15 +838,15 @@ Wrap(spacing: 8, runSpacing: 8, children: [
 - **Framework**: Flutter 3.13+
 - **Linguagem**: Dart 3.0+
 - **Arquitetura**: Clean Architecture + Feature-first
-- **Estado**: Riverpod 2.5 (StateNotifier + FutureProvider + StreamProvider)
+- **Estado**: Riverpod 3.5 (AsyncNotifier + Notifier + FutureProvider)
 - **Navegação**: go_router 14.2 (ShellRoute + Redirect Guards)
 - **Network**: Dio 5.5 + PrettyDioLogger
 - **Storage**: flutter_secure_storage 9.0 + shared_preferences 2.2
-- **Serialization**: Freezed 2.5 + JSON Serializable 6.8
+- **Serialization**: Freezed 4.0 + JSON Serializable 6.8
 - **DI**: GetIt 8.0
-- **Utils**: intl 0.19 (pt_BR), equatable 2.0, uuid 4.3
+- **Utils**: intl 0.20 (pt_BR), equatable 2.0, uuid 4.3
 - **UI Extras**: cached_network_image 3.3, shimmer 3.0, flutter_staggered_animations 1.1
-- **Code Gen**: build_runner 2.4, riverpod_generator 2.4, custom_lint 0.6, riverpod_lint 2.3
+- **Code Gen**: build_runner 2.17, riverpod_generator 4.0, riverpod_lint 3.2, analyzer_plugin 0.14
 
 ---
 
@@ -838,5 +878,5 @@ export 'order_models.dart';
 
 ---
 
-*Última atualização: 2026-11-15*
+*Última atualização: 2026-11-17*
 *Este documento deve ser mantido atualizado a cada mudança significativa no projeto.*

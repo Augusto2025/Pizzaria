@@ -370,14 +370,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
     );
 
-    await ref.read(cartNotifierProvider.notifier).addItem(request);
+    // Show add to cart animation
+    _showAddToCartAnimation(context);
+
+    await ref.read(cartProvider.notifier).addItem(request);
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${product.name} adicionado ao carrinho'),
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Expanded(child: Text('${product.name} adicionado ao carrinho')),
+            ],
+          ),
           backgroundColor: AppColors.success,
           duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           action: SnackBarAction(
             label: 'Ver Carrinho',
             textColor: Colors.white,
@@ -386,6 +397,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         ),
       );
     }
+  }
+
+  void _showAddToCartAnimation(BuildContext context) {
+    // Get the overlay to add animation
+    final overlay = Overlay.of(context);
+    final overlayEntry = OverlayEntry(
+      builder: (context) => const _AddToCartAnimationOverlay(),
+    );
+
+    overlay.insert(overlayEntry);
+
+    // Remove animation after duration
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (overlayEntry.mounted) {
+        overlayEntry.remove();
+      }
+    });
   }
 
   Widget _buildProductDetailSkeleton() {
@@ -452,6 +480,100 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Overlay widget para animação de adicionar ao carrinho
+class _AddToCartAnimationOverlay extends StatefulWidget {
+  const _AddToCartAnimationOverlay();
+
+  @override
+  State<_AddToCartAnimationOverlay> createState() => _AddToCartAnimationOverlayState();
+}
+
+class _AddToCartAnimationOverlayState extends State<_AddToCartAnimationOverlay>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _positionAnimation;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.5).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    );
+
+    _positionAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
+    _opacityAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(parent: _controller, curve: const Interval(0.5, 1.0, curve: Curves.easeOut)),
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        // Position near bottom right (cart icon area)
+        final screenSize = MediaQuery.of(context).size;
+        final startX = screenSize.width * 0.8;
+        final startY = screenSize.height * 0.7;
+        final endX = screenSize.width * 0.9;
+        final endY = screenSize.height * 0.92;
+
+        final currentX = startX + (endX - startX) * _positionAnimation.value;
+        final currentY = startY + (endY - startY) * _positionAnimation.value;
+
+        return Positioned(
+          left: currentX,
+          top: currentY,
+          child: Opacity(
+            opacity: _opacityAnimation.value,
+            child: Transform.scale(
+              scale: _scaleAnimation.value,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.add_shopping_cart,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

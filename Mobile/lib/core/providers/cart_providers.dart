@@ -10,28 +10,24 @@ final cartRepositoryProvider = Provider<CartRepository>((ref) {
   return _getIt<CartRepository>();
 });
 
-/// Provider do carrinho
-final cartProvider = FutureProvider<CartResponse>((ref) async {
-  final repository = ref.watch(cartRepositoryProvider);
-  return await repository.getCart();
-});
-
-/// Notifier para operações do carrinho (Riverpod 3.x: AsyncNotifier)
-class CartNotifier extends AsyncNotifier<void> {
+/// Notifier para gerenciar o estado do carrinho (Riverpod 3.x: AsyncNotifier)
+/// Este substitui o FutureProvider para ter controle total sobre o estado
+class CartNotifier extends AsyncNotifier<CartResponse> {
   late final CartRepository _cartRepository;
 
   @override
-  void build() {
+  Future<CartResponse> build() async {
     _cartRepository = ref.watch(cartRepositoryProvider);
+    return await _cartRepository.getCart();
   }
 
   Future<void> addItem(AddCartItemRequest request) async {
     state = const AsyncValue.loading();
     try {
       await _cartRepository.addCartItem(request);
-      // Invalida o provider do carrinho para recarregar
-      ref.invalidate(cartProvider);
-      state = const AsyncValue.data(null);
+      // Recarrega o carrinho após adicionar
+      final cart = await _cartRepository.getCart();
+      state = AsyncValue.data(cart);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -41,8 +37,8 @@ class CartNotifier extends AsyncNotifier<void> {
     state = const AsyncValue.loading();
     try {
       await _cartRepository.updateCartItem(id, request);
-      ref.invalidate(cartProvider);
-      state = const AsyncValue.data(null);
+      final cart = await _cartRepository.getCart();
+      state = AsyncValue.data(cart);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -52,8 +48,8 @@ class CartNotifier extends AsyncNotifier<void> {
     state = const AsyncValue.loading();
     try {
       await _cartRepository.removeCartItem(id);
-      ref.invalidate(cartProvider);
-      state = const AsyncValue.data(null);
+      final cart = await _cartRepository.getCart();
+      state = AsyncValue.data(cart);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -63,8 +59,8 @@ class CartNotifier extends AsyncNotifier<void> {
     state = const AsyncValue.loading();
     try {
       await _cartRepository.clearCart();
-      ref.invalidate(cartProvider);
-      state = const AsyncValue.data(null);
+      final cart = await _cartRepository.getCart();
+      state = AsyncValue.data(cart);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -72,6 +68,17 @@ class CartNotifier extends AsyncNotifier<void> {
 }
 
 /// Provider do CartNotifier (Riverpod 3.x: AsyncNotifierProvider)
-final cartNotifierProvider = AsyncNotifierProvider<CartNotifier, void>(
+/// Agora retorna CartResponse diretamente, não void
+final cartProvider = AsyncNotifierProvider<CartNotifier, CartResponse>(
   CartNotifier.new,
 );
+
+/// Provider para obter o total de itens no carrinho (para badge)
+final cartItemCountProvider = Provider<int>((ref) {
+  final cartAsync = ref.watch(cartProvider);
+  return cartAsync.when(
+    data: (cart) => cart.items.fold(0, (sum, item) => sum + item.quantity),
+    loading: () => 0,
+    error: (_, __) => 0,
+  );
+});

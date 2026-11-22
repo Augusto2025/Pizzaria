@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pizza/core/constants/app_routes.dart';
+import 'package:pizza/core/providers/cart_providers.dart';
 import 'package:pizza/features/auth/presentation/screens/login_screen.dart';
 import 'package:pizza/features/auth/presentation/screens/register_screen.dart';
 import 'package:pizza/features/home/presentation/screens/home_screen.dart';
@@ -155,7 +157,7 @@ class AppRouter {
 }
 
 /// Scaffold com bottom navigation bar persistente para o ShellRoute
-class ScaffoldWithBottomNav extends StatelessWidget {
+class ScaffoldWithBottomNav extends ConsumerWidget {
   final Widget child;
 
   const ScaffoldWithBottomNav({super.key, required this.child});
@@ -172,10 +174,58 @@ class ScaffoldWithBottomNav extends StatelessWidget {
     return 0; // home
   }
 
+  Widget _buildCartIcon(int count, bool selected) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Icon(
+          selected ? Icons.shopping_cart : Icons.shopping_cart_outlined,
+          size: 24,
+        ),
+        if (count > 0)
+          Positioned(
+            right: -6,
+            top: -6,
+            child: AnimatedScale(
+              scale: count > 0 ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.elasticOut,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red.withValues(alpha: 0.4),
+                      blurRadius: 4,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+                constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                child: Center(
+                  child: Text(
+                    count > 99 ? '99+' : '$count',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final location = GoRouterState.of(context).uri.toString();
     final currentIndex = _getCurrentIndex(location);
+    final cartItemCount = ref.watch(cartItemCountProvider);
 
     return Scaffold(
       body: child,
@@ -200,7 +250,7 @@ class ScaffoldWithBottomNav extends StatelessWidget {
               break;
           }
         },
-        destinations: const [
+        destinations: [
           NavigationDestination(
             icon: Icon(Icons.local_pizza_outlined),
             selectedIcon: Icon(Icons.local_pizza),
@@ -212,8 +262,8 @@ class ScaffoldWithBottomNav extends StatelessWidget {
             label: 'Cardápio',
           ),
           NavigationDestination(
-            icon: Icon(Icons.shopping_cart_outlined),
-            selectedIcon: Icon(Icons.shopping_cart),
+            icon: _buildCartIcon(cartItemCount, false),
+            selectedIcon: _buildCartIcon(cartItemCount, true),
             label: 'Carrinho',
           ),
           NavigationDestination(

@@ -16,7 +16,7 @@ class CartScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cartAsync = ref.watch(cartProvider);
-    final cartNotifier = ref.watch(cartNotifierProvider.notifier);
+    final cartNotifier = ref.watch(cartProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -165,7 +165,7 @@ class CartScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               ElevatedButton.icon(
-                onPressed: () => ref.invalidate(cartProvider),
+                onPressed: () => ref.refresh(cartProvider),
                 icon: const Icon(Icons.refresh),
                 label: const Text('Tentar novamente'),
               ),

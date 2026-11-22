@@ -7,6 +7,7 @@ import 'package:pizza/core/constants/app_routes.dart';
 import 'package:pizza/core/providers/cart_providers.dart';
 import 'package:pizza/core/providers/address_providers.dart';
 import 'package:pizza/core/providers/order_providers.dart';
+import 'package:pizza/data/models/order_models.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
 import 'package:pizza/shared/widgets/custom_text_field.dart';
 import 'package:pizza/data/models/address_models.dart';
@@ -451,36 +452,46 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       return;
     }
 
-    // Para testes: simular finalização instantânea sem aguardar API
-    // O carrinho será limpo localmente
-    try {
-      // Invalidar o provider do carrinho para limpá-lo visualmente
-      ref.invalidate(cartProvider);
+    final request = CreateOrderRequest(
+      deliveryAddressId: _selectedAddressId!,
+      paymentMethod: _selectedPaymentMethod,
+      notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+    );
 
-      // Invalidar o provider de pedidos se houver
-      ref.invalidate(ordersProvider);
+    // Invalidar providers imediatamente para resposta visual instantânea
+    ref.invalidate(cartProvider);
+    ref.invalidate(ordersProvider);
 
-      if (mounted) {
-        // Mostrar sucesso e navegar para pedidos
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppStrings.orderPlacedSuccess),
-            backgroundColor: AppColors.success,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-        context.go(AppRoutes.orders);
+    if (!mounted) return;
+
+    // Mostrar sucesso e navegar IMEDIATAMENTE (sem aguardar API)
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppStrings.orderPlacedSuccess),
+        backgroundColor: AppColors.success,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    context.go(AppRoutes.orders);
+
+    // Disparar salvamento na API em background (não bloqueia UI)
+    // Se falhar, o usuário já navegou para pedidos; ordersProvider será atualizado ao recarregar
+    _saveOrderInBackground(ref, request);
+  }
+
+  void _saveOrderInBackground(WidgetRef ref, CreateOrderRequest request) {
+    // Fire-and-forget: não aguardamos, apenas disparamos
+    Future.microtask(() async {
+      try {
+        final orderNotifier = ref.read(orderNotifierProvider.notifier);
+        await orderNotifier.createOrder(request);
+        // Atualizar lista de pedidos se ainda estiver na tela
+        ref.invalidate(ordersProvider);
+      } catch (e) {
+        // Log do erro mas não bloqueia o usuário
+        debugPrint('Erro ao salvar pedido na API: $e');
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao finalizar pedido: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    }
+    });
   }
 }
 

@@ -13,11 +13,10 @@ final cartRepositoryProvider = Provider<CartRepository>((ref) {
 /// Notifier para gerenciar o estado do carrinho (Riverpod 3.x: AsyncNotifier)
 /// Este substitui o FutureProvider para ter controle total sobre o estado
 class CartNotifier extends AsyncNotifier<CartResponse> {
-  late final CartRepository _cartRepository;
+  CartRepository get _cartRepository => ref.read(cartRepositoryProvider);
 
   @override
   Future<CartResponse> build() async {
-    _cartRepository = ref.watch(cartRepositoryProvider);
     return await _cartRepository.getCart();
   }
 

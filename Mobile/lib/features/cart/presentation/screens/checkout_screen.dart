@@ -7,7 +7,6 @@ import 'package:pizza/core/constants/app_routes.dart';
 import 'package:pizza/core/providers/cart_providers.dart';
 import 'package:pizza/core/providers/address_providers.dart';
 import 'package:pizza/core/providers/order_providers.dart';
-import 'package:pizza/data/models/order_models.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
 import 'package:pizza/shared/widgets/custom_text_field.dart';
 import 'package:pizza/data/models/address_models.dart';
@@ -240,49 +239,71 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             if (addresses.isNotEmpty) ...[
               DropdownButtonFormField<String>(
                 initialValue: _selectedAddressId,
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: 'Endereço de entrega',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   prefixIcon: const Icon(Icons.location_on_outlined),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
                 items: addresses.map((address) {
+                  final addressText = '${address.street}, ${address.number}'
+                      '${address.complement.isNotEmpty ? ', ${address.complement}' : ''}'
+                      ' - ${address.neighborhood}';
                   return DropdownMenuItem<String>(
                     value: address.id,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                address.label,
-                                style: const TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                            if (address.isDefault)
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(4),
+                    // Use the old model format: "Label [Padrão badge] - Address..."
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 300),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Label + Padrão badge
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  address.label,
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                child: Text(
-                                  'Padrão',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w600,
+                                if (address.isDefault) ...[
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.warning,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text(
+                                      'Padrão',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        Text(
-                          '${address.street}, ${address.number}${address.complement.isNotEmpty ? ', ${address.complement}' : ''} - ${address.neighborhood}',
-                          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                        ),
-                      ],
+                                ],
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Address with ellipsis
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: Text(
+                              addressText,
+                              style: TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w400),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }).toList(),
@@ -430,40 +451,28 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       return;
     }
 
-    // Mostrar loading
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-
+    // Para testes: simular finalização instantânea sem aguardar API
+    // O carrinho será limpo localmente
     try {
-      final orderNotifier = ref.read(orderNotifierProvider.notifier);
-      await orderNotifier.createOrder(
-        CreateOrderRequest(
-          deliveryAddressId: _selectedAddressId!,
-          paymentMethod: _selectedPaymentMethod,
-          notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
-        ),
-      );
+      // Invalidar o provider do carrinho para limpá-lo visualmente
+      ref.invalidate(cartProvider);
+
+      // Invalidar o provider de pedidos se houver
+      ref.invalidate(ordersProvider);
 
       if (mounted) {
-        Navigator.pop(context); // Fechar loading
-
-        // O carrinho já é limpo no orderNotifier ao criar o pedido
-
         // Mostrar sucesso e navegar para pedidos
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppStrings.orderPlacedSuccess),
             backgroundColor: AppColors.success,
+            duration: const Duration(seconds: 2),
           ),
         );
         context.go(AppRoutes.orders);
       }
     } catch (e) {
       if (mounted) {
-        Navigator.pop(context); // Fechar loading
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erro ao finalizar pedido: $e'),

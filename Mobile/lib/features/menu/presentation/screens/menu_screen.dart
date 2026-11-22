@@ -147,18 +147,23 @@ class _MenuScreenState extends ConsumerState<MenuScreen> with SingleTickerProvid
   }
 }
 
-class _ProductCard extends ConsumerWidget {
+class _ProductCard extends ConsumerStatefulWidget {
   final ProductDto product;
 
   const _ProductCard({required this.product});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends ConsumerState<_ProductCard> {
+  @override
+  Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
-        onTap: product.isAvailable
-            ? () => context.push('${AppRoutes.productDetail}/${product.id}')
+        onTap: widget.product.isAvailable
+            ? () => context.push('${AppRoutes.productDetail}/${widget.product.id}')
             : null,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
@@ -171,9 +176,9 @@ class _ProductCard extends ConsumerWidget {
                 child: SizedBox(
                   width: 100,
                   height: 100,
-                  child: product.isAvailable
+                  child: widget.product.isAvailable
                       ? Image.network(
-                          product.imageUrl,
+                          widget.product.imageUrl,
                           fit: BoxFit.cover,
                           errorBuilder: (_, _, _) => Container(
                             color: AppColors.surface,
@@ -195,15 +200,15 @@ class _ProductCard extends ConsumerWidget {
                   children: [
                     // Name with "Indisponível" badge below (not beside) to avoid overflow on long names
                     Text(
-                      product.name,
+                      widget.product.name,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: product.isAvailable ? AppColors.textPrimary : AppColors.textDisabled,
+                            color: widget.product.isAvailable ? AppColors.textPrimary : AppColors.textDisabled,
                           ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (!product.isAvailable) ...[
+                    if (!widget.product.isAvailable) ...[
                       const SizedBox(height: 4),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -223,7 +228,7 @@ class _ProductCard extends ConsumerWidget {
                     ],
                     const SizedBox(height: 4),
                     Text(
-                      product.description,
+                      widget.product.description,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -236,7 +241,7 @@ class _ProductCard extends ConsumerWidget {
                         Icon(Icons.timer_outlined, size: 14, color: AppColors.textDisabled),
                         const SizedBox(width: 4),
                         Text(
-                          '${product.prepTimeMinutes} ${AppStrings.minutes}',
+                          '${widget.product.prepTimeMinutes} ${AppStrings.minutes}',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -255,17 +260,17 @@ class _ProductCard extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'R\$ ${product.price.toStringAsFixed(2).replaceAll('.', ',')}',
+                      'R\$ ${widget.product.price.toStringAsFixed(2).replaceAll('.', ',')}',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: product.isAvailable ? AppColors.primary : AppColors.textDisabled,
+                            color: widget.product.isAvailable ? AppColors.primary : AppColors.textDisabled,
                           ),
                     ),
                     const SizedBox(height: 8),
-                    if (product.isAvailable)
+                    if (widget.product.isAvailable)
                       IconButton(
                         icon: const Icon(Icons.add_shopping_cart, color: AppColors.primary, size: 28),
-                        onPressed: () => _addToCart(ref, context),
+                        onPressed: () => _addToCart(context),
                         tooltip: 'Adicionar ao carrinho',
                         style: IconButton.styleFrom(
                           backgroundColor: AppColors.primary.withValues(alpha: 0.1),
@@ -286,9 +291,9 @@ class _ProductCard extends ConsumerWidget {
     );
   }
 
-  Future<void> _addToCart(WidgetRef ref, BuildContext context) async {
+  Future<void> _addToCart(BuildContext context) async {
     final request = AddCartItemRequest(
-      productId: product.id,
+      productId: widget.product.id,
       quantity: 1,
       selectedCustomizations: null,
       notes: null,
@@ -299,7 +304,11 @@ class _ProductCard extends ConsumerWidget {
 
     await ref.read(cartProvider.notifier).addItem(request);
 
-    if (ref.read(cartProvider).hasError) {
+    // Check if widget is still mounted before using ref/context
+    if (!mounted) return;
+
+    final cartState = ref.read(cartProvider);
+    if (cartState.hasError) {
       // Error handling is done by the notifier
     } else if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -308,11 +317,11 @@ class _ProductCard extends ConsumerWidget {
             children: [
               Icon(Icons.check_circle, color: Colors.white, size: 20),
               const SizedBox(width: 8),
-              Expanded(child: Text('${product.name} adicionado ao carrinho')),
+              Expanded(child: Text('${widget.product.name} adicionado ao carrinho')),
             ],
           ),
           backgroundColor: AppColors.success,
-          duration: const Duration(seconds: 2),
+          duration: const Duration(milliseconds: 800),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           action: SnackBarAction(

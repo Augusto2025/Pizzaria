@@ -386,7 +386,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             ],
           ),
           backgroundColor: AppColors.success,
-          duration: const Duration(seconds: 2),
+          duration: const Duration(milliseconds: 800),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           action: SnackBarAction(

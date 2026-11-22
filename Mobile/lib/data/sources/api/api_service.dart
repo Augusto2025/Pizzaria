@@ -36,17 +36,87 @@ class ApiService {
   // Cart endpoints
   Future<CartResponse> getCart() async {
     final response = await _dio.get('/api/v1/cart');
-    return CartResponse.fromJson(response.data);
+    final data = response.data as Map<String, dynamic>;
+    return CartResponse.fromJson(_transformCartResponse(data));
   }
 
   Future<CartItemDto> addCartItem(AddCartItemRequest request) async {
     final response = await _dio.post('/api/v1/cart/items', data: request.toJson());
-    return CartItemDto.fromJson(response.data);
+    return CartItemDto.fromJson(_transformCartItem(response.data));
   }
 
   Future<CartItemDto> updateCartItem(String id, UpdateCartItemRequest request) async {
     final response = await _dio.put('/api/v1/cart/items/$id', data: request.toJson());
-    return CartItemDto.fromJson(response.data);
+    return CartItemDto.fromJson(_transformCartItem(response.data));
+  }
+
+  /// Transforma a resposta da API para o formato esperado pelo modelo antigo
+  Map<String, dynamic> _transformCartResponse(Map<String, dynamic> data) {
+    if (data['items'] != null) {
+      data['items'] = (data['items'] as List).map((item) => _transformCartItem(item)).toList();
+    }
+    // A API retorna deliveryFee e total, mas o modelo antigo só tem subtotal
+    // Mantemos apenas os campos que o modelo espera
+    return {
+      'items': data['items'] ?? [],
+      'subtotal': data['subtotal'] ?? 0.0,
+    };
+  }
+
+  Map<String, dynamic> _transformCartItem(Map<String, dynamic> item) {
+    // Helper to safely get numeric values
+    double getDouble(dynamic value, double defaultValue) {
+      if (value == null) return defaultValue;
+      if (value is num) return value.toDouble();
+      if (value is String) return double.tryParse(value) ?? defaultValue;
+      return defaultValue;
+    }
+
+    int getInt(dynamic value, int defaultValue) {
+      if (value == null) return defaultValue;
+      if (value is int) return value;
+      if (value is num) return value.toInt();
+      if (value is String) return int.tryParse(value) ?? defaultValue;
+      return defaultValue;
+    }
+
+    // Cria um ProductDto a partir dos campos planos da API
+    // A API do carrinho não retorna informações de categoria, usamos valores padrão
+    final product = {
+      'id': item['productId'] ?? '',
+      'name': item['productName'] ?? '',
+      'description': item['productDescription'] ?? '',
+      'imageUrl': item['productImageUrl'] ?? '',
+      'price': getDouble(item['productPrice'], 0.0),
+      'categoryId': 0,
+      'categoryName': '',
+      'categoryDisplayName': '',
+      'prepTimeMinutes': getInt(item['prepTimeMinutes'], 0),
+      'isAvailable': true,
+      'customizationOptions': [],
+    };
+
+    // Converte selectedCustomizations para JSON string
+    String? selectedCustomizationsJson;
+    if (item['selectedCustomizations'] != null) {
+      selectedCustomizationsJson = item['selectedCustomizations'].toString();
+    }
+
+    // userId - tenta obter do auth ou usa string vazia
+    String userId = '';
+    // createdAt - usa data atual
+    final createdAt = DateTime.now().toIso8601String();
+
+    return {
+      'id': item['id'] ?? '',
+      'userId': userId,
+      'productId': item['productId'] ?? '',
+      'quantity': getInt(item['quantity'], 1),
+      'selectedCustomizationsJson': selectedCustomizationsJson ?? '',
+      'notes': item['notes'] ?? '',
+      'createdAt': createdAt,
+      'product': product,
+    };
   }
 
   Future<void> removeCartItem(String id) async {

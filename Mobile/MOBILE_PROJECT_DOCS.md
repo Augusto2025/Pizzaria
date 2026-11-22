@@ -516,6 +516,53 @@ BoxShadow(
 - `TabBarTheme`: label primary, indicator primary, label size
 - `SliderTheme`, `ProgressIndicatorTheme`, `FloatingActionButtonTheme`, `ListTileTheme`, `DividerTheme` — todos configurados
 
+### Skeleton Loading (Shimmer) — **Implementado**
+Widget `SkeletonLoader` reutilizável em `lib/shared/widgets/skeleton_loader.dart` com animação shimmer reversa (1.5s). Inclui variantes especializadas:
+
+| Widget | Uso | Tela |
+|--------|-----|------|
+| `SkeletonLoader` | Base circular/retangular | Todos |
+| `SkeletonText` | Linhas de texto (títulos, descrições) | Todos |
+| `SkeletonGridItem` | Cards de produto (imagem + título + desc + preço) | Menu |
+| `SkeletonOrderCard` | Cards de pedido (ID + status + chips + endereço) | Pedidos |
+| `SkeletonCartItem` | Itens do carrinho (imagem + nome + qty + preço) | Carrinho |
+| `SkeletonPromotionCard` | Cards de promoção horizontal | Home |
+| `SkeletonQuickActionCard` | Ações rápidas (ícone + label) | Home |
+| `SkeletonUserInfoCard` | Perfil (avatar + nome + email + telefone + botão) | Perfil |
+| `SkeletonProfileOption` | Menu perfil (ícone + título + subtítulo + chevron) | Perfil |
+| `ShimmerSkeleton` | Wrapper genérico para skeletons customizados | Qualquer |
+
+**Aplicado nas telas:**
+- **HomeScreen**: Quick Actions, Último Pedido, Promoções
+- **MenuScreen**: Lista de produtos por categoria (TabBarView)
+- **OrdersScreen**: Lista de pedidos
+- **OrderDetailScreen**: Timeline, Info, Itens, Pagamento/Endereço, Ações
+- **CartScreen**: Lista de itens + Resumo fixo
+- **ProfileScreen**: Card usuário + Menu options
+- **AddressesScreen**: Lista de endereços
+- **AddEditAddressScreen**: Formulário (quando editando endereço existente)
+
+**Padrão de uso:**
+```dart
+// No build do ConsumerWidget/ConsumerStatefulWidget
+final dataAsync = ref.watch(dataProvider);
+
+body: dataAsync.when(
+  data: (data) => _buildContent(data),
+  loading: () => _buildSkeleton(),  // Método privado retorna skeleton
+  error: (e, s) => _buildError(e),
+),
+
+// Exemplo skeleton method
+Widget _buildSkeleton() {
+  return ListView.builder(
+    padding: const EdgeInsets.all(16),
+    itemCount: 6,
+    itemBuilder: (_, __) => const SkeletonGridItem(),
+  );
+}
+```
+
 ---
 
 ## Próximos Passos (Roadmap)

@@ -19,7 +19,7 @@ class SkeletonLoader extends StatefulWidget {
   });
 
   /// Circular skeleton (for avatars, images)
-  const SkeletonLoader.circular({
+  SkeletonLoader.circular({
     super.key,
     required double diameter,
     this.baseColor,

@@ -353,7 +353,6 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
       ),
     );
   }
-  }
 
   Widget _buildSkeletonLoading() {
     return SingleChildScrollView(

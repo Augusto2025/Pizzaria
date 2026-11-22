@@ -78,6 +78,8 @@ class AppStrings {
   static const String confirmOrder = 'Confirmar pedido';
   static const String orderConfirmed = 'Pedido confirmado!';
   static const String estimatingTime = 'Tempo estimado:';
+  static const String placeOrder = 'Fazer pedido';
+  static const String orderPlacedSuccess = 'Pedido realizado com sucesso!';
 
   // Orders
   static const String orders = 'Pedidos';

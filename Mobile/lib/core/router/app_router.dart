@@ -5,7 +5,9 @@ import 'package:pizza/features/auth/presentation/screens/login_screen.dart';
 import 'package:pizza/features/auth/presentation/screens/register_screen.dart';
 import 'package:pizza/features/home/presentation/screens/home_screen.dart';
 import 'package:pizza/features/menu/presentation/screens/menu_screen.dart';
+import 'package:pizza/features/menu/presentation/screens/product_detail_screen.dart';
 import 'package:pizza/features/cart/presentation/screens/cart_screen.dart';
+import 'package:pizza/features/cart/presentation/screens/checkout_screen.dart';
 import 'package:pizza/features/orders/presentation/screens/orders_screen.dart';
 import 'package:pizza/features/orders/presentation/screens/order_detail_screen.dart';
 import 'package:pizza/features/profile/presentation/screens/profile_screen.dart';
@@ -160,12 +162,13 @@ class ScaffoldWithBottomNav extends StatelessWidget {
 
   int _getCurrentIndex(String location) {
     if (location.startsWith(AppRoutes.menu)) return 1;
-    if (location.startsWith(AppRoutes.orders)) return 2;
-    if (location.startsWith(AppRoutes.profile)) return 3;
-    if (location.startsWith(AppRoutes.addresses)) return 3;
-    if (location.startsWith(AppRoutes.settings)) return 3;
-    if (location.startsWith(AppRoutes.paymentMethods)) return 3;
-    if (location.startsWith(AppRoutes.editProfile)) return 3;
+    if (location.startsWith(AppRoutes.cart)) return 2;
+    if (location.startsWith(AppRoutes.orders)) return 3;
+    if (location.startsWith(AppRoutes.profile)) return 4;
+    if (location.startsWith(AppRoutes.addresses)) return 4;
+    if (location.startsWith(AppRoutes.settings)) return 4;
+    if (location.startsWith(AppRoutes.paymentMethods)) return 4;
+    if (location.startsWith(AppRoutes.editProfile)) return 4;
     return 0; // home
   }
 
@@ -187,23 +190,31 @@ class ScaffoldWithBottomNav extends StatelessWidget {
               context.go(AppRoutes.menu);
               break;
             case 2:
-              context.go(AppRoutes.orders);
+              context.go(AppRoutes.cart);
               break;
             case 3:
+              context.go(AppRoutes.orders);
+              break;
+            case 4:
               context.go(AppRoutes.profile);
               break;
           }
         },
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
+            icon: Icon(Icons.local_pizza_outlined),
+            selectedIcon: Icon(Icons.local_pizza),
             label: 'Início',
           ),
           NavigationDestination(
             icon: Icon(Icons.restaurant_menu_outlined),
             selectedIcon: Icon(Icons.restaurant_menu),
             label: 'Cardápio',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.shopping_cart_outlined),
+            selectedIcon: Icon(Icons.shopping_cart),
+            label: 'Carrinho',
           ),
           NavigationDestination(
             icon: Icon(Icons.receipt_long_outlined),
@@ -234,37 +245,6 @@ class ForgotPasswordScreen extends StatelessWidget {
   }
 }
 
-class ProductDetailScreen extends StatelessWidget {
-  final String productId;
-  const ProductDetailScreen({super.key, required this.productId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detalhes do Produto'),
-        leading: BackButton(onPressed: () => _safePop(context)),
-      ),
-      body: Center(child: Text('Produto: $productId - Em desenvolvimento')),
-    );
-  }
-}
-
-class CheckoutScreen extends StatelessWidget {
-  const CheckoutScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Finalizar Pedido'),
-        leading: BackButton(onPressed: () => _safePop(context)),
-      ),
-      body: const Center(child: Text('Checkout - Em desenvolvimento')),
-    );
-  }
-}
-
 class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({super.key});
 
@@ -276,37 +256,6 @@ class EditProfileScreen extends StatelessWidget {
         leading: BackButton(onPressed: () => _safePop(context)),
       ),
       body: const Center(child: Text('Editar Perfil - Em desenvolvimento')),
-    );
-  }
-}
-
-class AddressesScreen extends StatelessWidget {
-  const AddressesScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Endereços'),
-        leading: BackButton(onPressed: () => _safePop(context)),
-      ),
-      body: const Center(child: Text('Endereços - Em desenvolvimento')),
-    );
-  }
-}
-
-class AddEditAddressScreen extends StatelessWidget {
-  final String? addressId;
-  const AddEditAddressScreen({super.key, this.addressId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(addressId == null ? 'Novo Endereço' : 'Editar Endereço'),
-        leading: BackButton(onPressed: () => _safePop(context)),
-      ),
-      body: Center(child: Text('Endereço: ${addressId ?? 'novo'} - Em desenvolvimento')),
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/constants/app_routes.dart';
 import 'package:pizza/core/providers/order_providers.dart';
 import 'package:pizza/data/models/order_models.dart';
+import 'package:pizza/shared/widgets/skeleton_loader.dart';
 import 'package:intl/intl.dart';
 
 /// Tela de Lista de Pedidos
@@ -37,7 +38,7 @@ class OrdersScreen extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => _buildOrdersSkeleton(),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -99,6 +100,14 @@ class OrdersScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildOrdersSkeleton() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: 5,
+      itemBuilder: (context, index) => const SkeletonOrderCard(),
     );
   }
 }

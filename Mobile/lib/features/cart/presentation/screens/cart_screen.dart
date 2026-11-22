@@ -6,6 +6,7 @@ import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/constants/app_routes.dart';
 import 'package:pizza/core/providers/cart_providers.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
+import 'package:pizza/shared/widgets/skeleton_loader.dart';
 import 'package:pizza/data/models/cart_models.dart';
 
 /// Tela do Carrinho
@@ -141,7 +142,7 @@ class CartScreen extends ConsumerWidget {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => _buildCartSkeleton(),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -327,6 +328,70 @@ class _SummaryRow extends StatelessWidget {
               fontWeight: isTotal ? FontWeight.bold : FontWeight.w600,
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+Widget _buildCartSkeleton() {
+  return Column(
+    children: [
+      // Items List skeleton
+      Expanded(
+        child: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: 5,
+          itemBuilder: (context, index) => const SkeletonCartItem(),
+        ),
+      ),
+      // Summary skeleton
+      Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          border: Border(top: BorderSide(color: AppColors.divider)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadow,
+              blurRadius: 8,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            _SummarySkeletonRow(),
+            _SummarySkeletonRow(),
+            const Divider(height: 16),
+            _SummarySkeletonRow(isTotal: true),
+            const SizedBox(height: 16),
+            SkeletonLoader.rectangular(
+              width: double.infinity,
+              height: 48,
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+class _SummarySkeletonRow extends StatelessWidget {
+  final bool isTotal;
+
+  const _SummarySkeletonRow({super.key, this.isTotal = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SkeletonText(lines: 1, width: 100, height: isTotal ? 24 : 18),
+          SkeletonText(lines: 1, width: 80, height: isTotal ? 24 : 18),
         ],
       ),
     );

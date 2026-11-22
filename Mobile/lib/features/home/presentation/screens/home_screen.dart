@@ -6,6 +6,7 @@ import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/constants/app_routes.dart';
 import 'package:pizza/core/providers/auth_providers.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
+import 'package:pizza/shared/widgets/skeleton_loader.dart';
 
 /// Tela inicial (Home/Dashboard)
 class HomeScreen extends ConsumerWidget {
@@ -15,6 +16,10 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserProvider);
     final userName = currentUser?.name.split(' ').first ?? 'Usuário';
+
+    // For now, we simulate loading for demonstration
+    // In a real app, this would come from a provider that fetches data
+    const bool isLoading = false;
 
     return Scaffold(
       appBar: AppBar(
@@ -43,17 +48,17 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // Quick Actions
-            _buildQuickActions(context),
+            _buildQuickActions(context, isLoading: isLoading),
 
             const SizedBox(height: 24),
 
             // Last Order Status (if exists)
-            _buildLastOrderSection(context),
+            _buildLastOrderSection(context, isLoading: isLoading),
 
             const SizedBox(height: 24),
 
             // Promotions
-            _buildPromotionsSection(context),
+            _buildPromotionsSection(context, isLoading: isLoading),
           ],
         ),
       ),
@@ -98,7 +103,28 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuickActions(BuildContext context) {
+  Widget _buildQuickActions(BuildContext context, {bool isLoading = false}) {
+    if (isLoading) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SkeletonText(lines: 1, width: 120, height: 22),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 100,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 4,
+              itemBuilder: (context, index) => Padding(
+                padding: EdgeInsets.only(right: index < 3 ? 12 : 0),
+                child: const SkeletonQuickActionCard(),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     final actions = [
       _QuickAction(
         icon: Icons.restaurant_menu,
@@ -157,7 +183,18 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLastOrderSection(BuildContext context) {
+  Widget _buildLastOrderSection(BuildContext context, {bool isLoading = false}) {
+    if (isLoading) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SkeletonText(lines: 1, width: 120, height: 22),
+          const SizedBox(height: 12),
+          const SkeletonOrderCard(),
+        ],
+      );
+    }
+
     // TODO: Verificar se há pedido recente
     const hasRecentOrder = false;
 
@@ -219,7 +256,34 @@ class HomeScreen extends ConsumerWidget {
     // return const SizedBox.shrink();
   }
 
-  Widget _buildPromotionsSection(BuildContext context) {
+  Widget _buildPromotionsSection(BuildContext context, {bool isLoading = false}) {
+    if (isLoading) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SkeletonText(lines: 1, width: 120, height: 22),
+              SkeletonText(lines: 1, width: 60, height: 16),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 180,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 3,
+              itemBuilder: (context, index) => Padding(
+                padding: EdgeInsets.only(right: index < 2 ? 16 : 0),
+                child: const SkeletonPromotionCard(),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

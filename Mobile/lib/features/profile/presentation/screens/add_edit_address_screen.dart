@@ -6,6 +6,7 @@ import 'package:pizza/core/constants/app_routes.dart';
 import 'package:pizza/core/providers/address_providers.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
 import 'package:pizza/shared/widgets/custom_text_field.dart';
+import 'package:pizza/shared/widgets/skeleton_loader.dart';
 import 'package:pizza/data/models/address_models.dart';
 
 /// Tela de Adicionar/Editar Endereço
@@ -134,6 +135,26 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Show skeleton loading when editing and loading address data
+    if (_isEditing && _labelController.text.isEmpty && !_isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Editar Endereço'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go(AppRoutes.addresses);
+              }
+            },
+          ),
+        ),
+        body: _buildSkeletonLoading(),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? 'Editar Endereço' : 'Novo Endereço'),
@@ -329,6 +350,57 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+  }
+
+  Widget _buildSkeletonLoading() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Label Field skeleton
+          SkeletonText(lines: 1, width: double.infinity, height: 56),
+          const SizedBox(height: 16),
+          // CEP Field skeleton
+          SkeletonText(lines: 1, width: double.infinity, height: 56),
+          const SizedBox(height: 16),
+          // Street Field skeleton
+          SkeletonText(lines: 1, width: double.infinity, height: 56),
+          const SizedBox(height: 16),
+          // Number Field skeleton
+          SkeletonText(lines: 1, width: double.infinity, height: 56),
+          const SizedBox(height: 16),
+          // Complement Field skeleton
+          SkeletonText(lines: 1, width: double.infinity, height: 56),
+          const SizedBox(height: 16),
+          // Neighborhood Field skeleton
+          SkeletonText(lines: 1, width: double.infinity, height: 56),
+          const SizedBox(height: 16),
+          // City Field skeleton
+          SkeletonText(lines: 1, width: double.infinity, height: 56),
+          const SizedBox(height: 16),
+          // State Field skeleton
+          SkeletonText(lines: 1, width: double.infinity, height: 56),
+          const SizedBox(height: 24),
+          // Default Address Switch skeleton
+          Row(
+            children: [
+              SkeletonLoader.rectangular(width: 40, height: 24, borderRadius: BorderRadius.circular(12)),
+              const SizedBox(width: 16),
+              Expanded(child: SkeletonText(lines: 2, height: 16)),
+            ],
+          ),
+          const SizedBox(height: 32),
+          // Save Button skeleton
+          SkeletonLoader.rectangular(
+            width: double.infinity,
+            height: 48,
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ],
       ),
     );
   }

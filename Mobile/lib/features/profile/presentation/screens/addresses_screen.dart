@@ -6,6 +6,7 @@ import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/constants/app_routes.dart';
 import 'package:pizza/core/providers/address_providers.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
+import 'package:pizza/shared/widgets/skeleton_loader.dart';
 import 'package:pizza/data/models/address_models.dart';
 
 /// Tela de Endereços
@@ -55,7 +56,7 @@ class AddressesScreen extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => _buildAddressesSkeleton(),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -142,6 +143,64 @@ class AddressesScreen extends ConsumerWidget {
             child: const Text('Excluir'),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAddressesSkeleton() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: 5,
+      itemBuilder: (context, index) => _AddressSkeletonCard(),
+    );
+  }
+}
+
+class _AddressSkeletonCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          SkeletonText(lines: 1, width: 100, height: 18),
+                          const SizedBox(width: 8),
+                          SkeletonLoader.rectangular(
+                            width: 50,
+                            height: 16,
+                            borderRadius: const BorderRadius.all(Radius.circular(6)),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      SkeletonText(lines: 1, width: 200, height: 16),
+                      SkeletonText(lines: 1, width: 180, height: 14),
+                      SkeletonText(lines: 1, width: 120, height: 14),
+                    ],
+                  ),
+                ),
+                Column(
+                  children: [
+                    SkeletonLoader.rectangular(width: 40, height: 40, borderRadius: BorderRadius.circular(8)),
+                    SkeletonLoader.rectangular(width: 40, height: 40, borderRadius: BorderRadius.circular(8)),
+                    SkeletonLoader.rectangular(width: 40, height: 40, borderRadius: BorderRadius.circular(8)),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

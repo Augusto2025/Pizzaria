@@ -8,6 +8,7 @@ import 'package:pizza/core/providers/order_providers.dart';
 import 'package:pizza/data/models/address_models.dart';
 import 'package:pizza/data/models/order_models.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
+import 'package:pizza/shared/widgets/skeleton_loader.dart';
 
 /// Tela de Detalhes do Pedido + Rastreamento
 class OrderDetailScreen extends ConsumerStatefulWidget {
@@ -104,7 +105,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
             ],
           ),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => _buildOrderDetailSkeleton(),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -419,6 +420,171 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
               }
             },
             child: Text(AppStrings.confirm, style: const TextStyle(color: AppColors.error)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderDetailSkeleton() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Status Timeline skeleton
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SkeletonText(lines: 1, width: 150, height: 24),
+                  const SizedBox(height: 20),
+                  ...List.generate(7, (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          children: [
+                            SkeletonLoader.circular(diameter: 24),
+                            if (index < 6)
+                              Expanded(child: Container(width: 2, color: AppColors.border)),
+                          ],
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SkeletonText(lines: 1, width: 100, height: 18),
+                              const SizedBox(height: 2),
+                              SkeletonText(lines: 1, width: 80, height: 14),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          // Order Info skeleton
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SkeletonText(lines: 1, width: 180, height: 22),
+                  const SizedBox(height: 16),
+                  ...List.generate(4, (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 120, child: SkeletonText(lines: 1, height: 16)),
+                        Expanded(child: SkeletonText(lines: 1, height: 16)),
+                      ],
+                    ),
+                  )),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          // Items skeleton
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SkeletonText(lines: 1, width: 150, height: 22),
+                  const SizedBox(height: 16),
+                  ...List.generate(3, (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      children: [
+                        Expanded(child: SkeletonText(lines: 2, height: 16)),
+                        const SizedBox(width: 16),
+                        SkeletonText(lines: 1, width: 80, height: 18),
+                      ],
+                    ),
+                  )),
+                  const Divider(height: 24),
+                  ...List.generate(3, (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 120, child: SkeletonText(lines: 1, height: 16)),
+                        Expanded(child: SkeletonText(lines: 1, height: 16)),
+                      ],
+                    ),
+                  )),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          // Payment & Address skeleton
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SkeletonText(lines: 1, width: 180, height: 22),
+                  const SizedBox(height: 16),
+                  ...List.generate(2, (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 120, child: SkeletonText(lines: 1, height: 16)),
+                        Expanded(child: SkeletonText(lines: 1, height: 16)),
+                      ],
+                    ),
+                  )),
+                  const SizedBox(height: 12),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SkeletonLoader.circular(diameter: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SkeletonText(lines: 1, height: 14),
+                            const SizedBox(height: 2),
+                            SkeletonText(lines: 2, height: 16),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          // Actions skeleton
+          Column(
+            children: [
+              SkeletonLoader.rectangular(
+                width: double.infinity,
+                height: 48,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              const SizedBox(height: 12),
+              SkeletonLoader.rectangular(
+                width: double.infinity,
+                height: 48,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ],
           ),
         ],
       ),

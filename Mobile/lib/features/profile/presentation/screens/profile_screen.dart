@@ -7,6 +7,7 @@ import 'package:pizza/core/constants/app_routes.dart';
 import 'package:pizza/core/providers/auth_providers.dart';
 import 'package:pizza/core/providers/order_providers.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
+import 'package:pizza/shared/widgets/skeleton_loader.dart';
 import 'package:pizza/data/models/auth_models.dart';
 
 /// Tela de Perfil do Usuário
@@ -65,7 +66,16 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildLoadingState(BuildContext context) {
-    return const Center(child: CircularProgressIndicator());
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      child: Column(
+        children: [
+          const SkeletonUserInfoCard(),
+          const SizedBox(height: 24),
+          ...List.generate(4, (index) => const SkeletonProfileOption()),
+        ],
+      ),
+    );
   }
 
   Widget _buildUserInfoCard(BuildContext context, WidgetRef ref, UserDto user) {

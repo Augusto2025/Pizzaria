@@ -8,6 +8,7 @@ import 'package:pizza/core/providers/menu_providers.dart';
 import 'package:pizza/core/providers/cart_providers.dart';
 import 'package:pizza/data/models/menu_models.dart';
 import 'package:pizza/data/models/cart_models.dart';
+import 'package:pizza/shared/widgets/skeleton_loader.dart';
 
 /// Tela do Cardápio/Menu
 class MenuScreen extends ConsumerStatefulWidget {
@@ -75,31 +76,73 @@ class _MenuScreenState extends ConsumerState<MenuScreen> with SingleTickerProvid
   }
 
   Widget _buildCategoryList(String category) {
-    // Usa o provider para buscar produtos por categoria
+    // Watch the menu provider to get loading state
+    final menuAsync = ref.watch(menuProvider);
     final products = ref.watch(productsByCategoryProvider(category));
 
-    if (products.isEmpty) {
-      return Center(
+    return menuAsync.when(
+      loading: () => _buildCategorySkeleton(),
+      error: (error, stack) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.restaurant_menu, size: 64, color: AppColors.textDisabled),
+            Icon(Icons.error_outline, size: 64, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
-              'Nenhum item nesta categoria',
+              'Erro ao carregar cardápio',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
             ),
+            const SizedBox(height: 8),
+            Text(
+              error.toString(),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textDisabled,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => ref.invalidate(menuProvider),
+              child: const Text('Tentar novamente'),
+            ),
           ],
         ),
-      );
-    }
+      ),
+      data: (menu) {
+        if (products.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.restaurant_menu, size: 64, color: AppColors.textDisabled),
+                const SizedBox(height: 16),
+                Text(
+                  'Nenhum item nesta categoria',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                ),
+              ],
+            ),
+          );
+        }
 
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: products.length,
+          itemBuilder: (context, index) => _ProductCard(product: products[index]),
+        );
+      },
+    );
+  }
+
+  Widget _buildCategorySkeleton() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: products.length,
-      itemBuilder: (context, index) => _ProductCard(product: products[index]),
+      itemCount: 6, // Show 6 skeleton items
+      itemBuilder: (context, index) => const SkeletonGridItem(),
     );
   }
 }

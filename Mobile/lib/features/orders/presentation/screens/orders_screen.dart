@@ -34,7 +34,7 @@ class OrdersScreen extends ConsumerWidget {
             itemCount: orders.length,
             itemBuilder: (context, index) => _OrderCard(
               order: orders[index],
-              onTap: () => context.push('${AppRoutes.orderDetail}/${orders[index].id}'),
+              onTap: () => context.push(AppRoutes.orderDetailRoute(orders[index].id)),
             ),
           );
         },

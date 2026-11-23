@@ -644,3 +644,256 @@ Wrap(spacing: 8, runSpacing: 8, children: [
 
 *Última atualização: 2024-10-24*
 *Este documento deve ser mantido atualizado a cada mudança significativa no projeto.*
+
+---
+
+## Atualizações Recentes - Mobile (2024-11-21 a 2024-11-22)
+
+### Resumo das Mudanças
+
+Esta seção documenta as correções e melhorias implementadas no app mobile (pasta `Mobile/`) para resolver problemas críticos de UX e bugs de runtime.
+
+---
+
+### 1. Carrinho - Atualização Visual + Badge + Animação
+
+#### Problema
+Itens adicionados via API não apareciam visualmente no carrinho, mesmo com logs confirmando o sucesso da operação. O carrinho mostrava "vazio" apesar de itens existirem no backend.
+
+#### Causa Raiz
+- `CartProvider` usava `FutureProvider` que não recarregava automaticamente após operações
+- Transformação da API não incluía campos obrigatórios do `ProductDto` (`categoryId`, `categoryName`, `categoryDisplayName`)
+- `LateInitializationError` no `CartNotifier` por uso incorreto de `late final` com `ref.read`
+
+#### Soluções Implementadas
+
+**Arquivos alterados:**
+- `Mobile/lib/core/providers/cart_providers.dart`
+- `Mobile/lib/data/sources/api/api_service.dart`
+- `Mobile/lib/features/menu/presentation/screens/menu_screen.dart`
+- `Mobile/lib/features/menu/presentation/screens/product_detail_screen.dart`
+- `Mobile/lib/features/cart/presentation/screens/cart_screen.dart`
+- `Mobile/lib/core/router/app_router.dart` (badge no BottomNavigationBar)
+
+**Mudanças principais:**
+
+1. **CartProvider → AsyncNotifierProvider** (`cart_providers.dart`)
+   ```dart
+   class CartNotifier extends AsyncNotifier<CartResponse> {
+     CartRepository get _cartRepository => ref.read(cartRepositoryProvider);
+     
+     @override
+     Future<CartResponse> build() async => await _cartRepository.getCart();
+     
+     Future<void> addItem(AddCartItemRequest request) async {
+       state = const AsyncValue.loading();
+       try {
+         await _cartRepository.addCartItem(request);
+         final cart = await _cartRepository.getCart(); // Recarrega após add
+         state = AsyncValue.data(cart);
+       } catch (e, stackTrace) {
+         state = AsyncValue.error(e, stackTrace);
+       }
+     }
+     // ... updateItem, removeItem, clear
+   }
+   ```
+
+2. **Transformação da API Completa** (`api_service.dart`)
+   ```dart
+   Map<String, dynamic> _transformCartItem(Map<String, dynamic> item) {
+     final product = {
+       'id': item['productId'] ?? '',
+       'name': item['productName'] ?? '',
+       'description': item['productDescription'] ?? '',
+       'imageUrl': item['productImageUrl'] ?? '',
+       'price': getDouble(item['productPrice'], 0.0),
+       'categoryId': 0,                    // NOVO: campo obrigatório
+       'categoryName': '',                  // NOVO: campo obrigatório
+       'categoryDisplayName': '',           // NOVO: campo obrigatório
+       'prepTimeMinutes': getInt(item['prepTimeMinutes'], 0),
+       'isAvailable': true,
+       'customizationOptions': [],
+     };
+     // ... resto da transformação
+   }
+   ```
+
+3. **Badge no Ícone do Carrinho** (`app_router.dart`)
+   ```dart
+   final cartItemCountProvider = Provider<int>((ref) {
+     final cartAsync = ref.watch(cartProvider);
+     return cartAsync.when(
+       data: (cart) => cart.items.fold(0, (sum, item) => sum + item.quantity),
+       loading: () => 0,
+       error: (_, __) => 0,
+     );
+   });
+   ```
+   - Badge com contagem de itens (soma das quantidades)
+   - Só aparece quando count ≥ 1
+   - Animação elástica (scale 0→1.2→1.0) ao aparecer/atualizar
+
+4. **Animação "Voando" ao Adicionar ao Carrinho** (`menu_screen.dart`, `product_detail_screen.dart`)
+   - Overlay com círculo (cor primária) que voa do botão "+" até o ícone do carrinho no BottomNavigationBar
+   - Duração: 800ms com curva `easeOutCubic`
+   - Auto-remove após animação
+   - Número "1" dentro do círculo durante a animação
+
+5. **Correções de Runtime Errors**
+   - `"Using 'ref' when widget unmounted"`: `_ProductCard` mudou de `ConsumerWidget` → `ConsumerStatefulWidget` com checks de `mounted`
+   - `"type 'Null' is not a subtype of type 'String'"`: `selectedCustomizationsJson` tornado nullable no model + tratamento no g.dart
+   - `"LateInitializationError"`: `late final CartRepository` → getter `CartRepository get _cartRepository`
+   - `"type 'Null' is not a subtype of type 'num'"`: Helpers `getDouble()` / `getInt()` para parsing seguro
+
+---
+
+### 2. Checkout - Simplificação + Correção de Overflow
+
+#### Problemas
+1. Finalização do pedido demorava muito (aguardava API `/api/v1/cart/checkout`)
+2. Dropdown de endereços overflowava horizontalmente (60-69px)
+
+#### Soluções
+
+**1. Order Creation Non-Blocking** (`checkout_screen.dart`)
+```dart
+Future<void> _handlePlaceOrder(WidgetRef ref, BuildContext context, double total) async {
+  // 1. Validação + feedback imediato
+  ref.invalidate(cartProvider);      // Limpa carrinho visualmente
+  ref.invalidate(ordersProvider);    // Prepara refresh
+  
+  // 2. Navega IMEDIATAMENTE (sem await)
+  context.go(AppRoutes.orders);
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Pedido realizado!'), backgroundColor: Colors.green),
+  );
+  
+  // 3. Salva na API em background (fire-and-forget)
+  _saveOrderInBackground(ref, request);
+}
+
+void _saveOrderInBackground(WidgetRef ref, CreateOrderRequest request) {
+  Future.microtask(() async {
+    try {
+      final orderNotifier = ref.read(orderNotifierProvider.notifier);
+      await orderNotifier.createOrder(request);
+      ref.invalidate(ordersProvider); // Atualiza lista se sucesso
+    } catch (e) {
+      debugPrint('Erro ao salvar pedido na API: $e'); // Log apenas
+    }
+  });
+}
+```
+
+**2. Address Dropdown Compacto** (`checkout_screen.dart`)
+```dart
+DropdownButtonFormField<String>(
+  isExpanded: true,  // Menu usa largura total
+  items: addresses.map((address) {
+    final addressText = '${address.street}, ${address.number}...';
+    return DropdownMenuItem<String>(
+      value: address.id,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 300),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Label + Badge "Padrão" laranja
+            Flexible(
+              fit: FlexFit.loose,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(address.label, overflow: TextOverflow.ellipsis),
+                  if (address.isDefault) ...[
+                    SizedBox(width: 6),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                      decoration: BoxDecoration(
+                        color: AppColors.warning,  // Laranja
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text('Padrão', style: TextStyle(fontSize: 10, color: Colors.white)),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            SizedBox(width: 8),
+            // Endereço com ellipsis
+            Flexible(
+              fit: FlexFit.loose,
+              child: Text(addressText, overflow: TextOverflow.ellipsis, maxLines: 1),
+            ),
+          ],
+        ),
+      ),
+    );
+  }).toList(),
+)
+```
+- Formato: `"Casa [Padrão] - Rua X, 123 - Bairro..."`
+- Badge "Padrão" em laranja (AppColors.warning)
+- Texto com ellipsis quando excede largura
+- `isExpanded: true` no DropdownButtonFormField para largura correta
+
+---
+
+### 3. SnackBar de Sucesso - Duração Reduzida
+
+**Arquivos:** `menu_screen.dart`, `product_detail_screen.dart`
+
+```dart
+// ANTES: 2 segundos
+duration: const Duration(seconds: 2),
+
+// DEPOIS: 800ms (mesma duração da animação voando)
+duration: const Duration(milliseconds: 800),
+```
+- Feedback visual mais rápido
+- Sincronizado com duração da animação "voando"
+
+---
+
+### 4. Build & Deploy
+
+**Status:** ✅ Compila sem erros
+```bash
+flutter analyze    # 0 errors (apenas infos/warnings de estilo)
+flutter build apk --debug  # Sucesso em ~65s
+```
+
+**Dispositivo testado:** Samsung SM-A235M (Android)
+
+---
+
+### Resumo dos Arquivos Modificados
+
+| Arquivo | Tipo de Mudança |
+|---------|-----------------|
+| `cart_providers.dart` | AsyncNotifierProvider, recarga automática, badge count provider |
+| `api_service.dart` | Transformação completa com campos ProductDto obrigatórios + helpers numéricos |
+| `menu_screen.dart` | ConsumerStatefulWidget, animação voando, SnackBar 800ms |
+| `product_detail_screen.dart` | Animação voando, SnackBar 800ms |
+| `cart_screen.dart` | Adaptado para novo model (product aninhado), ConsumerWidget |
+| `checkout_screen.dart` | Order non-blocking, dropdown compacto com badge + ellipsis |
+| `app_router.dart` | Badge animado no BottomNavigationBar |
+
+---
+
+### Padrões Reforçados (Para Futuras Manutenções)
+
+| Situação | Padrão Aplicado |
+|----------|-----------------|
+| Provider que precisa recarregar após mutação | `AsyncNotifierProvider` com `build()` + métodos que chamam `get` novamente |
+| Transformação API ↔ Model com campos faltando | Adicionar campos com defaults no `_transformXxx` (não mudar model) |
+| Animações customizadas entre widgets | `Overlay` + `OverlayEntry` com `Future.delayed` para cleanup |
+| Badge dinâmico em ícone de navegação | `Provider<int>` derivado do estado + `AnimatedScale` |
+| Dropdown com conteúdo variável | `isExpanded: true` + `ConstrainedBox` + `Flexible(fit: FlexFit.loose)` + `TextOverflow.ellipsis` |
+| Operações que não devem bloquear UI | `Future.microtask()` para fire-and-forget + invalidate providers imediatamente |
+| SnackBar de feedback rápido | `duration: 800ms` (sub-segundo) |
+
+---
+
+*Última atualização desta seção: 2024-11-22*

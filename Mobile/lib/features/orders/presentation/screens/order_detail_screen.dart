@@ -186,6 +186,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
                   isCurrent: isCurrent,
                   isLast: isLast,
                   time: _getStatusTime(order, status.value),
+                  order: order,
                 );
               }),
             ] else ...[
@@ -238,6 +239,43 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
     return timelineEntry?.timestamp;
   }
 
+  String? _getTimelineNote(OrderDto order, int statusValue) {
+    final timelineEntry = order.timeline.where((t) => t.status.value == statusValue).firstOrNull;
+    return (timelineEntry?.note != null && timelineEntry!.note!.isNotEmpty) ? timelineEntry.note : null;
+  }
+
+  Widget _buildTimelineNoteForStatus(OrderDto order, int statusValue) {
+    final note = _getTimelineNote(order, statusValue);
+    if (note == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, left: 40),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.info_outline, size: 14, color: AppColors.textSecondary),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                note,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildOrderInfo(OrderDto order, DateFormat formatter) {
     return Card(
       child: Padding(
@@ -257,6 +295,34 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
               _InfoRow(label: AppStrings.estimatedDelivery, value: formatter.format(order.estimatedDeliveryTime!)),
             _InfoRow(label: AppStrings.deliveryAddressLabel, value: _formatAddress(order.deliveryAddress)),
             _InfoRow(label: AppStrings.paymentMethodLabel, value: _getPaymentMethodLabel(order.paymentMethod)),
+            if (order.notes != null && order.notes!.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Divider(),
+              const SizedBox(height: 8),
+              Text(
+                'Observações do Pedido',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Text(
+                  order.notes!,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -610,6 +676,7 @@ class _TimelineStep extends StatefulWidget {
   final bool isCurrent;
   final bool isLast;
   final DateTime? time;
+  final OrderDto order;
 
   const _TimelineStep({
     required this.status,
@@ -617,6 +684,7 @@ class _TimelineStep extends StatefulWidget {
     required this.isCurrent,
     required this.isLast,
     this.time,
+    required this.order,
   });
 
   @override
@@ -625,6 +693,44 @@ class _TimelineStep extends StatefulWidget {
 
 class _TimelineStepState extends State<_TimelineStep> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
+
+  String? _getTimelineNoteInline(OrderDto order, int statusValue) {
+    final timelineEntry = order.timeline.where((t) => t.status.value == statusValue).firstOrNull;
+    final note = timelineEntry?.note;
+    return (note != null && note.isNotEmpty) ? note : null;
+  }
+
+  Widget _buildTimelineNoteForStatusInline(OrderDto order, int statusValue) {
+    final note = _getTimelineNoteInline(order, statusValue);
+    if (note == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, left: 40),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.info_outline, size: 14, color: AppColors.textSecondary),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                note,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -649,6 +755,7 @@ class _TimelineStepState extends State<_TimelineStep> with SingleTickerProviderS
     final isCurrent = widget.isCurrent;
     final isLast = widget.isLast;
     final time = widget.time;
+    final order = widget.order;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -733,6 +840,10 @@ class _TimelineStepState extends State<_TimelineStep> with SingleTickerProviderS
                         ),
                   ),
                 ],
+                // Timeline note (if any)
+                if (widget.status.value == order.status.value || widget.isCompleted) ...[
+                  _buildTimelineNoteForStatusInline(order, widget.status.value),
+                ],
               ],
             ),
           ),
@@ -750,34 +861,91 @@ class _OrderItemRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.productName,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.productName,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
+                    Text(
+                      'Qtd: ${item.quantity}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                    ),
+                    if (item.customizations != null && item.customizations!.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: item.customizations!.entries.map((entry) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+                            ),
+                            child: Text(
+                              '${entry.key}: ${entry.value}',
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                            ),
+                          );
+                        }).toList(),
                       ),
-                ),
-                Text(
-                  'Qtd: ${item.quantity}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
+                    ],
+                    if (item.notes != null && item.notes!.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.warning.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.note_alt_outlined, size: 14, color: AppColors.warning),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                item.notes!,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.warning,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                    ],
+                  ],
                 ),
-              ],
-            ),
-          ),
-          Text(
-            'R\$ ${(item.unitPrice * item.quantity).toStringAsFixed(2).replaceAll('.', ',')}',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+              ),
+              const SizedBox(width: 16),
+              Text(
+                'R\$ ${(item.unitPrice * item.quantity).toStringAsFixed(2).replaceAll('.', ',')}',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+              ),
+            ],
           ),
         ],
       ),

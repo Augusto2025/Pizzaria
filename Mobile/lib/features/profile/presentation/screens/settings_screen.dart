@@ -89,11 +89,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _showSuccess('Cache limpo com sucesso');
   }
 
-  Future<void> _exportData() async {
-    // TODO: Implementar exportação de dados do usuário
-    _showSuccess('Dados exportados (funcionalidade em desenvolvimento)');
-  }
-
   Future<void> _logout() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -464,22 +459,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.download_outlined, color: AppColors.primary, size: 22),
-            ),
-            title: const Text('Exportar meus dados'),
-            subtitle: const Text('Baixar uma cópia dos seus dados'),
-            trailing: const Icon(Icons.chevron_right, color: AppColors.textDisabled),
-            onTap: _exportData,
-          ),
-          const Divider(height: 1, indent: 72, endIndent: 16),
-          ListTile(
-            leading: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
                 color: AppColors.textSecondary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -616,38 +595,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             subtitle: const Text('Central de ajuda, FAQ, contato'),
             trailing: const Icon(Icons.chevron_right, color: AppColors.textDisabled),
             onTap: () => _launchUrl('https://pizzaria.app/help'),
-          ),
-          const Divider(height: 1, indent: 72, endIndent: 16),
-          ListTile(
-            leading: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: AppColors.success.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.star_outline, color: AppColors.success, size: 22),
-            ),
-            title: const Text('Avaliar o app'),
-            subtitle: const Text('Deixe sua opinião na loja'),
-            trailing: const Icon(Icons.chevron_right, color: AppColors.textDisabled),
-            onTap: () => _launchUrl('https://play.google.com/store/apps/details?id=com.pizzaria.app'),
-          ),
-          const Divider(height: 1, indent: 72, endIndent: 16),
-          ListTile(
-            leading: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: AppColors.warning.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.bug_report_outlined, color: AppColors.warning, size: 22),
-            ),
-            title: const Text('Reportar problema'),
-            subtitle: const Text('Enviar feedback ou bug'),
-            trailing: const Icon(Icons.chevron_right, color: AppColors.textDisabled),
-            onTap: () => _launchUrl('https://pizzaria.app/feedback'),
           ),
         ],
       ),

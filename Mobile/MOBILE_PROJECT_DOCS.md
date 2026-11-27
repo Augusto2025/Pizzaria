@@ -53,8 +53,9 @@ lib/
 │   └── profile/             # Perfil do usuário
 │       └── presentation/
 │           └── screens/
-│               ├── profile_screen.dart    # Dados, endereços, pagamentos, histórico, logout
-│               └── edit_profile_screen.dart # Editar nome, telefone, senha (opcional)
+│               ├── profile_screen.dart     # Dados, endereços, pagamentos, histórico, logout
+│               ├── edit_profile_screen.dart # Editar nome, telefone, senha (opcional)
+│               └── settings_screen.dart    # Configurações completas (tema, notificações, privacidade, conta)
 ├── shared/
 │   ├── widgets/             # Widgets reutilizáveis
 │   │   ├── custom_button.dart       # Elevated/Outlined + loading + icon
@@ -157,11 +158,18 @@ lib/
   - Email exibido como somente leitura (não editável)
   - Alterar senha (opcional): senha atual + nova senha + confirmar
   - Validação completa + loading state + feedback visual
+- **Configurações** (`/settings` — `SettingsScreen`):
+  - **Notificações**: Push geral, atualizações de pedido, promoções (toggles persistidos)
+  - **Tema**: Sistema / Claro / Escuro (RadioListTile, persistido)
+  - **Idioma**: Português (Brasil) / English US (em desenvolvimento)
+  - **Privacidade e Dados**: Política de privacidade, Termos de uso, Exportar dados, Limpar cache
+  - **Conta**: Editar perfil, Formas de pagamento, Endereços, Sair, Excluir conta
+  - **Sobre**: Versão do app, Ajuda/Suporte, Avaliar app, Reportar problema
 - Menu options (ListTile cards):
   - Endereços → `/profile/addresses` (placeholder)
   - Formas de pagamento → `/profile/payment-methods` (placeholder)
   - Histórico de pedidos → `/orders`
-  - Configurações → `/settings` (placeholder)
+  - Configurações → `/settings`
 - **Logout**: Dialog confirmação → `AuthService.logout()` → `/login`
 - **Excluir conta**: Dialog confirmação (placeholder)
 

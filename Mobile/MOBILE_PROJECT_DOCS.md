@@ -53,7 +53,8 @@ lib/
 │   └── profile/             # Perfil do usuário
 │       └── presentation/
 │           └── screens/
-│               └── profile_screen.dart    # Dados, endereços, pagamentos, histórico, logout
+│               ├── profile_screen.dart    # Dados, endereços, pagamentos, histórico, logout
+│               └── edit_profile_screen.dart # Editar nome, telefone, senha (opcional)
 ├── shared/
 │   ├── widgets/             # Widgets reutilizáveis
 │   │   ├── custom_button.dart       # Elevated/Outlined + loading + icon
@@ -150,6 +151,12 @@ lib/
 
 ### 6. Perfil (Profile) — **Implementado (UI + Mock)**
 - Card do usuário: avatar (inicial do nome), nome, email, telefone, botão "Editar perfil"
+- **Editar Perfil** (`/profile/edit` — `EditProfileScreen`):
+  - Nome completo (validação: mínimo 2 palavras)
+  - Telefone com máscara visual (validação: 10-11 dígitos)
+  - Email exibido como somente leitura (não editável)
+  - Alterar senha (opcional): senha atual + nova senha + confirmar
+  - Validação completa + loading state + feedback visual
 - Menu options (ListTile cards):
   - Endereços → `/profile/addresses` (placeholder)
   - Formas de pagamento → `/profile/payment-methods` (placeholder)

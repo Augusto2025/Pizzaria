@@ -15,6 +15,7 @@ import 'package:pizza/features/orders/presentation/screens/order_detail_screen.d
 import 'package:pizza/features/profile/presentation/screens/profile_screen.dart';
 import 'package:pizza/features/profile/presentation/screens/addresses_screen.dart';
 import 'package:pizza/features/profile/presentation/screens/add_edit_address_screen.dart';
+import 'package:pizza/features/profile/presentation/screens/edit_profile_screen.dart';
 
 /// Configuração de rotas da aplicação usando go_router com ShellRoute para bottom navigation
 class AppRouter {
@@ -291,21 +292,6 @@ class ForgotPasswordScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Recuperar Senha')),
       body: const Center(child: Text('Tela de recuperar senha - Em desenvolvimento')),
-    );
-  }
-}
-
-class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Editar Perfil'),
-        leading: BackButton(onPressed: () => _safePop(context)),
-      ),
-      body: const Center(child: Text('Editar Perfil - Em desenvolvimento')),
     );
   }
 }

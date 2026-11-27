@@ -7,6 +7,49 @@ import 'package:pizza/core/providers/auth_providers.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
 import 'package:pizza/shared/widgets/custom_text_field.dart';
 import 'package:pizza/data/models/auth_models.dart';
+import 'package:flutter/services.dart';
+
+/// Formatador para telefone brasileiro: (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+class _PhoneNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Remove tudo que não é dígito
+    final digits = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
+
+    // Limita a 11 dígitos (DDD + 9 dígitos)
+    if (digits.length > 11) {
+      return oldValue;
+    }
+
+    // Aplica máscara
+    String formatted = '';
+    if (digits.length >= 1) {
+      formatted = '(${digits.substring(0, digits.length.clamp(0, 2))}';
+    }
+    if (digits.length >= 2) {
+      formatted = '(${digits.substring(0, 2)}) ';
+    }
+    if (digits.length >= 3) {
+      // Verifica se é celular (9 dígitos) ou fixo (8 dígitos)
+      final remaining = digits.substring(2);
+      if (remaining.length <= 5) {
+        // Fixo ou início do celular: XXXX-XXXX
+        formatted += remaining;
+      } else {
+        // Celular: XXXXX-XXXX
+        formatted += '${remaining.substring(0, 5)}-${remaining.substring(5)}';
+      }
+    }
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
 
 /// Tela de Edição de Perfil
 class EditProfileScreen extends ConsumerStatefulWidget {
@@ -200,6 +243,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 hint: '(11) 99999-9999',
                 prefixIcon: Icons.phone_outlined,
                 keyboardType: TextInputType.phone,
+                inputFormatters: [_PhoneNumberFormatter()],
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Telefone é obrigatório';

@@ -897,6 +897,81 @@ Wrap(spacing: 8, runSpacing: 8, children: [
 
 ---
 
+## Histórico de Correções Recentes (2026-11-27)
+
+### 1. Retry Automático com Backoff Exponencial (Timeout da API Render)
+**Problema:** API no Render Free Tier "dorme" após inatividade (cold start 30-60s), causando `DioExceptionType.receiveTimeout` no login e outras chamadas.
+
+**Solução:** Adicionado `RetryInterceptor` em `lib/injection.dart`:
+- **Máx. 3 tentativas** com backoff exponencial: 3s → 6s → 12s (capped em 30s)
+- **Tipos de erro que dão retry:** timeout (connect/receive/send), connection error, 5xx server errors
+- **Usa a mesma instância Dio** → mantém interceptors de auth, logging, etc.
+- **Log de tentativas** no console para debug
+
+**Arquivos:** `lib/injection.dart` (novas classes `RetryOptions`, `RetryInterceptor`)
+
+---
+
+### 2. Correção de Layout — OrderDetailScreen (Unbounded Height)
+**Problema:** `RenderFlex children have non-zero flex but incoming height constraints are unbounded` ao acessar detalhes do pedido.
+
+**Causa:** No `_TimelineStep`, o `Row` continha uma `Column` com `Expanded` (linha do timeline), mas o `Row` não passava restrição de altura finita.
+
+**Solução:** Envolveu o `Row` com `IntrinsicHeight` no `_TimelineStep.build()`:
+```dart
+return IntrinsicHeight(child: Row(...));
+```
+
+**Arquivo:** `lib/features/orders/presentation/screens/order_detail_screen.dart`
+
+---
+
+### 3. Strings Hardcoded — OrderDetailScreen
+**Problema:** Referências `AppStrings` aparecendo literalmente na UI (ex: "AppStrings.cancelOrder").
+
+**Solução:** Substituídas 15 referências `AppStrings` pelos textos reais em português:
+- `AppStrings.orderNumber` → `'Pedido #'`
+- `AppStrings.trackOrder` → `'Acompanhar pedido'`
+- `AppStrings.orderDate` → `'Data do pedido'`
+- `AppStrings.estimatedDelivery` → `'Previsão de entrega'`
+- `AppStrings.deliveryAddressLabel` → `'Endereço de entrega'`
+- `AppStrings.paymentMethodLabel` → `'Forma de pagamento'`
+- `AppStrings.items` → `'Itens'`
+- `AppStrings.subtotal` → `'Subtotal'`
+- `AppStrings.deliveryFee` → `'Taxa de entrega'`
+- `AppStrings.total` → `'Total'`
+- `AppStrings.reorder` → `'Pedir novamente'`
+- `AppStrings.cancelOrder` → `'Cancelar pedido'`
+- `AppStrings.confirmCancel` → `'Tem certeza que deseja cancelar?'`
+- `AppStrings.cancel` → `'Cancelar'`
+- `AppStrings.confirm` → `'Confirmar'`
+
+**Arquivo:** `lib/features/orders/presentation/screens/order_detail_screen.dart` (removido import `app_strings.dart`)
+
+---
+
+### 4. Skeleton Loading — OrderDetailScreen (Já Existia)
+**Nota:** O skeleton loading já estava implementado no método `_buildOrderDetailSkeleton()` e usado no estado `loading` do `orderAsync.when()`. Cobre todas as seções: Timeline (7 passos), Info do Pedido, Itens, Pagamento/Endereço, Ações.
+
+---
+
+## Referências Técnicas
+
+- **Framework**: Flutter 3.13+
+- **Linguagem**: Dart 3.0+
+- **Arquitetura**: Clean Architecture + Feature-first
+- **Estado**: Riverpod 3.5 (AsyncNotifier + Notifier + FutureProvider)
+- **Navegação**: go_router 14.2 (ShellRoute + Redirect Guards)
+- **Network**: Dio 5.5 + PrettyDioLogger
+- **Storage**: flutter_secure_storage 9.0 + shared_preferences 2.2
+- **Serialization**: Freezed 4.0 + JSON Serializable 6.8
+- **DI**: GetIt 8.0
+- **Utils**: intl 0.20 (pt_BR), equatable 2.0, uuid 4.3
+- **UI Extras**: cached_network_image 3.3, shimmer 3.0, flutter_staggered_animations 1.1
+- **Code Gen**: build_runner 2.17, riverpod_generator 4.0, riverpod_lint 3.2, analyzer_plugin 0.14
+
+---
+
 ## Estrutura de Arquivos de Índice (Barrel Exports)
 Cada pasta `core/`, `features/*/presentation/`, `shared/` possui `index.dart` exportando o conteúdo público:
 ```dart

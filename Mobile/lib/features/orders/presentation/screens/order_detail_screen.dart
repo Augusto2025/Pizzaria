@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:pizza/core/constants/app_colors.dart';
-import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/core/providers/order_providers.dart';
 import 'package:pizza/data/models/address_models.dart';
 import 'package:pizza/data/models/order_models.dart';
@@ -55,7 +54,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('$AppStrings.orderNumber ${widget.orderId}'),
+        title: Text('Pedido #${widget.orderId}'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -164,7 +163,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
                 Icon(Icons.timeline, color: AppColors.primary, size: 24),
                 const SizedBox(width: 8),
                 Text(
-                  AppStrings.trackOrder,
+                  'Acompanhar pedido',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -290,11 +289,11 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
                   ),
             ),
             const SizedBox(height: 16),
-            _InfoRow(label: AppStrings.orderDate, value: formatter.format(order.createdAt)),
+            _InfoRow(label: 'Data do pedido', value: formatter.format(order.createdAt)),
             if (order.estimatedDeliveryTime != null)
-              _InfoRow(label: AppStrings.estimatedDelivery, value: formatter.format(order.estimatedDeliveryTime!)),
-            _InfoRow(label: AppStrings.deliveryAddressLabel, value: _formatAddress(order.deliveryAddress)),
-            _InfoRow(label: AppStrings.paymentMethodLabel, value: _getPaymentMethodLabel(order.paymentMethod)),
+              _InfoRow(label: 'Previsão de entrega', value: formatter.format(order.estimatedDeliveryTime!)),
+            _InfoRow(label: 'Endereço de entrega', value: _formatAddress(order.deliveryAddress)),
+            _InfoRow(label: 'Forma de pagamento', value: _getPaymentMethodLabel(order.paymentMethod)),
             if (order.notes != null && order.notes!.isNotEmpty) ...[
               const SizedBox(height: 12),
               const Divider(),
@@ -359,7 +358,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '$AppStrings.items (${order.items.length})',
+                  'Itens (${order.items.length})',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -370,16 +369,16 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
             ...order.items.map((item) => _OrderItemRow(item: item)),
             const Divider(height: 24),
             _InfoRow(
-              label: AppStrings.subtotal,
+              label: 'Subtotal',
               value: 'R\$ ${order.subtotal.toStringAsFixed(2).replaceAll('.', ',')}',
             ),
             _InfoRow(
-              label: AppStrings.deliveryFee,
+              label: 'Taxa de entrega',
               value: 'R\$ ${order.deliveryFee.toStringAsFixed(2).replaceAll('.', ',')}',
             ),
             const Divider(height: 16),
             _InfoRow(
-              label: AppStrings.total,
+              label: 'Total',
               value: 'R\$ ${order.total.toStringAsFixed(2).replaceAll('.', ',')}',
               isTotal: true,
             ),
@@ -403,7 +402,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
                   ),
             ),
             const SizedBox(height: 16),
-            _InfoRow(label: AppStrings.paymentMethodLabel, value: _getPaymentMethodLabel(order.paymentMethod)),
+            _InfoRow(label: 'Forma de pagamento', value: _getPaymentMethodLabel(order.paymentMethod)),
             const SizedBox(height: 12),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -415,7 +414,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        AppStrings.deliveryAddressLabel,
+                        'Endereço de entrega',
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -443,7 +442,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
       children: [
         if (order.status.value != statusPending)
           CustomButton(
-            text: AppStrings.reorder,
+            text: 'Pedir novamente',
             isOutlined: true,
             onPressed: () async {
               await ref.read(orderNotifierProvider.notifier).reorder(order.id);
@@ -456,7 +455,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
           ),
         const SizedBox(height: 12),
         CustomButton(
-          text: AppStrings.cancelOrder,
+          text: 'Cancelar pedido',
           isOutlined: true,
           backgroundColor: AppColors.error.withValues(alpha: 0.1),
           foregroundColor: AppColors.error,
@@ -470,12 +469,12 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppStrings.cancelOrder),
-        content: Text(AppStrings.confirmCancel),
+        title: Text('Cancelar pedido'),
+        content: Text('Tem certeza que deseja cancelar?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppStrings.cancel),
+            child: Text('Cancelar'),
           ),
           TextButton(
             onPressed: () async {
@@ -485,7 +484,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> with Sing
                 context.pop(); // Go back to orders list
               }
             },
-            child: Text(AppStrings.confirm, style: const TextStyle(color: AppColors.error)),
+            child: Text('Confirmar', style: const TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -757,99 +756,103 @@ class _TimelineStepState extends State<_TimelineStep> with SingleTickerProviderS
     final time = widget.time;
     final order = widget.order;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Timeline line & circle
-        Column(
-          children: [
-            // Circle
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isCompleted || isCurrent ? status.color : AppColors.surface,
-                border: Border.all(
-                  color: isCompleted || isCurrent ? status.color : AppColors.border,
-                  width: 2,
+    // IntrinsicHeight resolve "RenderFlex children have non-zero flex but incoming height constraints are unbounded"
+    // O Expanded na coluna da linha do timeline precisa de altura finita
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Timeline line & circle
+          Column(
+            children: [
+              // Circle
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isCompleted || isCurrent ? status.color : AppColors.surface,
+                  border: Border.all(
+                    color: isCompleted || isCurrent ? status.color : AppColors.border,
+                    width: 2,
+                  ),
                 ),
+                child: isCompleted
+                    ? const Icon(Icons.check, size: 14, color: Colors.white)
+                    : null,
               ),
-              child: isCompleted
-                  ? const Icon(Icons.check, size: 14, color: Colors.white)
-                  : null,
-            ),
-            // Line
-            if (!isLast)
-              Expanded(
-                child: Container(
-                  width: 2,
-                  color: isCompleted ? status.color : AppColors.border,
+              // Line
+              if (!isLast)
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    color: isCompleted ? status.color : AppColors.border,
+                  ),
                 ),
-              ),
-          ],
-        ),
-        const SizedBox(width: 16),
-        // Content
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
+            ],
+          ),
+          const SizedBox(width: 16),
+          // Content
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        status.label,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: isCurrent ? FontWeight.bold : FontWeight.w500,
+                              color: isCompleted || isCurrent ? status.color : AppColors.textSecondary,
+                            ),
+                      ),
+                      if (isCurrent) ...[
+                        const SizedBox(width: 8),
+                        AnimatedBuilder(
+                          animation: _animationController,
+                          builder: (context, child) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: status.color.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'AGORA',
+                                style: TextStyle(
+                                  color: status.color,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ],
+                  ),
+                  if (time != null) ...[
+                    const SizedBox(height: 2),
                     Text(
-                      status.label,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: isCurrent ? FontWeight.bold : FontWeight.w500,
-                            color: isCompleted || isCurrent ? status.color : AppColors.textSecondary,
+                      formatter.format(time),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textDisabled,
                           ),
                     ),
-                    if (isCurrent) ...[
-                      const SizedBox(width: 8),
-                      AnimatedBuilder(
-                        animation: _animationController,
-                        builder: (context, child) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: status.color.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'AGORA',
-                              style: TextStyle(
-                                color: status.color,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
                   ],
-                ),
-                if (time != null) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    formatter.format(time),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textDisabled,
-                        ),
-                  ),
+                  // Timeline note (if any)
+                  if (widget.status.value == order.status.value || widget.isCompleted) ...[
+                    _buildTimelineNoteForStatusInline(order, widget.status.value),
+                  ],
                 ],
-                // Timeline note (if any)
-                if (widget.status.value == order.status.value || widget.isCompleted) ...[
-                  _buildTimelineNoteForStatusInline(order, widget.status.value),
-                ],
-              ],
+              ),
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      ),
+    );  // fecha IntrinsicHeight
   }
 }
 

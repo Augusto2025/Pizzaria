@@ -80,6 +80,7 @@ class AuthNotifier extends AsyncNotifier<void> {
         userId: response.user.id,
         email: response.user.email,
         name: response.user.name,
+        password: password, // Salva para "Último acesso"
       );
 
       ref.read(currentUserProvider.notifier).setUser(response.user);
@@ -114,6 +115,7 @@ class AuthNotifier extends AsyncNotifier<void> {
         userId: response.user.id,
         email: response.user.email,
         name: response.user.name,
+        password: password, // Salva para "Último acesso"
       );
 
       ref.read(currentUserProvider.notifier).setUser(response.user);

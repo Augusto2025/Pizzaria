@@ -955,6 +955,21 @@ return IntrinsicHeight(child: Row(...));
 
 ---
 
+### 5. Botão "Último Acesso" — LoginScreen
+**Implementação:** Botão de login automático usando credenciais salvas.
+- **Verifica credenciais salvas** no `initState` via `AuthService.getLastLogin()`
+- **Mostra `OutlinedButton`** com ícone de histórico e email do último acesso quando disponível
+- **Ao clicar:** Preenche automaticamente email/senha e chama `AuthNotifier.login()`
+- **Credenciais salvas** no `flutter_secure_storage` após login/registro bem-sucedido
+- **Método `AuthService.saveLoginData()`** aceita `password` opcional para salvar último acesso
+
+**Arquivos alterados:**
+- `lib/core/services/auth_service.dart` — `_lastLoginEmailKey`, `_lastLoginPasswordKey`, `saveLastLogin()`, `getLastLogin()`, `clearLastLogin()`, `saveLoginData()` com password opcional
+- `lib/core/providers/auth_providers.dart` — `login()` e `register()` passam `password` para `AuthService.saveLoginData()`
+- `lib/features/auth/presentation/screens/login_screen.dart` — `_loadLastLogin()`, `_handleLastLogin()`, UI do botão "Último acesso"
+
+---
+
 ## Referências Técnicas
 
 - **Framework**: Flutter 3.13+
@@ -1000,5 +1015,5 @@ export 'order_models.dart';
 
 ---
 
-*Última atualização: 2026-11-17*
+*Última atualização: 2026-11-27*
 *Este documento deve ser mantido atualizado a cada mudança significativa no projeto.*

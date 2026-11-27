@@ -11,6 +11,10 @@ class AuthService {
   static const _userNameKey = 'user_name';
   static const _isLoggedInKey = 'is_logged_in';
 
+  // Último acesso (credenciais para login automático)
+  static const _lastLoginEmailKey = 'last_login_email';
+  static const _lastLoginPasswordKey = 'last_login_password';
+
   /// Verifica se o usuário está logado
   static Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
@@ -28,6 +32,7 @@ class AuthService {
     required String userId,
     required String email,
     required String name,
+    String? password, // Opcional: para salvar como último acesso
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await _storage.write(key: _tokenKey, value: token);
@@ -35,6 +40,11 @@ class AuthService {
     await prefs.setString(_userEmailKey, email);
     await prefs.setString(_userNameKey, name);
     await prefs.setBool(_isLoggedInKey, true);
+
+    // Salva credenciais para "Último acesso" se senha fornecida
+    if (password != null && password.isNotEmpty) {
+      await saveLastLogin(email: email, password: password);
+    }
   }
 
   /// Obtém ID do usuário
@@ -63,6 +73,31 @@ class AuthService {
     await prefs.remove(_userEmailKey);
     await prefs.remove(_userNameKey);
     await prefs.setBool(_isLoggedInKey, false);
+  }
+
+  /// Salva credenciais do último login (para botão "Último acesso")
+  static Future<void> saveLastLogin({
+    required String email,
+    required String password,
+  }) async {
+    await _storage.write(key: _lastLoginEmailKey, value: email);
+    await _storage.write(key: _lastLoginPasswordKey, value: password);
+  }
+
+  /// Obtém credenciais do último login salvo
+  static Future<Map<String, String>?> getLastLogin() async {
+    final email = await _storage.read(key: _lastLoginEmailKey);
+    final password = await _storage.read(key: _lastLoginPasswordKey);
+    if (email != null && password != null) {
+      return {'email': email, 'password': password};
+    }
+    return null;
+  }
+
+  /// Remove credenciais do último login
+  static Future<void> clearLastLogin() async {
+    await _storage.delete(key: _lastLoginEmailKey);
+    await _storage.delete(key: _lastLoginPasswordKey);
   }
 
   /// Login mock (para desenvolvimento)

@@ -6,6 +6,7 @@ import 'package:pizza/core/constants/app_strings.dart';
 import 'package:pizza/shared/widgets/custom_button.dart';
 import 'package:pizza/shared/widgets/custom_text_field.dart';
 import 'package:pizza/core/providers/auth_providers.dart';
+import 'package:pizza/core/services/auth_service.dart';
 
 /// Tela de Login
 class LoginScreen extends ConsumerStatefulWidget {
@@ -20,6 +21,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+
+  // Último acesso
+  String? _lastLoginEmail;
+  bool _hasLastLogin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLastLogin();
+  }
+
+  Future<void> _loadLastLogin() async {
+    final lastLogin = await AuthService.getLastLogin();
+    if (lastLogin != null && mounted) {
+      setState(() {
+        _lastLoginEmail = lastLogin['email'];
+        _hasLastLogin = true;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -43,6 +64,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(error?.toString() ?? 'Erro ao fazer login'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleLastLogin() async {
+    if (_lastLoginEmail == null) return;
+
+    final lastLogin = await AuthService.getLastLogin();
+    if (lastLogin == null) return;
+
+    _emailController.text = lastLogin['email']!;
+    _passwordController.text = lastLogin['password']!;
+
+    final success = await ref.read(authProvider.notifier).login(
+      lastLogin['email']!,
+      lastLogin['password']!,
+    );
+
+    if (success && mounted) {
+      context.go('/home');
+    } else if (mounted) {
+      final error = ref.read(authProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error?.toString() ?? 'Erro no último acesso'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -166,6 +214,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     return null;
                   },
                 ),
+
+                // Último Acesso Button
+                if (_hasLastLogin) ...[
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.history, size: 20),
+                    label: Text('Último acesso: $_lastLoginEmail'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      side: BorderSide(color: AppColors.primary),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: isLoading ? null : _handleLastLogin,
+                  ),
+                ],
 
                 const SizedBox(height: 12),
 
